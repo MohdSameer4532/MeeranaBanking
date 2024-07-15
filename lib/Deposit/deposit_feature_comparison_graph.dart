@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'person.dart';
+import 'deposit_person.dart';
 
 class FeatureComparisonGraph extends StatefulWidget {
   final List<Person> dummyData;

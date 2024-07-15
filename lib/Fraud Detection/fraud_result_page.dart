@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'data.dart'; // Import your data file
+import 'fraud_data.dart'; // Import your data file
 import 'fraud_feature_comparison_graph.dart'; // Adjust to your actual graph widget name
 
 class FraudResultPage extends StatefulWidget {

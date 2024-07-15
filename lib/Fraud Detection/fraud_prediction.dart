@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'data.dart'; // Import your data file
+import 'fraud_data.dart'; // Import your data file
 import 'fraud_result_page.dart'; // Import FraudResultPage
 
 class FraudPredictionPage extends StatefulWidget {

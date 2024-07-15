@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'person.dart';
-import 'result_screen.dart';
+import 'deposit_person.dart';
+import 'deposit_resultscreen.dart';
 
 final Map<String, String> fieldLabels = {
   'age': 'Age',

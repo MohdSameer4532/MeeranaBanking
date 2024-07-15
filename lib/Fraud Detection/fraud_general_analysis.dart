@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'data.dart'; // Assuming this imports your data structure
+import 'fraud_data.dart'; // Assuming this imports your data structure
 import 'fraud_prediction.dart'; // Import your prediction page
 
 class FraudGeneralAnalyticsPage extends StatefulWidget {

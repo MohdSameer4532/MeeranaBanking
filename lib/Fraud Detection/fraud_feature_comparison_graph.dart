@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'data.dart'; // Import your FraudPerson class
+import 'fraud_data.dart'; // Import your FraudPerson class
 
 class FeatureComparisonGraph extends StatelessWidget {
   final FraudPerson userInput;

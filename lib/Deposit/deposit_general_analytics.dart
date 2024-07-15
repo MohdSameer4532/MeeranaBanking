@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'person.dart'; // Import your Person class and dummyData list
-import 'user_input_form.dart'; // Import your UserInputForm widget
+import 'deposit_person.dart'; // Import your Person class and dummyData list
+import 'deposit_user_input_form.dart'; // Import your UserInputForm widget
 
 class DepositPredictionPage extends StatelessWidget {
   @override
