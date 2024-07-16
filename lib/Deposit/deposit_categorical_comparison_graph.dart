@@ -59,8 +59,10 @@ class CategoricalComparisonGraph extends StatelessWidget {
                     },
                   ),
                 ),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               borderData: FlBorderData(show: false),
               barGroups: _getBarGroups(categoryCounts),
@@ -95,7 +97,13 @@ class CategoricalComparisonGraph extends StatelessWidget {
   }
 
   List<BarChartGroupData> _getBarGroups(Map<String, int> categoryCounts) {
-    final List<Color> colors = [Colors.blue, Colors.green, Colors.red, Colors.yellow, Colors.purple];
+    final List<Color> colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.red,
+      Colors.yellow,
+      Colors.purple
+    ];
     return categoryCounts.entries.map((entry) {
       final index = categoryCounts.keys.toList().indexOf(entry.key);
       return BarChartGroupData(
@@ -126,7 +134,13 @@ class CategoricalComparisonGraph extends StatelessWidget {
           alignment: WrapAlignment.center,
           children: _getCategoryCounts().keys.map((category) {
             final index = _getCategoryCounts().keys.toList().indexOf(category);
-            final List<Color> colors = [Colors.blue, Colors.green, Colors.red, Colors.yellow, Colors.purple];
+            final List<Color> colors = [
+              Colors.blue,
+              Colors.green,
+              Colors.red,
+              Colors.yellow,
+              Colors.purple
+            ];
             return _legendItem(colors[index % colors.length], category);
           }).toList(),
         ),
