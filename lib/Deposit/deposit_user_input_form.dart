@@ -139,8 +139,7 @@ class _UserInputFormState extends State<UserInputForm> {
                       textStyle: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    child: const Text('Submit',
-                        style: TextStyle(color: Colors.white)),
+                    child: const Text('Submit'),
                   ),
                 ),
               ],
