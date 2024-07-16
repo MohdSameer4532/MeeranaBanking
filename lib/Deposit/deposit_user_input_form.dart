@@ -114,10 +114,11 @@ class _UserInputFormState extends State<UserInputForm> {
                   child: ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), backgroundColor: Color(0xFF1E3354),
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      backgroundColor: Color(0xFF1E3354),
                       textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    child: const Text('Submit', style: TextStyle(color: Colors.white)),
+                    child: const Text('Submit'),
                   ),
                 ),
               ],
