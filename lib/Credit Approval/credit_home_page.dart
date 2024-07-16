@@ -95,6 +95,7 @@ class _CreditHomePageState extends State<CreditHomePage> {
                     _buildLegendItem(Colors.red, 'Rented apartment'),
                     _buildLegendItem(Colors.purple, 'Office apartment'),
                   ]),
+                  _buildEmptyCard(), // New empty card
                 ],
               ),
             ),
@@ -141,6 +142,14 @@ class _CreditHomePageState extends State<CreditHomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildEmptyCard() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+       
     );
   }
 

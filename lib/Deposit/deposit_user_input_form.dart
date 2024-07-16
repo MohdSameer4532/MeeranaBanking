@@ -27,14 +27,12 @@ class _UserInputFormState extends State<UserInputForm> {
   final TextEditingController _balanceController = TextEditingController();
   final TextEditingController _campaignController = TextEditingController();
   final TextEditingController _daysController = TextEditingController();
-  final TextEditingController _previousContactsController =
-      TextEditingController();
-
-  String _selectedJob = 'Select Job';
+  final TextEditingController _previousContactsController = TextEditingController();
+  String? _selectedJob;
   String? _selectedMaritalStatus;
   String? _selectedEducation;
-  String _selectedHousingLoan = 'no';
-  String _selectedPersonalLoan = 'no';
+  String _selectedHousingLoan = '';
+  String _selectedPersonalLoan = '';
   String? _selectedPreviousCampaignOutcome;
 
   @override
@@ -47,12 +45,11 @@ class _UserInputFormState extends State<UserInputForm> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Navigate back and handle layout adjustment
             Navigator.pop(context);
           },
         ),
         title: Text(
-          'Deposit Prediction',
+          'Bank Deposit',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
@@ -64,67 +61,63 @@ class _UserInputFormState extends State<UserInputForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const Text(
+                  'Enter Customer Details',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 20),
-                _buildTextField('age', _ageController, TextInputType.number,
-                    'Please enter age'),
-                const SizedBox(height: 20),
-                _buildCustomDropdown('job', [
-                  'Admin',
-                  'Blue-collar',
-                  'Entrepreneur',
-                  'Housemaid',
-                  'Management',
-                  'Retired',
-                  'Self-employed',
-                  'Services',
-                  'Student',
-                  'Technician',
-                  'Unemployed'
-                ]),
+                _buildTextField('age', _ageController, TextInputType.number, 'Please enter age'),
                 const SizedBox(height: 20),
                 _buildCustomDropdown(
-                    'maritalStatus', ['Single', 'Married', 'Divorced']),
+                  'job',
+                  ['Admin', 'Blue-collar', 'Entrepreneur', 'Housemaid', 'Management', 'Retired', 'Self-employed', 'Services', 'Student', 'Technician', 'Unemployed'],
+                  (value) => setState(() => _selectedJob = value),
+                ),
                 const SizedBox(height: 20),
-                _buildCustomDropdown('education',
-                    ['Primary', 'Secondary', 'Tertiary', 'Unknown']),
+                _buildCustomDropdown(
+                  'maritalStatus',
+                  ['Single', 'Married', 'Divorced'],
+                  (value) => setState(() => _selectedMaritalStatus = value),
+                ),
                 const SizedBox(height: 20),
-                _buildTextField('balance', _balanceController,
-                    TextInputType.number, 'Please enter balance'),
+                _buildCustomDropdown(
+                  'education',
+                  ['Primary', 'Secondary', 'Tertiary', 'Unknown'],
+                  (value) => setState(() => _selectedEducation = value),
+                ),
                 const SizedBox(height: 20),
-                _buildRadioGroup('personalLoan', 'Personal Loan'),
+                _buildTextField('balance', _balanceController, TextInputType.number, 'Please enter balance'),
                 const SizedBox(height: 20),
-                _buildRadioGroup('housingLoan', 'Housing Loan'),
+                _buildSectionHeader('personalLoan'),
+                _buildRadioGroup('personalLoan'),
                 const SizedBox(height: 20),
-                _buildTextField('campaign', _campaignController,
-                    TextInputType.number, 'Please enter a campaign number'),
+                _buildSectionHeader('housingLoan'),
+                _buildRadioGroup('housingLoan'),
                 const SizedBox(height: 20),
-                _buildTextField('daysSincePreviousContact', _daysController,
-                    TextInputType.number, 'Please enter number of days'),
+                _buildTextField('campaign', _campaignController, TextInputType.number, 'Please enter a campaign number'),
                 const SizedBox(height: 20),
-                _buildTextField('previousContacts', _previousContactsController,
-                    TextInputType.number, 'Please enter number of contacts'),
+                _buildTextField('daysSincePreviousContact', _daysController, TextInputType.number, 'Please enter number of days'),
                 const SizedBox(height: 20),
-                _buildCustomDropdown('previousCampaignOutcome',
-                    ['Success', 'Failure', 'Other', 'Unknown']),
+                _buildTextField('previousContacts', _previousContactsController, TextInputType.number, 'Please enter number of contacts'),
+                const SizedBox(height: 20),
+                _buildCustomDropdown(
+                  'previousCampaignOutcome',
+                  ['Success', 'Failure', 'Other', 'Unknown'],
+                  (value) => setState(() => _selectedPreviousCampaignOutcome = value),
+                ),
                 const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color.fromARGB(255, 30, 51, 84), // background color
-                      foregroundColor: Colors.white, // text color
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 15),
-                      textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), backgroundColor: Color(0xFF1E3354),
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: const Text('Submit', style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
@@ -135,14 +128,13 @@ class _UserInputFormState extends State<UserInputForm> {
     );
   }
 
-  Widget _buildTextField(String fieldName, TextEditingController controller,
-      TextInputType inputType, String validationMessage) {
+  Widget _buildTextField(String fieldName, TextEditingController controller, TextInputType inputType, String validationMessage) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           fieldLabels[fieldName]!,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -171,100 +163,75 @@ class _UserInputFormState extends State<UserInputForm> {
     );
   }
 
-  Widget _buildCustomDropdown(String fieldName, List<String> items) {
-    String? selectedValue;
-    switch (fieldName) {
-      case 'job':
-        selectedValue = _selectedJob;
-        break;
-      case 'maritalStatus':
-        selectedValue = _selectedMaritalStatus;
-        break;
-      case 'education':
-        selectedValue = _selectedEducation;
-        break;
-      case 'previousCampaignOutcome':
-        selectedValue = _selectedPreviousCampaignOutcome;
-        break;
-    }
-
+  Widget _buildCustomDropdown(String fieldName, List<String> items, Function(String?) onChanged) {
     return CustomDropdown(
       label: fieldLabels[fieldName]!,
       items: items,
-      value: selectedValue,
-      onChanged: (value) {
-        setState(() {
-          switch (fieldName) {
-            case 'job':
-              _selectedJob = value!;
-              break;
-            case 'maritalStatus':
-              _selectedMaritalStatus = value!;
-              break;
-            case 'education':
-              _selectedEducation = value!;
-              break;
-            case 'previousCampaignOutcome':
-              _selectedPreviousCampaignOutcome = value!;
-              break;
-          }
-        });
-      },
+      value: _getSelectedValueForField(fieldName),
+      onChanged: onChanged,
     );
   }
 
-  Widget _buildRadioGroup(String fieldName, String label) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  String? _getSelectedValueForField(String fieldName) {
+    switch (fieldName) {
+      case 'job':
+        return _selectedJob;
+      case 'maritalStatus':
+        return _selectedMaritalStatus;
+      case 'education':
+        return _selectedEducation;
+      case 'previousCampaignOutcome':
+        return _selectedPreviousCampaignOutcome;
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildSectionHeader(String fieldName) {
+    return Text(
+      fieldLabels[fieldName]!,
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
+    );
+  }
+
+  Widget _buildRadioGroup(String fieldName) {
+    return Row(
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+        Expanded(
+          child: RadioListTile<String>(
+            title: const Text('Yes'),
+            value: 'yes',
+            groupValue: fieldName == 'housingLoan' ? _selectedHousingLoan : _selectedPersonalLoan,
+            onChanged: (value) {
+              setState(() {
+                if (fieldName == 'housingLoan') {
+                  _selectedHousingLoan = value!;
+                } else if (fieldName == 'personalLoan') {
+                  _selectedPersonalLoan = value!;
+                }
+              });
+            },
           ),
         ),
-        const SizedBox(height: 5),
-        Row(
-          children: [
-            Expanded(
-              child: RadioListTile<String>(
-                title: const Text('Yes'),
-                value: 'yes',
-                groupValue: fieldName == 'housingLoan'
-                    ? _selectedHousingLoan
-                    : _selectedPersonalLoan,
-                onChanged: (value) {
-                  setState(() {
-                    if (fieldName == 'housingLoan') {
-                      _selectedHousingLoan = value!;
-                    } else if (fieldName == 'personalLoan') {
-                      _selectedPersonalLoan = value!;
-                    }
-                  });
-                },
-              ),
-            ),
-            Expanded(
-              child: RadioListTile<String>(
-                title: const Text('No'),
-                value: 'no',
-                groupValue: fieldName == 'housingLoan'
-                    ? _selectedHousingLoan
-                    : _selectedPersonalLoan,
-                onChanged: (value) {
-                  setState(() {
-                    if (fieldName == 'housingLoan') {
-                      _selectedHousingLoan = value!;
-                    } else if (fieldName == 'personalLoan') {
-                      _selectedPersonalLoan = value!;
-                    }
-                  });
-                },
-              ),
-            ),
-          ],
+        Expanded(
+          child: RadioListTile<String>(
+            title: const Text('No'),
+            value: 'no',
+            groupValue: fieldName == 'housingLoan' ? _selectedHousingLoan : _selectedPersonalLoan,
+            onChanged: (value) {
+              setState(() {
+                if (fieldName == 'housingLoan') {
+                  _selectedHousingLoan = value!;
+                } else if (fieldName == 'personalLoan') {
+                  _selectedPersonalLoan = value!;
+                }
+              });
+            },
+          ),
         ),
       ],
     );
@@ -274,20 +241,19 @@ class _UserInputFormState extends State<UserInputForm> {
     if (_formKey.currentState!.validate()) {
       Person userInput = Person(
         age: int.parse(_ageController.text),
-        job: _selectedJob == 'Select Job' ? '' : _selectedJob,
+        job: _selectedJob ?? '',
         marital: _selectedMaritalStatus ?? '',
         education: _selectedEducation ?? '',
         balance: int.parse(_balanceController.text),
         personalLoan: _selectedPersonalLoan == 'yes',
         housingLoan: _selectedHousingLoan == 'yes',
-        result: false,
+        result: true, // Placeholder for result calculation
       );
 
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              ResultScreen(userInput: userInput, dummyData: []),
+          builder: (context) => ResultScreen(userInput: userInput, dummyData: []),
         ),
       );
     }

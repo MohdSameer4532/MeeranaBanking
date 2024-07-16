@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 import 'credit_person.dart';
 import 'credit_feature_comparison_graph.dart';
+import 'credit_categorical_comparision_graph.dart';
 
 class ResultScreen extends StatelessWidget {
   final CreditPerson userInput;
   final List<CreditPerson> dummyData;
 
-  const ResultScreen({
-    super.key, // Adding key parameter
+  ResultScreen({
     required this.userInput,
     required this.dummyData,
-  }); // Passing key to the superclass constructor
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
         backgroundColor: Color(0xFF1E3354),
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Navigate back and handle layout adjustment
             Navigator.pop(context);
           },
         ),
@@ -32,31 +30,47 @@ class ResultScreen extends StatelessWidget {
         ),
       ),
       body: Container(
-        color: Colors.white,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white, const Color.fromARGB(255, 209, 230, 228)],
+          ),
+        ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildUserInputSummary(),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 _buildResultDisplay(),
-                const SizedBox(height: 20),
-                _buildComparisonSection(
-                    'Annual Income Comparison', 'annualIncome'),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
+                _buildComparisonSection('Annual Income Comparison', 'annualIncome'),
+                SizedBox(height: 20),
                 _buildComparisonSection('Days Birth Comparison', 'daysBirth'),
-                const SizedBox(height: 20),
-                _buildComparisonSection(
-                    'Days Employed Comparison', 'daysEmployed'),
-                const SizedBox(height: 20),
-                _buildComparisonSection(
-                    'Number of Children Comparison', 'noOfChildren'),
-                const SizedBox(height: 20),
-                _buildComparisonSection(
-                    'Total Family Members Comparison', 'totalFamilyMembers'),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
+                _buildComparisonSection('Days Employed Comparison', 'daysEmployed'),
+                SizedBox(height: 20),
+                _buildComparisonSection('Number of Children Comparison', 'noOfChildren'),
+                SizedBox(height: 20),
+                _buildComparisonSection('Total Family Members Comparison', 'totalFamilyMembers'),
+                SizedBox(height: 20),
+                _buildComparisonSection('Gender Comparison', 'gender'),
+                SizedBox(height: 20),
+                _buildComparisonSection('Own Car Comparison', 'ownCar'),
+                SizedBox(height: 20),
+                _buildComparisonSection('Own Property Comparison', 'ownProperty'),
+                SizedBox(height: 20),
+                _buildComparisonSection('Income Type Comparison', 'incomeType'),
+                SizedBox(height: 20),
+                _buildComparisonSection('Education Type Comparison', 'educationType'),
+                SizedBox(height: 20),
+                _buildComparisonSection('Family Status Comparison', 'familyStatus'),
+                SizedBox(height: 20),
+                _buildComparisonSection('Housing Type Comparison', 'housingType'),
+                 
               ],
             ),
           ),
@@ -70,26 +84,25 @@ class ResultScreen extends StatelessWidget {
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Your Profile',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal)),
-            const SizedBox(height: 10),
-            _buildProfileItem(Icons.child_friendly, 'Number of Children',
-                '${userInput.noOfChildren}'),
-            _buildProfileItem(Icons.attach_money, 'Annual Income',
-                '${userInput.annualIncome}'),
-            _buildProfileItem(
-                Icons.cake, 'Days Birth', '${userInput.daysBirth}'),
-            _buildProfileItem(Icons.work_history, 'Days Employed',
-                '${userInput.daysEmployed}'),
-            _buildProfileItem(Icons.group, 'Total Family Members',
-                '${userInput.totalFamilyMembers}'),
+            Text('Your Profile', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue[900])),
+            SizedBox(height: 10),
+            _buildProfileItem(Icons.person, 'Gender', userInput.gender),
+            _buildProfileItem(Icons.car_rental, 'Own Car', userInput.ownCar ? 'Yes' : 'No'),
+            _buildProfileItem(Icons.home, 'Own Property', userInput.ownProperty ? 'Yes' : 'No'),
+            _buildProfileItem(Icons.child_friendly, 'Number of Children', '${userInput.noOfChildren}'),
+            _buildProfileItem(Icons.attach_money, 'Annual Income', '${userInput.annualIncome}'),
+            _buildProfileItem(Icons.work, 'Income Type', userInput.incomeType),
+            _buildProfileItem(Icons.school, 'Education Type', userInput.educationType),
+            _buildProfileItem(Icons.family_restroom, 'Family Status', userInput.familyStatus),
+            _buildProfileItem(Icons.home_work, 'Housing Type', userInput.housingType),
+            _buildProfileItem(Icons.cake, 'Days Birth', '${userInput.daysBirth}'),
+            _buildProfileItem(Icons.work_history, 'Days Employed', '${userInput.daysEmployed}'),
+            _buildProfileItem(Icons.work_outline, 'Occupation Type', userInput.occupationType),
+            _buildProfileItem(Icons.group, 'Total Family Members', '${userInput.totalFamilyMembers}'),
           ],
         ),
       ),
@@ -101,9 +114,9 @@ class ResultScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.teal, size: 20),
-          const SizedBox(width: 10),
-          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Icon(icon, color: Colors.blue[900], size: 20),
+          SizedBox(width: 10),
+          Text('$label: ', style: TextStyle(fontWeight: FontWeight.bold)),
           Text(value),
         ],
       ),
@@ -116,28 +129,23 @@ class ResultScreen extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: userInput.result ? Colors.green.shade100 : Colors.red.shade100,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const Text(
+            Text(
               'Prediction Result',
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue[900]),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Icon(
               userInput.result ? Icons.thumb_up : Icons.thumb_down,
               size: 50,
               color: userInput.result ? Colors.green : Colors.red,
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Text(
-              userInput.result
-                  ? 'Eligible for Credit'
-                  : 'Not Eligible for Credit',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              userInput.result ? 'Eligible for Credit' : 'Not Eligible for Credit',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -150,23 +158,29 @@ class ResultScreen extends StatelessWidget {
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal)),
-            const SizedBox(height: 10),
-            SizedBox(
+            Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue[900])),
+            SizedBox(height: 10),
+            Container(
               height: 300,
-              child: FeatureComparisonGraph(
-                dummyData: dummyData,
-                userInput: userInput,
-                feature: feature,
-              ),
+              child: feature == 'annualIncome' ||
+                      feature == 'daysBirth' ||
+                      feature == 'daysEmployed' ||
+                      feature == 'noOfChildren' ||
+                      feature == 'totalFamilyMembers'
+                  ? FeatureComparisonGraph(
+                      dummyData: dummyData,
+                      userInput: userInput,
+                      feature: feature,
+                    )
+                  : CategoricalComparisonGraph(
+                      dummyData: dummyData,
+                      userInput: userInput,
+                      feature: feature,
+                    ),
             ),
           ],
         ),
