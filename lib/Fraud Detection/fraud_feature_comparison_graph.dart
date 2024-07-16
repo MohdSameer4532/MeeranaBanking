@@ -233,19 +233,19 @@ class FeatureComparisonGraph extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(
-          isFraud ? Icons.thumb_down : Icons.thumb_up,
-          color: isFraud ? Colors.red : Colors.green,
-          size: 40,
-        ),
+        // Icon(
+        //   isFraud ? Icons.thumb_down : Icons.thumb_up,
+        //   color: isFraud ? Colors.red : Colors.green,
+        //   size: 40,
+        // ),
         SizedBox(width: 10),
-        Text(
-          isFraud ? 'Fraud Detected' : 'No Fraud Detected',
-          style: TextStyle(
-            fontSize: 18,
-            color: isFraud ? Colors.red : Colors.green,
-          ),
-        ),
+        // Text(
+        //   isFraud ? 'Fraud Detected' : 'No Fraud Detected',
+        //   style: TextStyle(
+        //     fontSize: 18,
+        //     color: isFraud ? Colors.red : Colors.green,
+        //   ),
+        // ),
       ],
     );
   }

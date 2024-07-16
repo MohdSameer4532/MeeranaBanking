@@ -22,12 +22,9 @@ class _FraudResultPageState extends State<FraudResultPage> {
       appBar: AppBar(
         title: const Text(
           'Fraud Result',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
-        backgroundColor: Color.fromARGB(255, 20, 6, 109),
+        backgroundColor: Color.fromARGB(255, 30, 51, 84),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -45,6 +42,8 @@ class _FraudResultPageState extends State<FraudResultPage> {
               ),
               SizedBox(height: 20),
               _buildUserInputSummary(),
+              SizedBox(height: 20),
+              _buildFraudDetectionInfo(),
               SizedBox(height: 20),
               _buildComparisonSection('Age Comparison', 'age'),
               SizedBox(height: 20),
@@ -102,11 +101,43 @@ class _FraudResultPageState extends State<FraudResultPage> {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.teal, size: 20),
+          Icon(icon, color: const Color.fromARGB(255, 146, 211, 205), size: 20),
           SizedBox(width: 10),
           Text('$label: ', style: TextStyle(fontWeight: FontWeight.bold)),
           Text(value),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFraudDetectionInfo() {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.thumb_up, color: Colors.green, size: 70),
+                SizedBox(
+                  width: 10,
+                  height: 100,
+                ),
+                Text(
+                  'No Fraud Detected',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

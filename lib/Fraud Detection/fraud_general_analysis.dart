@@ -15,6 +15,8 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
 
   Map<String, double> ageRangeData = {};
   Map<String, double> genderData = {};
+  Map<String, double> categoriesData = {};
+  Map<String, double> amountData = {};
 
   @override
   void initState() {
@@ -29,6 +31,11 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
 
       // Calculate gender data
       genderData = _calculateGenderData();
+
+      // Calculate categories data
+      categoriesData = _calculateCategoriesData();
+
+      amountData = _calculateAmountData();
     });
   }
 
@@ -53,6 +60,27 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
     return ageRanges;
   }
 
+  Map<String, double> _calculateAmountData() {
+    Map<String, double> amountRanges = {
+      '1-50': 0,
+      '50-100': 0,
+      '100+': 0,
+    };
+
+    for (var person in data) {
+      double amount = person.amount;
+      if (amount >= 1 && amount <= 50) {
+        amountRanges['1-50'] = amountRanges['1-50']! + 1;
+      } else if (amount > 50 && amount <= 100) {
+        amountRanges['50-100'] = amountRanges['50-100']! + 1;
+      } else if (amount > 100) {
+        amountRanges['100+'] = amountRanges['100+']! + 1;
+      }
+    }
+
+    return amountRanges;
+  }
+
   Map<String, double> _calculateGenderData() {
     Map<String, double> genderCounts = {'Male': 0, 'Female': 0};
 
@@ -65,6 +93,24 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
     }
 
     return genderCounts;
+  }
+
+  Map<String, double> _calculateCategoriesData() {
+    Map<String, double> categoriesCounts = {
+      'es_travel': 0,
+      'es_tech': 0,
+      'es_health': 0,
+      'es_food': 0,
+    };
+
+    for (var person in data) {
+      String category = person.category;
+      if (categoriesCounts.containsKey(category)) {
+        categoriesCounts[category] = categoriesCounts[category]! + 1;
+      }
+    }
+
+    return categoriesCounts;
   }
 
   List<PieChartSectionData> _generatePieChartSections(
@@ -101,6 +147,20 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
         return Colors.blue;
       case 'Female':
         return Colors.pink;
+      case 'es_travel':
+        return Colors.blue;
+      case 'es_tech':
+        return Colors.orange;
+      case 'es_health':
+        return Colors.green;
+      case 'es_food':
+        return Colors.red;
+      case '1-50':
+        return Colors.blue;
+      case '50-100':
+        return Colors.orange;
+      case '100+':
+        return Colors.red;
       default:
         return Colors.grey;
     }
@@ -213,6 +273,32 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                   _buildChartCard('Gender', _buildPieChart(genderData), [
                     _buildLegendItem(Colors.blue, 'Male'),
                     _buildLegendItem(Colors.pink, 'Female'),
+                  ]),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                childAspectRatio: 0.68,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                children: [
+                  _buildChartCard(
+                      'Categories Type', _buildPieChart(categoriesData), [
+                    _buildLegendItem(Colors.blue, 'es_travel'),
+                    _buildLegendItem(Colors.orange, 'es_tech'),
+                    _buildLegendItem(Colors.green, 'es_health'),
+                    _buildLegendItem(Colors.red, 'es_food'),
+                  ]),
+                  _buildChartCard('Amount', _buildPieChart(amountData), [
+                    _buildLegendItem(Colors.blue, '1-50'),
+                    _buildLegendItem(Colors.orange, '50-100'),
+                    _buildLegendItem(Colors.red, '100+'),
                   ]),
                 ],
               ),
