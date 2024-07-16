@@ -27,7 +27,8 @@ class _UserInputFormState extends State<UserInputForm> {
   final TextEditingController _balanceController = TextEditingController();
   final TextEditingController _campaignController = TextEditingController();
   final TextEditingController _daysController = TextEditingController();
-  final TextEditingController _previousContactsController = TextEditingController();
+  final TextEditingController _previousContactsController =
+      TextEditingController();
   String? _selectedJob;
   String? _selectedMaritalStatus;
   String? _selectedEducation;
@@ -70,11 +71,24 @@ class _UserInputFormState extends State<UserInputForm> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
-                _buildTextField('age', _ageController, TextInputType.number, 'Please enter age'),
+                _buildTextField('age', _ageController, TextInputType.number,
+                    'Please enter age'),
                 const SizedBox(height: 20),
                 _buildCustomDropdown(
                   'job',
-                  ['Admin', 'Blue-collar', 'Entrepreneur', 'Housemaid', 'Management', 'Retired', 'Self-employed', 'Services', 'Student', 'Technician', 'Unemployed'],
+                  [
+                    'Admin',
+                    'Blue-collar',
+                    'Entrepreneur',
+                    'Housemaid',
+                    'Management',
+                    'Retired',
+                    'Self-employed',
+                    'Services',
+                    'Student',
+                    'Technician',
+                    'Unemployed'
+                  ],
                   (value) => setState(() => _selectedJob = value),
                 ),
                 const SizedBox(height: 20),
@@ -90,7 +104,8 @@ class _UserInputFormState extends State<UserInputForm> {
                   (value) => setState(() => _selectedEducation = value),
                 ),
                 const SizedBox(height: 20),
-                _buildTextField('balance', _balanceController, TextInputType.number, 'Please enter balance'),
+                _buildTextField('balance', _balanceController,
+                    TextInputType.number, 'Please enter balance'),
                 const SizedBox(height: 20),
                 _buildSectionHeader('personalLoan'),
                 _buildRadioGroup('personalLoan'),
@@ -98,26 +113,34 @@ class _UserInputFormState extends State<UserInputForm> {
                 _buildSectionHeader('housingLoan'),
                 _buildRadioGroup('housingLoan'),
                 const SizedBox(height: 20),
-                _buildTextField('campaign', _campaignController, TextInputType.number, 'Please enter a campaign number'),
+                _buildTextField('campaign', _campaignController,
+                    TextInputType.number, 'Please enter a campaign number'),
                 const SizedBox(height: 20),
-                _buildTextField('daysSincePreviousContact', _daysController, TextInputType.number, 'Please enter number of days'),
+                _buildTextField('daysSincePreviousContact', _daysController,
+                    TextInputType.number, 'Please enter number of days'),
                 const SizedBox(height: 20),
-                _buildTextField('previousContacts', _previousContactsController, TextInputType.number, 'Please enter number of contacts'),
+                _buildTextField('previousContacts', _previousContactsController,
+                    TextInputType.number, 'Please enter number of contacts'),
                 const SizedBox(height: 20),
                 _buildCustomDropdown(
                   'previousCampaignOutcome',
                   ['Success', 'Failure', 'Other', 'Unknown'],
-                  (value) => setState(() => _selectedPreviousCampaignOutcome = value),
+                  (value) =>
+                      setState(() => _selectedPreviousCampaignOutcome = value),
                 ),
                 const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), backgroundColor: Color(0xFF1E3354),
-                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 15),
+                      backgroundColor: Color(0xFF1E3354),
+                      textStyle: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    child: const Text('Submit', style: TextStyle(color: Colors.white)),
+                    child: const Text('Submit',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
@@ -128,7 +151,8 @@ class _UserInputFormState extends State<UserInputForm> {
     );
   }
 
-  Widget _buildTextField(String fieldName, TextEditingController controller, TextInputType inputType, String validationMessage) {
+  Widget _buildTextField(String fieldName, TextEditingController controller,
+      TextInputType inputType, String validationMessage) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -163,7 +187,8 @@ class _UserInputFormState extends State<UserInputForm> {
     );
   }
 
-  Widget _buildCustomDropdown(String fieldName, List<String> items, Function(String?) onChanged) {
+  Widget _buildCustomDropdown(
+      String fieldName, List<String> items, Function(String?) onChanged) {
     return CustomDropdown(
       label: fieldLabels[fieldName]!,
       items: items,
@@ -205,7 +230,9 @@ class _UserInputFormState extends State<UserInputForm> {
           child: RadioListTile<String>(
             title: const Text('Yes'),
             value: 'yes',
-            groupValue: fieldName == 'housingLoan' ? _selectedHousingLoan : _selectedPersonalLoan,
+            groupValue: fieldName == 'housingLoan'
+                ? _selectedHousingLoan
+                : _selectedPersonalLoan,
             onChanged: (value) {
               setState(() {
                 if (fieldName == 'housingLoan') {
@@ -221,7 +248,9 @@ class _UserInputFormState extends State<UserInputForm> {
           child: RadioListTile<String>(
             title: const Text('No'),
             value: 'no',
-            groupValue: fieldName == 'housingLoan' ? _selectedHousingLoan : _selectedPersonalLoan,
+            groupValue: fieldName == 'housingLoan'
+                ? _selectedHousingLoan
+                : _selectedPersonalLoan,
             onChanged: (value) {
               setState(() {
                 if (fieldName == 'housingLoan') {
@@ -253,7 +282,8 @@ class _UserInputFormState extends State<UserInputForm> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ResultScreen(userInput: userInput, dummyData: []),
+          builder: (context) =>
+              ResultScreen(userInput: userInput, dummyData: []),
         ),
       );
     }
