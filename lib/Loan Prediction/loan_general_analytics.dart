@@ -233,6 +233,114 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
     );
   }
 
+  Widget _buildCurrentJobYearsChart() {
+    Map<String, int> currentJobYearsData =
+        _calculateCurrentJobYearsData(dummyData);
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: currentJobYearsData.keys.map((range) {
+          Color color;
+          switch (range) {
+            case '0-2':
+              color = Colors.green;
+              break;
+            case '2-4':
+              color = Colors.blue;
+              break;
+            case '4-6':
+              color = Colors.orange;
+              break;
+            case '6+':
+              color = Colors.pink;
+              break;
+            default:
+              color = Colors.grey;
+              break;
+          }
+          return PieChartSectionData(
+            color: color,
+            value: currentJobYearsData[range]!.toDouble(),
+            title: currentJobYearsData[range].toString(),
+            radius: 30,
+            titleStyle: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildCurrentHouseYearsChart() {
+    Map<String, int> currentHouseYearsData =
+        _calculateCurrentHouseYearsData(dummyData);
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: currentHouseYearsData.keys.map((range) {
+          Color color;
+          switch (range) {
+            case '0-2':
+              color = Colors.green;
+              break;
+            case '2-4':
+              color = Colors.blue;
+              break;
+            case '4-6':
+              color = Colors.orange;
+              break;
+            case '6+':
+              color = Colors.pink;
+              break;
+            default:
+              color = Colors.grey;
+              break;
+          }
+          return PieChartSectionData(
+            color: color,
+            value: currentHouseYearsData[range]!.toDouble(),
+            title: currentHouseYearsData[range].toString(),
+            radius: 30,
+            titleStyle: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildMaritalStatusChart() {
+    Map<String, int> maritalStatusData = _calculateMaritalStatusData(dummyData);
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: maritalStatusData.keys.map((status) {
+          Color color = status == 'Single' ? Colors.orange : Colors.pink;
+          return PieChartSectionData(
+            color: color,
+            value: maritalStatusData[status]!.toDouble(),
+            title: maritalStatusData[status].toString(),
+            radius: 30,
+            titleStyle: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -243,7 +351,6 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Navigate back and handle layout adjustment
             Navigator.pop(context);
           },
         ),
@@ -299,6 +406,25 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                     _buildLegendItem(Colors.orange, '40-49'),
                     _buildLegendItem(Colors.pink, '50+'),
                   ]),
+                  _buildChartCard(
+                      'Current Job Years', _buildCurrentJobYearsChart(), [
+                    _buildLegendItem(Colors.green, '0-2'),
+                    _buildLegendItem(Colors.blue, '2-4'),
+                    _buildLegendItem(Colors.orange, '4-6'),
+                    _buildLegendItem(Colors.pink, '6+'),
+                  ]),
+                  _buildChartCard(
+                      'Current House Years', _buildCurrentHouseYearsChart(), [
+                    _buildLegendItem(Colors.green, '0-2'),
+                    _buildLegendItem(Colors.blue, '2-4'),
+                    _buildLegendItem(Colors.orange, '4-6'),
+                    _buildLegendItem(Colors.pink, '6+'),
+                  ]),
+                  _buildChartCard(
+                      'Marital Status', _buildMaritalStatusChart(), [
+                    _buildLegendItem(Colors.orange, 'Single'),
+                    _buildLegendItem(Colors.pink, 'Married'),
+                  ]),
                 ],
               ),
             ),
@@ -312,15 +438,13 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
           alignment: Alignment.bottomRight,
           child: FloatingActionButton.extended(
             onPressed: () {
-              // Navigate to loan prediction page
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => LoanPredictionPage()),
               );
             },
             label: Text('Predict Loan Risk',
-                style:
-                    TextStyle(color: Colors.white)), // Set text color to white
+                style: TextStyle(color: Colors.white)),
             icon: Icon(
               Icons.add,
               color: Colors.white,
@@ -332,12 +456,9 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
     );
   }
 
-  // Helper methods to calculate data for charts
-
   Map<String, int> _calculateTotalClientsData(List<Map<String, dynamic>> data) {
     int acceptedCount = data.where((person) {
-      var loanStatus =
-          person['loanStatus']; // Adjust according to your data structure
+      var loanStatus = person['loanStatus'];
       return loanStatus != null && loanStatus.toLowerCase() == 'accepted';
     }).length;
     int deniedCount = data.length - acceptedCount;
@@ -411,6 +532,77 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
       }
     });
     return ageGroupMap;
+  }
+
+  Map<String, int> _calculateCurrentJobYearsData(
+      List<Map<String, dynamic>> data) {
+    Map<String, int> jobYearsMap = {
+      '0-2': 0,
+      '2-4': 0,
+      '4-6': 0,
+      '6+': 0,
+    };
+    data.forEach((person) {
+      if (person['currentJobYears'] != null) {
+        if (person['currentJobYears'] >= 0 && person['currentJobYears'] < 2) {
+          jobYearsMap['0-2'] = (jobYearsMap['0-2'] ?? 0) + 1;
+        } else if (person['currentJobYears'] >= 2 &&
+            person['currentJobYears'] < 4) {
+          jobYearsMap['2-4'] = (jobYearsMap['2-4'] ?? 0) + 1;
+        } else if (person['currentJobYears'] >= 4 &&
+            person['currentJobYears'] < 6) {
+          jobYearsMap['4-6'] = (jobYearsMap['4-6'] ?? 0) + 1;
+        } else {
+          jobYearsMap['6+'] = (jobYearsMap['6+'] ?? 0) + 1;
+        }
+      }
+    });
+    return jobYearsMap;
+  }
+
+  Map<String, int> _calculateCurrentHouseYearsData(
+      List<Map<String, dynamic>> data) {
+    Map<String, int> houseYearsMap = {
+      '0-2': 0,
+      '2-4': 0,
+      '4-6': 0,
+      '6+': 0,
+    };
+    data.forEach((person) {
+      if (person['currentHouseYears'] != null) {
+        if (person['currentHouseYears'] >= 0 &&
+            person['currentHouseYears'] < 2) {
+          houseYearsMap['0-2'] = (houseYearsMap['0-2'] ?? 0) + 1;
+        } else if (person['currentHouseYears'] >= 2 &&
+            person['currentHouseYears'] < 4) {
+          houseYearsMap['2-4'] = (houseYearsMap['2-4'] ?? 0) + 1;
+        } else if (person['currentHouseYears'] >= 4 &&
+            person['currentHouseYears'] < 6) {
+          houseYearsMap['4-6'] = (houseYearsMap['4-6'] ?? 0) + 1;
+        } else {
+          houseYearsMap['6+'] = (houseYearsMap['6+'] ?? 0) + 1;
+        }
+      }
+    });
+    return houseYearsMap;
+  }
+
+  Map<String, int> _calculateMaritalStatusData(
+      List<Map<String, dynamic>> data) {
+    Map<String, int> maritalStatusMap = {
+      'Single': 0,
+      'Married': 0,
+    };
+    data.forEach((person) {
+      if (person['maritalStatus'] != null) {
+        if (person['maritalStatus'].toLowerCase() == 'single') {
+          maritalStatusMap['Single'] = (maritalStatusMap['Single'] ?? 0) + 1;
+        } else if (person['maritalStatus'].toLowerCase() == 'married') {
+          maritalStatusMap['Married'] = (maritalStatusMap['Married'] ?? 0) + 1;
+        }
+      }
+    });
+    return maritalStatusMap;
   }
 }
 

@@ -228,7 +228,7 @@ class FeatureComparisonGraph extends StatelessWidget {
   }
 
   Widget _buildFraudDetection() {
-    bool isFraud = _isFraudDetected();
+    _isFraudDetected();
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
