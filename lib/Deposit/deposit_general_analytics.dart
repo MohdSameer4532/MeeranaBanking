@@ -68,6 +68,21 @@ class DepositPredictionPage extends StatelessWidget {
                     _buildLegendItem(Colors.green, '1000+'),
                     _buildLegendItem(Colors.blue, '5000+'),
                   ]),
+                  _buildChartCard(
+                      'Marital Status', _buildMaritalStatusChart(), [
+                    _buildLegendItem(Colors.green, 'Single'),
+                    _buildLegendItem(Colors.red, 'Married'),
+                    _buildLegendItem(
+                        Color.fromARGB(255, 6, 112, 160), 'Divorced'),
+                  ]),
+                  _buildChartCard('Personal Loan', _buildPersonalLoanChart(), [
+                    _buildLegendItem(Colors.green, 'True'),
+                    _buildLegendItem(Colors.red, 'False'),
+                  ]),
+                  _buildChartCard('Housing Loan', _buildHousingLoanChart(), [
+                    _buildLegendItem(Colors.green, 'True'),
+                    _buildLegendItem(Colors.red, 'False'),
+                  ]),
                 ],
               ),
             ),
@@ -282,59 +297,219 @@ class DepositPredictionPage extends StatelessWidget {
     );
   }
 
-  // Helper methods to calculate data for charts
-
-  Map<String, int> _calculateTotalClientsData(List<Person> data) {
-    int acceptedCount = data.where((person) => person.result).length;
-    int rejectedCount = data.length - acceptedCount;
-    return {'Accepted': acceptedCount, 'Rejected': rejectedCount};
+  Widget _buildMaritalStatusChart() {
+    Map<String, int> maritalStatusData = _calculateMaritalStatusData(dummyData);
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: maritalStatusData.keys.map((status) {
+          Color color;
+          switch (status) {
+            case 'single':
+              color = Colors.green;
+              break;
+            case 'married':
+              color = Colors.red;
+              break;
+            case 'divorced':
+              color = Color.fromARGB(255, 6, 112, 160);
+              break;
+            default:
+              color = Colors.grey;
+              break;
+          }
+          return PieChartSectionData(
+            color: color,
+            value: maritalStatusData[status]!.toDouble(),
+            title: maritalStatusData[status].toString(),
+            radius: 30,
+            titleStyle: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        }).toList(),
+      ),
+    );
   }
 
-  Map<String, int> _calculateEducationData(List<Person> data) {
-    Map<String, int> educationMap = {};
-    data.forEach((person) {
-      if (educationMap.containsKey(person.education)) {
-        educationMap[person.education] = educationMap[person.education]! + 1;
+  Widget _buildPersonalLoanChart() {
+    Map<String, int> personalLoanData = _calculatePersonalLoanData(dummyData);
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: personalLoanData.keys.map((loan) {
+          Color color = loan == 'true' ? Colors.green : Colors.red;
+          return PieChartSectionData(
+            color: color,
+            value: personalLoanData[loan]!.toDouble(),
+            title: personalLoanData[loan].toString(),
+            radius: 30,
+            titleStyle: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildHousingLoanChart() {
+    Map<String, int> housingLoanData = _calculateHousingLoanData(dummyData);
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: housingLoanData.keys.map((loan) {
+          Color color = loan == 'true' ? Colors.green : Colors.red;
+          return PieChartSectionData(
+            color: color,
+            value: housingLoanData[loan]!.toDouble(),
+            title: housingLoanData[loan].toString(),
+            radius: 30,
+            titleStyle: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Map<String, int> _calculateTotalClientsData(List<Person> dummyData) {
+    Map<String, int> totalClientsData = {'Accepted': 0, 'Rejected': 0};
+
+    for (var person in dummyData) {
+      if (person.result) {
+        totalClientsData['Accepted'] = totalClientsData['Accepted']! + 1;
       } else {
-        educationMap[person.education] = 1;
+        totalClientsData['Rejected'] = totalClientsData['Rejected']! + 1;
       }
-    });
-    return educationMap;
+    }
+
+    return totalClientsData;
   }
 
-  Map<String, int> _calculateAgeGroupData(List<Person> data) {
-    Map<String, int> ageGroupMap = {
+  Map<String, int> _calculateEducationData(List<Person> dummyData) {
+    Map<String, int> educationData = {
+      'primary': 0,
+      'secondary': 0,
+      'tertiary': 0
+    };
+
+    for (var person in dummyData) {
+      switch (person.education) {
+        case 'primary':
+          educationData['primary'] = educationData['primary']! + 1;
+          break;
+        case 'secondary':
+          educationData['secondary'] = educationData['secondary']! + 1;
+          break;
+        case 'tertiary':
+          educationData['tertiary'] = educationData['tertiary']! + 1;
+          break;
+      }
+    }
+
+    return educationData;
+  }
+
+  Map<String, int> _calculateAgeGroupData(List<Person> dummyData) {
+    Map<String, int> ageGroupData = {
       '20-29': 0,
       '30-39': 0,
       '40-49': 0,
-      '50-59': 0,
+      '50-59': 0
     };
-    data.forEach((person) {
-      if (person.age >= 20 && person.age <= 29) {
-        ageGroupMap['20-29'] = ageGroupMap['20-29']! + 1;
-      } else if (person.age >= 30 && person.age <= 39) {
-        ageGroupMap['30-39'] = ageGroupMap['30-39']! + 1;
-      } else if (person.age >= 40 && person.age <= 49) {
-        ageGroupMap['40-49'] = ageGroupMap['40-49']! + 1;
-      } else if (person.age >= 50 && person.age <= 59) {
-        ageGroupMap['50-59'] = ageGroupMap['50-59']! + 1;
+
+    for (var person in dummyData) {
+      int age = person.age; // Use the age directly from the Person object
+      if (age >= 20 && age <= 29) {
+        ageGroupData['20-29'] = ageGroupData['20-29']! + 1;
+      } else if (age >= 30 && age <= 39) {
+        ageGroupData['30-39'] = ageGroupData['30-39']! + 1;
+      } else if (age >= 40 && age <= 49) {
+        ageGroupData['40-49'] = ageGroupData['40-49']! + 1;
+      } else if (age >= 50 && age <= 59) {
+        ageGroupData['50-59'] = ageGroupData['50-59']! + 1;
       }
-    });
-    return ageGroupMap;
+    }
+
+    return ageGroupData;
   }
 
-  Map<String, int> _calculateBalanceRangeData(List<Person> data) {
-    Map<String, int> balanceRangeMap = {
-      '1000+': 0,
-      '5000+': 0,
-    };
-    data.forEach((person) {
-      if (person.balance >= 1000 && person.balance < 5000) {
-        balanceRangeMap['1000+'] = balanceRangeMap['1000+']! + 1;
-      } else if (person.balance >= 5000 && person.balance < 8000) {
-        balanceRangeMap['5000+'] = balanceRangeMap['5000+']! + 1;
+  Map<String, int> _calculateBalanceRangeData(List<Person> dummyData) {
+    Map<String, int> balanceRangeData = {'1000+': 0, '5000+': 0};
+
+    for (var person in dummyData) {
+      int balance =
+          person.balance; // Use the balance directly from the Person object
+      if (balance >= 1000 && balance < 5000) {
+        balanceRangeData['1000+'] = balanceRangeData['1000+']! + 1;
+      } else if (balance >= 5000) {
+        balanceRangeData['5000+'] = balanceRangeData['5000+']! + 1;
       }
-    });
-    return balanceRangeMap;
+    }
+
+    return balanceRangeData;
+  }
+
+  Map<String, int> _calculateMaritalStatusData(List<Person> dummyData) {
+    Map<String, int> maritalStatusData = {
+      'single': 0,
+      'married': 0,
+      'divorced': 0
+    };
+
+    for (var person in dummyData) {
+      switch (person.marital) {
+        case 'single':
+          maritalStatusData['single'] = maritalStatusData['single']! + 1;
+          break;
+        case 'married':
+          maritalStatusData['married'] = maritalStatusData['married']! + 1;
+          break;
+        case 'divorced':
+          maritalStatusData['divorced'] = maritalStatusData['divorced']! + 1;
+          break;
+      }
+    }
+
+    return maritalStatusData;
+  }
+
+  Map<String, int> _calculatePersonalLoanData(List<Person> dummyData) {
+    Map<String, int> personalLoanData = {'true': 0, 'false': 0};
+
+    for (var person in dummyData) {
+      if (person.personalLoan) {
+        personalLoanData['true'] = personalLoanData['true']! + 1;
+      } else {
+        personalLoanData['false'] = personalLoanData['false']! + 1;
+      }
+    }
+
+    return personalLoanData;
+  }
+
+  Map<String, int> _calculateHousingLoanData(List<Person> dummyData) {
+    Map<String, int> housingLoanData = {'true': 0, 'false': 0};
+
+    for (var person in dummyData) {
+      if (person.housingLoan) {
+        housingLoanData['true'] = housingLoanData['true']! + 1;
+      } else {
+        housingLoanData['false'] = housingLoanData['false']! + 1;
+      }
+    }
+
+    return housingLoanData;
   }
 }
