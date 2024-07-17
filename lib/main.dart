@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'splash_screen.dart'; // Import the SplashScreen widget
+import 'splash_screen.dart';
 
 void main() {
   runApp(const BankPredictionApp());
@@ -16,7 +16,7 @@ class BankPredictionApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SplashScreen(), // Display SplashScreen initially
+      home: const SplashScreen(),
     );
   }
 }
