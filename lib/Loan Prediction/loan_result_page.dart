@@ -18,13 +18,10 @@ class LoanResultPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            // Navigate back and handle layout adjustment
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Loan Prediction Result',
+          'Result',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
@@ -34,18 +31,26 @@ class LoanResultPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildResultDisplay(),
-              SizedBox(height: 20),
+              Text(
+                'User Input Summary',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
               _buildUserInputSummary(),
               SizedBox(height: 20),
-              _buildNumericalComparisons(),
-              SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('Back to Prediction'),
-                ),
+              Text(
+                'Prediction Result',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
+              SizedBox(height: 10),
+              _buildPredictionResult(),
+              SizedBox(height: 20),
+              Text(
+                'Comparison',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              _buildNumericalComparisons(),
             ],
           ),
         ),
@@ -53,49 +58,70 @@ class LoanResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildResultDisplay() {
+  Widget _buildUserInputSummary() {
     return Card(
-      color: predictionResult == 'Loan Approved'
-          ? Colors.green[100]
-          : Colors.red[100],
+      color: Colors.grey[100],
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text(
-              'Prediction Result',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              predictionResult,
-              style: TextStyle(fontSize: 16),
-            ),
+            _buildInputRow(
+                'Income:', userInputData['income']?.toString() ?? 'N/A'),
+            _buildInputRow('Age:', userInputData['age']?.toString() ?? 'N/A'),
+            _buildInputRow('Experience:',
+                userInputData['experience']?.toString() ?? 'N/A'),
+            _buildInputRow('Current Job Years:',
+                userInputData['currentJobYears']?.toString() ?? 'N/A'),
+            _buildInputRow('Current House Years:',
+                userInputData['currentHouseYears']?.toString() ?? 'N/A'),
+            _buildInputRow(
+                'Marital Status:', userInputData['maritalStatus'] ?? 'N/A'),
+            _buildInputRow(
+                'House Ownership:', userInputData['houseOwnership'] ?? 'N/A'),
+            _buildInputRow(
+                'Car Ownership:', userInputData['carOwnership'] ?? 'N/A'),
+            _buildInputRow('Profession:', userInputData['profession'] ?? 'N/A'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildUserInputSummary() {
+  Widget _buildInputRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(color: Colors.grey[600])),
+          Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPredictionResult() {
+    bool isApproved = predictionResult == 'Loan Approved';
     return Card(
+      color: isApproved ? Colors.green[100] : Colors.red[100],
       child: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text('User Input Summary',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            Text('Income: ${userInputData['income']}'),
-            Text('Age: ${userInputData['age']}'),
-            Text('Experience: ${userInputData['experience']}'),
-            Text('Current Job Years: ${userInputData['currentJobYears']}'),
-            Text('Current House Years: ${userInputData['currentHouseYears']}'),
-            Text('Marital Status: ${userInputData['maritalStatus']}'),
-            Text('House Ownership: ${userInputData['houseOwnership']}'),
-            Text('Car Ownership: ${userInputData['carOwnership']}'),
-            Text('Profession: ${userInputData['profession']}'),
+            Icon(
+              isApproved ? Icons.check_circle : Icons.cancel,
+              color: isApproved ? Colors.green : Colors.red,
+              size: 50,
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                isApproved
+                    ? 'Likely to make a deposit'
+                    : 'Unlikely to make a deposit',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
           ],
         ),
       ),
@@ -126,40 +152,55 @@ class LoanResultPage extends StatelessWidget {
       Colors.yellow, // Median
       Colors.green // User
     ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        Container(
-          height: 300,
-          child: BarChart(
-            BarChartData(
-              titlesData: FlTitlesData(
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: (value, meta) {
-                      const titles = ['Min', 'Max', 'Mean', 'Median', 'User'];
-                      return Text(titles[value.toInt()]);
-                    },
-                    reservedSize: 30,
+    return Card(
+      color: Colors.white,
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Container(
+              height: 300,
+              child: BarChart(
+                BarChartData(
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          const titles = [
+                            'Min',
+                            'Max',
+                            'Mean',
+                            'Median',
+                            'User'
+                          ];
+                          return Text(titles[value.toInt()]);
+                        },
+                        reservedSize: 30,
+                      ),
+                    ),
                   ),
+                  barGroups: [
+                    for (int i = 0; i < data.length; i++)
+                      BarChartGroupData(
+                        x: i,
+                        barRods: [
+                          BarChartRodData(toY: data[i], color: colors[i])
+                        ],
+                      ),
+                  ],
                 ),
               ),
-              barGroups: [
-                for (int i = 0; i < data.length; i++)
-                  BarChartGroupData(
-                    x: i,
-                    barRods: [BarChartRodData(toY: data[i], color: colors[i])],
-                  ),
-              ],
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
