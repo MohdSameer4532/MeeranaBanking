@@ -25,6 +25,7 @@ flutter:
   assets:
     - assets/logor.png
     - assets/logt.png
+    - assets/banking_illustration.png
     # Add any other assets here if needed
 
 flutter_launcher_icons:
