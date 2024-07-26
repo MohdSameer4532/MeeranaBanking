@@ -37,7 +37,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
                 const Text(
-                  'Admin !',
+                  'Admin!',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

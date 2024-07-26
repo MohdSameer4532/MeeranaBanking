@@ -7,11 +7,12 @@ class CategoricalComparisonGraph extends StatefulWidget {
   final CreditPerson userInput;
   final String feature;
 
-  CategoricalComparisonGraph({
+  const CategoricalComparisonGraph({
+    Key? key,
     required this.dummyData,
     required this.userInput,
     required this.feature,
-  });
+  }) : super(key: key);
 
   @override
   _CategoricalComparisonGraphState createState() => _CategoricalComparisonGraphState();
@@ -20,207 +21,149 @@ class CategoricalComparisonGraph extends StatefulWidget {
 class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph> {
   late String userCategory;
   late Map<String, int> categoryCounts;
-  late List<String> hiddenCategories;
-
-  final List<Color> colors = [
-    Color(0xFF4E79A7),
-    Color(0xFFF28E2B),
-    Color(0xFFE15759),
-    Color(0xFF76B7B2),
-    Color(0xFF59A14F),
-    Color(0xFFEDC948),
-    Color(0xFFB07AA1),
-    Color(0xFFFF9DA7),
-    Color(0xFF9C755F),
-    Color(0xFFBAB0AC),
-  ];
 
   @override
   void initState() {
     super.initState();
     userCategory = _getFeatureValue(widget.userInput);
     categoryCounts = _getCategoryCounts();
-    hiddenCategories = [];
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'This graph shows the distribution of ${_getFeatureName().toLowerCase()} across all data points. Your category is highlighted in yellow.',
-                  style: TextStyle(fontSize: 14, fontStyle: FontStyle.normal),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(height: 10),
-              Container(
-                height: constraints.maxHeight * 0.6,
-                width: constraints.maxWidth,
-                child: BarChart(
-                  BarChartData(
-                    alignment: BarChartAlignment.spaceAround,
-                    maxY: _getMaxCount(categoryCounts),
-                    titlesData: _getTitlesData(),
-                    borderData: FlBorderData(show: false),
-                    barGroups: _getBarGroups(constraints.maxWidth),
-                    barTouchData: _getBarTouchData(),
+    return Column(
+      children: [
+        Expanded(
+          child: BarChart(
+            BarChartData(
+              alignment: BarChartAlignment.spaceAround,
+              maxY: _getMaxCount(categoryCounts),
+              titlesData: FlTitlesData(
+                show: true,
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      final labels = categoryCounts.keys.toList();
+                      if (value.toInt() < labels.length) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            labels[value.toInt()],
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        );
+                      }
+                      return const Text('');
+                    },
+                    reservedSize: 40,
                   ),
-                  swapAnimationDuration: Duration(milliseconds: 150),
-                  swapAnimationCurve: Curves.linear,
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    getTitlesWidget: (value, meta) {
+                      return Text(value.toInt().toString());
+                    },
+                  ),
+                ),
+                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              borderData: FlBorderData(show: false),
+              barGroups: _getBarGroups(categoryCounts),
+              barTouchData: BarTouchData(
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    final category = categoryCounts.keys.toList()[group.x];
+                    final count = categoryCounts[category]!;
+                    final percentage = (count / widget.dummyData.length * 100).toStringAsFixed(1);
+                    return BarTooltipItem(
+                      '$category: $count ($percentage%)',
+                      const TextStyle(color: Colors.white),
+                    );
+                  },
                 ),
               ),
-              SizedBox(height: 20),
-              _buildLegend(),
-            ],
+            ),
           ),
-        );
-      },
+        ),
+        const SizedBox(height: 20),
+        _buildLegend(userCategory),
+      ],
     );
   }
 
-  FlTitlesData _getTitlesData() {
-    return FlTitlesData(
-      show: true,
-      bottomTitles: AxisTitles(
-        sideTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 60,
-          getTitlesWidget: (value, meta) {
-            final labels = categoryCounts.keys.toList();
-            if (value.toInt() < labels.length) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: RotatedBox(
-                  quarterTurns: 3,
-                  child: Text(
-                    labels[value.toInt()],
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              );
-            }
-            return Text('');
-          },
-        ),
-      ),
-      leftTitles: AxisTitles(
-        sideTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 40,
-          getTitlesWidget: (value, meta) {
-            return Text(value.toInt().toString(), style: TextStyle(fontSize: 10));
-          },
-        ),
-      ),
-      topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-    );
+  Map<String, int> _getCategoryCounts() {
+    final counts = <String, int>{};
+    for (final person in widget.dummyData) {
+      final category = _getFeatureValue(person);
+      counts[category] = (counts[category] ?? 0) + 1;
+    }
+    return counts;
   }
 
-  List<BarChartGroupData> _getBarGroups(double maxWidth) {
-    final barWidth = (maxWidth / (categoryCounts.length * 2)).clamp(10.0, 30.0);
+  List<BarChartGroupData> _getBarGroups(Map<String, int> categoryCounts) {
+    final List<Color> colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.red,
+      Colors.yellow,
+      Colors.purple
+    ];
     return categoryCounts.entries.map((entry) {
       final index = categoryCounts.keys.toList().indexOf(entry.key);
-      final color = colors[index % colors.length];
-      final isUser = entry.key == userCategory;
-      final isHidden = hiddenCategories.contains(entry.key);
+      final isUserCategory = entry.key == userCategory;
       return BarChartGroupData(
         x: index,
         barRods: [
           BarChartRodData(
-            toY: isHidden ? 0 : entry.value.toDouble(),
-            color: isUser ? Colors.yellow : color,
-            width: barWidth,
-            borderRadius: BorderRadius.circular(barWidth / 3),
-            backDrawRodData: BackgroundBarChartRodData(
-              show: true,
-              toY: _getMaxCount(categoryCounts),
-              color: Colors.grey.withOpacity(0.3),
-            ),
+            toY: entry.value.toDouble(),
+            color: isUserCategory ? Colors.orange : colors[index % colors.length],
+            width: 60,
+            borderRadius: BorderRadius.circular(4),
           ),
-          if (isUser && _shouldShowUserIndicator())
-            BarChartRodData(
-              toY: entry.value.toDouble() + 0.5,
-              color: Colors.green,
-              width: barWidth / 2,
-              borderRadius: BorderRadius.circular(barWidth / 6),
-            ),
         ],
-        showingTooltipIndicators: isUser ? [0, 1] : [],
       );
     }).toList();
   }
 
-  bool _shouldShowUserIndicator() {
-    return ['gender', 'educationType', 'housingType'].contains(widget.feature);
-  }
+  Widget _buildLegend(String userCategory) {
+    final userCount = categoryCounts[userCategory] ?? 0;
+    final totalCount = widget.dummyData.length;
+    final percentage = (userCount / totalCount * 100).toStringAsFixed(1);
 
-  BarTouchData _getBarTouchData() {
-    return BarTouchData(
-      touchTooltipData: BarTouchTooltipData(
-        getTooltipItem: (group, groupIndex, rod, rodIndex) {
-          final featureValue = categoryCounts.keys.elementAt(group.x);
-          final count = rod.toY.toInt();
-          final total = categoryCounts.values.reduce((a, b) => a + b);
-          final percentage = (count / total * 100).toStringAsFixed(1);
-          String tooltipText = '$featureValue:\n$count ($percentage%)';
-          if (rodIndex == 1 && _shouldShowUserIndicator()) {
-            tooltipText += '\nYour Input';
-          }
-          return BarTooltipItem(
-            tooltipText,
-            TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildLegend() {
     return Column(
       children: [
         Text(
           'Comparison for ${_getFeatureName()}: $userCategory',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 10),
+        Text(
+          'Your input: $userCount out of $totalCount ($percentage%)',
+          style: const TextStyle(fontSize: 14),
+        ),
+        const SizedBox(height: 10),
         Wrap(
           spacing: 10,
           runSpacing: 10,
-          children: [
-            ...categoryCounts.keys.map((category) {
-              final index = categoryCounts.keys.toList().indexOf(category);
-              final color = colors[index % colors.length];
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if (hiddenCategories.contains(category)) {
-                      hiddenCategories.remove(category);
-                    } else {
-                      hiddenCategories.add(category);
-                    }
-                  });
-                },
-                child: Opacity(
-                  opacity: hiddenCategories.contains(category) ? 0.5 : 1.0,
-                  child: _legendItem(color, category),
-                ),
-              );
-            }).toList(),
-            if (_shouldShowUserIndicator())
-              _legendItem(Colors.green, 'Your Input'),
-          ],
+          alignment: WrapAlignment.center,
+          children: categoryCounts.keys.map((category) {
+            final index = categoryCounts.keys.toList().indexOf(category);
+            final List<Color> colors = [
+              Colors.blue,
+              Colors.green,
+              Colors.red,
+              Colors.yellow,
+              Colors.purple
+            ];
+            final color = category == userCategory ? Colors.orange : colors[index % colors.length];
+            return _legendItem(color, category);
+          }).toList(),
         ),
       ],
     );
@@ -235,19 +178,10 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
           height: 16,
           color: color,
         ),
-        SizedBox(width: 4),
-        Text(label, style: TextStyle(fontSize: 12)),
+        const SizedBox(width: 4),
+        Text(label),
       ],
     );
-  }
-
-  Map<String, int> _getCategoryCounts() {
-    final Map<String, int> dataMap = {};
-    for (final person in widget.dummyData) {
-      final featureValue = _getFeatureValue(person);
-      dataMap[featureValue] = (dataMap[featureValue] ?? 0) + 1;
-    }
-    return dataMap;
   }
 
   String _getFeatureValue(CreditPerson person) {
@@ -297,7 +231,6 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
   }
 
   double _getMaxCount(Map<String, int> categoryCounts) {
-    if (categoryCounts.isEmpty) return 0;
     final max = categoryCounts.values.reduce((a, b) => a > b ? a : b);
     return (max * 1.2).toDouble();
   }
