@@ -21,6 +21,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Set overall background color to white
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -59,42 +60,42 @@ class WelcomePage extends StatelessWidget {
                   children: [
                     _buildFeatureButton(
                       'Deposit\nPrediction',
-                      Icons.account_balance_wallet,
-                      Colors.blue,
+                      'assets/deps.png',
                       () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DepositPredictionPage()),
+                          builder: (context) => DepositPredictionPage(),
+                        ),
                       ),
                     ),
                     _buildFeatureButton(
                       'Loan\nPrediction',
-                      Icons.attach_money,
-                      Colors.green,
+                      'assets/loan.png',
                       () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => LoanGeneralAnalyticsPage()),
+                          builder: (context) => LoanGeneralAnalyticsPage(),
+                        ),
                       ),
                     ),
                     _buildFeatureButton(
                       'Credit\nApproval',
-                      Icons.credit_card,
-                      Colors.orange,
+                      'assets/cred.png',
                       () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => CreditHomePage()),
+                          builder: (context) => CreditHomePage(),
+                        ),
                       ),
                     ),
                     _buildFeatureButton(
                       'Fraud\nDetection',
-                      Icons.security,
-                      Colors.red,
+                      'assets/fraud.png',
                       () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => FraudGeneralAnalyticsPage()),
+                          builder: (context) => FraudGeneralAnalyticsPage(),
+                        ),
                       ),
                     ),
                   ],
@@ -108,29 +109,46 @@ class WelcomePage extends StatelessWidget {
   }
 
   Widget _buildFeatureButton(
-      String text, IconData icon, Color color, VoidCallback onPressed) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: color,
-        backgroundColor: color.withOpacity(0.1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 32, color: color),
-          const SizedBox(height: 8),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: color, fontSize: 14),
+      String text, String assetPath, VoidCallback onPressed) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0x0D000000), // Shadow color with opacity
+            offset: const Offset(0, 5),
+            blurRadius: 30,
           ),
         ],
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(assetPath, height: 32), // Use your PNG icon
+            const SizedBox(height: 8),
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
