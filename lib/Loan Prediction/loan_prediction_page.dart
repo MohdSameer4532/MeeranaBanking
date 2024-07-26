@@ -160,7 +160,7 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
         backgroundColor: Color(0xFF1E3354),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
             // Navigate back and handle layout adjustment
             Navigator.pop(context);

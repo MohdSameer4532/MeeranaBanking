@@ -15,6 +15,9 @@ class BankPredictionApp extends StatelessWidget {
       title: 'Bank Prediction',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        appBarTheme: AppBarTheme(
+          centerTitle: true,
+        ),
       ),
       home: const SplashScreen(),
     );
