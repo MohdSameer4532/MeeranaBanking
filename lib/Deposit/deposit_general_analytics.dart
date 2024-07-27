@@ -14,7 +14,6 @@ class DepositPredictionPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Navigate back and handle layout adjustment
             Navigator.pop(context);
           },
         ),
@@ -28,16 +27,6 @@ class DepositPredictionPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16),
-            Center(
-              child: Text(
-                'General Analytics',
-                style: TextStyle(
-                  color: const Color.fromARGB(255, 2, 2, 2),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
@@ -96,7 +85,6 @@ class DepositPredictionPage extends StatelessWidget {
           alignment: Alignment.bottomRight,
           child: FloatingActionButton.extended(
             onPressed: () {
-              // Navigate to user input form
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => UserInputForm()),

@@ -12,37 +12,40 @@ class LoanResultPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Color(0xFF1E3354),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          'Result',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back_ios_new,
-                        color: Color(0xFF222222)),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    'Result',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF222222)),
-                  ),
-                ],
-              ),
               SizedBox(height: 20),
               Text(
                 'User Input Summary',
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF222222)),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF222222),
+                ),
               ),
               SizedBox(height: 10),
               _buildUserInputSummary(),
@@ -50,9 +53,10 @@ class LoanResultPage extends StatelessWidget {
               Text(
                 'Prediction Result',
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF222222)),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF222222),
+                ),
               ),
               SizedBox(height: 10),
               _buildPredictionResult(),
@@ -60,9 +64,10 @@ class LoanResultPage extends StatelessWidget {
               Text(
                 'Comparison',
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF222222)),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF222222),
+                ),
               ),
               SizedBox(height: 10),
               _buildNumericalComparisons(),
