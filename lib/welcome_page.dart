@@ -49,7 +49,8 @@ class WelcomePage extends StatelessWidget {
                   child: Image.asset('assets/banking_illustration.png',
                       height: 200),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(
+                    height: 80), // Increased space to move buttons down
                 GridView.count(
                   crossAxisCount: 2,
                   shrinkWrap: true,

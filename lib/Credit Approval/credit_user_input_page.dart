@@ -168,7 +168,7 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
                       textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.normal),
+                          fontSize: 16, fontWeight: FontWeight.normal),
                       backgroundColor: const Color.fromARGB(255, 30, 51, 84),
                     ),
                     child: const Text(
