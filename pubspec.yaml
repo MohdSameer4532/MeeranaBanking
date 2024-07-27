@@ -13,11 +13,15 @@ dependencies:
   cupertino_icons: ^1.0.6
   charts_flutter: ^0.12.0
   fl_chart: ^0.68.0
+  flutter_bloc: ^8.0.0
+  provider: ^6.0.0
+  go_router: ^5.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.10.0
 
 flutter:
   uses-material-design: true
@@ -32,7 +36,8 @@ flutter:
     - assets/banking_illustration.png
     # Add any other assets here if needed
 
-flutter_launcher_icons:
-  android: "launcher_icon"
+flutter_icons:
+  android: true
   ios: true
   image_path: "assets/logo.png"
+  min_sdk_android: 21

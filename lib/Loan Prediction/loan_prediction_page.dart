@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'loan_result_page.dart';
+import '../custom_app_bar.dart'; // Import the CustomAppBar file
+import 'loan_result_page.dart'; // Import the LoanResultPage file
 
 final Map<String, String> loanFieldLabels = {
   'income': 'Income',
@@ -45,7 +46,6 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
 
   void _predictLoanRisk() {
     if (_formKey.currentState!.validate()) {
-      // Dummy logic for loan risk prediction
       final double income = double.tryParse(_incomeController.text) ?? 0;
       final int age = int.tryParse(_ageController.text) ?? 0;
       final int experience = int.tryParse(_experienceController.text) ?? 0;
@@ -54,7 +54,6 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
       final int currentHouseYears =
           int.tryParse(_currentHouseYearsController.text) ?? 0;
 
-      // Dummy prediction logic
       String predictionResult;
       if (income > 50000 &&
           age > 30 &&
@@ -66,7 +65,6 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
         predictionResult = 'Loan Denied';
       }
 
-      // Creating userInputData map
       Map<String, dynamic> userInputData = {
         'income': income,
         'age': age,
@@ -79,7 +77,6 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
         'profession': _profession,
       };
 
-      // Navigate to the result page with the prediction result and user input data
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -155,21 +152,13 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
-      appBar: AppBar(
-        backgroundColor: Color(0xFF1E3354),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () {
-            // Navigate back and handle layout adjustment
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'Loan Prediction',
-          style: TextStyle(color: Colors.white, fontSize: 16),
-        ),
+      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      appBar: CustomAppBar(
+        c: context,
+        title: 'Loan Prediction',
+        backButton: true, // Enable back button
+        backgroundColor: Color.fromARGB(
+            255, 30, 51, 84), // Set the background color of the AppBar
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -324,26 +313,22 @@ class _CustomDropdownState extends State<CustomDropdown> {
         ),
         if (_isExpanded)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(10),
               color: Colors.grey[100],
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: widget.items.map((item) {
-                return GestureDetector(
+                return ListTile(
+                  title: Text(item),
                   onTap: () {
+                    widget.onChanged(item);
                     setState(() {
-                      widget.onChanged(item);
                       _isExpanded = false;
                     });
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Text(item, style: const TextStyle(fontSize: 16)),
-                  ),
                 );
               }).toList(),
             ),

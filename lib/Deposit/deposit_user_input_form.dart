@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'deposit_person.dart';
 import 'deposit_resultscreen.dart';
+import '../custom_app_bar.dart';
 
 final Map<String, String> fieldLabels = {
   'age': 'Age',
@@ -39,20 +40,13 @@ class _UserInputFormState extends State<UserInputForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
-      appBar: AppBar(
-        backgroundColor: Color(0xFF1E3354),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'Deposit Prediction',
-          style: TextStyle(color: Colors.white, fontSize: 16),
-        ),
+      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      appBar: CustomAppBar(
+        c: context,
+        title: 'Deposit Prediction',
+        backButton: true, // Enable back button
+        backgroundColor: Color.fromARGB(
+            255, 30, 51, 84), // Set the background color of the AppBar
       ),
       body: SingleChildScrollView(
         child: Padding(

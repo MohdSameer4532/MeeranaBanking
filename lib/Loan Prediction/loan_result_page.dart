@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../custom_app_bar.dart';
 import 'loanperson.dart';
 
 class LoanResultPage extends StatelessWidget {
@@ -12,25 +13,13 @@ class LoanResultPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Color(0xFF1E3354),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'Loan Result',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
+      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      appBar: CustomAppBar(
+        c: context,
+        title: 'Loan Result',
+        backButton: true, // Enable back button
+        backgroundColor: Color.fromARGB(
+            255, 30, 51, 84), // Set the background color of the AppBar
       ),
       body: SingleChildScrollView(
         child: Padding(

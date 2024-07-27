@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'credit_person.dart';
 import 'credit_result_screen.dart';
+import '../custom_app_bar.dart';
 
 final Map<String, String> fieldLabels = {
   'gender': 'Gender',
@@ -46,20 +47,13 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
-      appBar: AppBar(
-        backgroundColor: Color(0xFF1E3354),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          'Credit Approval',
-          style: TextStyle(color: Colors.white, fontSize: 16),
-        ),
+      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      appBar: CustomAppBar(
+        c: context,
+        title: 'Credit Approval',
+        backButton: true, // Enable back button
+        backgroundColor: Color.fromARGB(
+            255, 30, 51, 84), // Set the background color of the AppBar
       ),
       body: SingleChildScrollView(
         child: Padding(
