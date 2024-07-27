@@ -51,7 +51,7 @@ class LoanResultPage extends StatelessWidget {
               _buildUserInputSummary(),
               SizedBox(height: 20),
               Text(
-                'Prediction Result',
+                'Loan Result',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

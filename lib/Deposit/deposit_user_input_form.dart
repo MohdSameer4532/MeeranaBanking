@@ -44,13 +44,13 @@ class _UserInputFormState extends State<UserInputForm> {
         backgroundColor: Color(0xFF1E3354),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: Text(
-          'Bank Deposit',
+          'Deposit Prediction',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
@@ -129,7 +129,7 @@ class _UserInputFormState extends State<UserInputForm> {
                           horizontal: 40, vertical: 15),
                       backgroundColor: Color(0xFF1E3354),
                       textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18, fontWeight: FontWeight.normal),
                     ),
                     child: const Text(
                       'Submit',

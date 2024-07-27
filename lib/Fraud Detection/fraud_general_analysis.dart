@@ -230,13 +230,13 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
         backgroundColor: Color(0xFF1E3354),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: Text(
-          'Fraud General Analytics',
+          'Fraud Detection',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
@@ -245,16 +245,6 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16),
-            Center(
-              child: Text(
-                'General Analytics',
-                style: TextStyle(
-                  color: const Color.fromARGB(255, 2, 2, 2),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
@@ -318,8 +308,8 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                 MaterialPageRoute(builder: (context) => FraudPredictionPage()),
               );
             },
-            label: Text('Predict Fraud Risk',
-                style: TextStyle(color: Colors.white)),
+            label:
+                Text('Detect FraudRisk', style: TextStyle(color: Colors.white)),
             icon: Icon(Icons.add, color: Colors.white),
             backgroundColor: Color.fromARGB(255, 30, 51, 84),
           ),

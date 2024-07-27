@@ -51,14 +51,13 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
         backgroundColor: Color(0xFF1E3354),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
-            // Navigate back and handle layout adjustment
             Navigator.pop(context);
           },
         ),
         title: Text(
-          'Credit Prediction',
+          'Credit Approval',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
@@ -70,14 +69,6 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Enter Applicant Details',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
                 const SizedBox(height: 20),
                 _buildCustomDropdown(
                   'gender',
@@ -183,9 +174,13 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
                       textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18, fontWeight: FontWeight.normal),
+                      backgroundColor: const Color.fromARGB(255, 30, 51, 84),
                     ),
-                    child: const Text('Submit'),
+                    child: const Text(
+                      'Submit',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],

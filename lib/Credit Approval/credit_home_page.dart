@@ -27,13 +27,13 @@ class _CreditHomePageState extends State<CreditHomePage> {
         backgroundColor: Color(0xFF1E3354),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: Text(
-          'Credit General Analytics',
+          'Credit Approval',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
@@ -42,16 +42,6 @@ class _CreditHomePageState extends State<CreditHomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16),
-            Center(
-              child: Text(
-                'General Analytics',
-                style: TextStyle(
-                  color: const Color.fromARGB(255, 2, 2, 2),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
@@ -111,7 +101,7 @@ class _CreditHomePageState extends State<CreditHomePage> {
               MaterialPageRoute(builder: (context) => CreditUserInputPage()),
             );
           },
-          label: Text('Get Prediction', style: TextStyle(color: Colors.white)),
+          label: Text('Get Approval', style: TextStyle(color: Colors.white)),
           icon: Icon(Icons.add, color: Colors.white),
           backgroundColor: Color.fromARGB(255, 30, 51, 84),
         ),
@@ -149,7 +139,6 @@ class _CreditHomePageState extends State<CreditHomePage> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: Colors.white,
-       
     );
   }
 

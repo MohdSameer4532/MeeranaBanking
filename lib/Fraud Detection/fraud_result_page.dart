@@ -20,11 +20,18 @@ class _FraudResultPageState extends State<FraudResultPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: Color(0xFF1E3354),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
           'Fraud Result',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
-        backgroundColor: Color.fromARGB(255, 30, 51, 84),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -32,14 +39,6 @@ class _FraudResultPageState extends State<FraudResultPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'Fraud Prediction Result',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
               SizedBox(height: 20),
               _buildUserInputSummary(),
               SizedBox(height: 20),

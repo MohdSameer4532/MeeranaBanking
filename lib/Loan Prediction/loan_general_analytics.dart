@@ -433,8 +433,8 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                 MaterialPageRoute(builder: (context) => LoanPredictionPage()),
               );
             },
-            label: Text('Predict Loan Risk',
-                style: TextStyle(color: Colors.white)),
+            label:
+                Text('Start Prediction', style: TextStyle(color: Colors.white)),
             icon: Icon(
               Icons.add,
               color: Colors.white,

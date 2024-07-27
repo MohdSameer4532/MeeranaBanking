@@ -24,7 +24,6 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
 
   @override
   void dispose() {
-    // Dispose controllers when not needed to avoid memory leaks
     customerController.dispose();
     ageController.dispose();
     zipCodeOriController.dispose();
@@ -65,14 +64,13 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
         backgroundColor: Color(0xFF1E3354),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
-            // Navigate back and handle layout adjustment
             Navigator.pop(context);
           },
         ),
         title: Text(
-          'Fraud Prediction',
+          'Fraud Detection',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
@@ -237,7 +235,7 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
                   });
                 }
               },
-              child: Text(
+              child: const Text(
                 'Submit',
                 style: TextStyle(color: Colors.white),
               ),
@@ -254,7 +252,7 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.red, // Adjust color as needed
+                color: Colors.red,
               ),
             ),
             SizedBox(height: 20),

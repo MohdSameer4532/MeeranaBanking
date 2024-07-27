@@ -20,7 +20,7 @@ class ResultScreen extends StatelessWidget {
         backgroundColor: Color(0xFF1E3354),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -163,8 +163,10 @@ class ResultScreen extends StatelessWidget {
             SizedBox(height: 10),
             _buildProfileItem('Gender', userInput.gender),
             _buildProfileItem('Own Car', userInput.ownCar ? 'Yes' : 'No'),
-            _buildProfileItem('Own Property', userInput.ownProperty ? 'Yes' : 'No'),
-            _buildProfileItem('Number of Children', '${userInput.noOfChildren}'),
+            _buildProfileItem(
+                'Own Property', userInput.ownProperty ? 'Yes' : 'No'),
+            _buildProfileItem(
+                'Number of Children', '${userInput.noOfChildren}'),
             _buildProfileItem('Annual Income', '${userInput.annualIncome}'),
             _buildProfileItem('Income Type', userInput.incomeType),
             _buildProfileItem('Education Type', userInput.educationType),
@@ -173,7 +175,8 @@ class ResultScreen extends StatelessWidget {
             _buildProfileItem('Days Birth', '${userInput.daysBirth}'),
             _buildProfileItem('Days Employed', '${userInput.daysEmployed}'),
             _buildProfileItem('Occupation Type', userInput.occupationType),
-            _buildProfileItem('Total Family Members', '${userInput.totalFamilyMembers}'),
+            _buildProfileItem(
+                'Total Family Members', '${userInput.totalFamilyMembers}'),
           ],
         ),
       ),
@@ -265,7 +268,9 @@ class ResultScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              userInput.result ? 'Eligible for Credit' : 'Not Eligible for Credit',
+              userInput.result
+                  ? 'Eligible for Credit'
+                  : 'Not Eligible for Credit',
               style: TextStyle(fontSize: 18),
             ),
           ],
