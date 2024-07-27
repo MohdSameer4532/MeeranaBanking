@@ -33,6 +33,6 @@ flutter:
     # Add any other assets here if needed
 
 flutter_launcher_icons:
-    android: "launcher_icon"
-    ios: true
-    image_path: "assets/logo.png"
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo.png"

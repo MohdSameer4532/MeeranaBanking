@@ -23,7 +23,7 @@ class LoanResultPage extends StatelessWidget {
           },
         ),
         title: Text(
-          'Result',
+          'Loan Result',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
