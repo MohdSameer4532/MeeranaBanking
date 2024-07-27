@@ -12,13 +12,14 @@ class DepositPredictionPage extends StatelessWidget {
         backgroundColor: Color(0xFF1E3354),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
+            // Navigate back and handle layout adjustment
             Navigator.pop(context);
           },
         ),
         title: Text(
-          'Deposit Prediction',
+          'Deposit General Analytics',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
@@ -85,6 +86,7 @@ class DepositPredictionPage extends StatelessWidget {
           alignment: Alignment.bottomRight,
           child: FloatingActionButton.extended(
             onPressed: () {
+              // Navigate to user input form
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => UserInputForm()),
