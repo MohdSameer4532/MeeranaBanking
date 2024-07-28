@@ -161,6 +161,10 @@ class LoanResultPage extends StatelessWidget {
       Colors.yellow, // Median
       Colors.green // User
     ];
+
+    // Calculate the maximum value for the graph's Y-axis
+    double maxYValue = data.reduce((a, b) => a > b ? a : b);
+
     return Card(
       color: Colors.white,
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -177,6 +181,7 @@ class LoanResultPage extends StatelessWidget {
               height: 300,
               child: BarChart(
                 BarChartData(
+                  maxY: maxYValue, // Set the maximum Y value dynamically
                   titlesData: FlTitlesData(
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(

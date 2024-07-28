@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'deposit_person.dart';
+import 'dart:math';
 
 class FeatureComparisonGraph extends StatefulWidget {
   final List<Person> dummyData;
@@ -37,10 +38,23 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
     _maxX = widget.dummyData.length.toDouble() - 1;
     _minY = featureValues.reduce((a, b) => a < b ? a : b);
     _maxY = featureValues.reduce((a, b) => a > b ? a : b);
+
+    // Include user input in max calculation
+    final userValue = _getFeatureValue(widget.userInput);
+    _maxY = _maxY > userValue ? _maxY : userValue;
+
+    // Ensure non-zero range
+    if (_maxY == _minY) {
+      _maxY += 1;
+    }
+
+    // Add some padding to the top of the graph
+    _maxY *= 1.1; // Increase max by 10%
   }
 
   @override
   Widget build(BuildContext context) {
+    _updateBoundaries();
     final List<double> featureValues =
         widget.dummyData.map((person) => _getFeatureValue(person)).toList();
     final double userValue = _getFeatureValue(widget.userInput);
@@ -48,103 +62,110 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
         featureValues.reduce((a, b) => a + b) / featureValues.length;
     final double medianVal = _calculateMedian(featureValues);
 
-    return LayoutBuilder(builder: (context, constraints) {
-      return Container(
-        height: constraints.maxHeight,
-        width: constraints.maxWidth,
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Expanded(
-              child: LineChart(
-                LineChartData(
-                  minX: _minX,
-                  maxX: _maxX,
-                  minY: _minY,
-                  maxY: _maxY,
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+    // Generate custom ticks for y-axis
+    final yAxisTicks = _generateYAxisTicks(_minY, _maxY, 5);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          height: constraints.maxHeight,
+          width: constraints.maxWidth,
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Expanded(
+                child: LineChart(
+                  LineChartData(
+                    minX: _minX,
+                    maxX: _maxX,
+                    minY: _minY,
+                    maxY: _maxY,
+                    titlesData: FlTitlesData(
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, meta) {
+                            return Text(_formatAxisLabel(value));
+                          },
+                          reservedSize: 40,
+                          interval: yAxisTicks[1] - yAxisTicks[0],
+                        ),
+                      ),
                     ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          return Text(value.toStringAsFixed(0));
+                    borderData: FlBorderData(show: true),
+                    lineBarsData: [
+                      _createLineChartBarData(featureValues, Colors.blue),
+                      _createHorizontalLine(_maxY, Colors.orange, 'Maximum'),
+                      _createHorizontalLine(meanVal, Colors.purple, 'Mean'),
+                      _createHorizontalLine(medianVal, Colors.yellow, 'Median'),
+                      _createHorizontalLine(
+                          userValue, Colors.green, 'User Data'),
+                    ],
+                    extraLinesData: ExtraLinesData(
+                      horizontalLines: [
+                        HorizontalLine(
+                          y: userValue,
+                          color: Colors.green,
+                          strokeWidth: 2,
+                          label: HorizontalLineLabel(
+                            show: true,
+                            alignment: Alignment.topRight,
+                            padding: EdgeInsets.only(right: 5, top: 5),
+                            style: TextStyle(color: Colors.black),
+                            labelResolver: (line) =>
+                                'User: ${_formatAxisLabel(userValue)}',
+                          ),
+                        ),
+                      ],
+                    ),
+                    lineTouchData: LineTouchData(
+                      touchTooltipData: LineTouchTooltipData(
+                        getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+                          return touchedBarSpots.map((barSpot) {
+                            final flSpot = barSpot;
+                            return LineTooltipItem(
+                              '${widget.feature}: ${_formatAxisLabel(flSpot.y)}',
+                              TextStyle(color: Colors.white),
+                            );
+                          }).toList();
                         },
                       ),
                     ),
                   ),
-                  borderData: FlBorderData(show: true),
-                  lineBarsData: [
-                    _createLineChartBarData(featureValues, Colors.blue),
-                    _createHorizontalLine(_maxY, Colors.orange, 'Maximum'),
-                    _createHorizontalLine(meanVal, Colors.purple, 'Mean'),
-                    _createHorizontalLine(medianVal, Colors.yellow, 'Median'),
-                    _createHorizontalLine(userValue, Colors.green, 'User Data'),
-                  ],
-                  extraLinesData: ExtraLinesData(
-                    horizontalLines: [
-                      HorizontalLine(
-                        y: userValue,
-                        color: Colors.green,
-                        strokeWidth: 2,
-                        label: HorizontalLineLabel(
-                          show: true,
-                          alignment: Alignment.topRight,
-                          padding: EdgeInsets.only(right: 5, top: 5),
-                          style: TextStyle(color: Colors.black),
-                          labelResolver: (line) =>
-                              'User: ${userValue.toStringAsFixed(2)}',
-                        ),
-                      ),
-                    ],
-                  ),
-                  lineTouchData: LineTouchData(
-                    touchTooltipData: LineTouchTooltipData(
-                      // Example of setting tooltip background color
-                      getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
-                        return touchedBarSpots.map((barSpot) {
-                          final flSpot = barSpot;
-                          return LineTooltipItem(
-                            '${widget.feature}: ${flSpot.y.toStringAsFixed(2)}',
-                            TextStyle(color: Colors.white),
-                          );
-                        }).toList();
-                      },
-                    ),
-                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildLegend(),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        if (_isZoomed) {
-                          _updateBoundaries();
-                        } else {
-                          _minX = _maxX / 2;
-                          _minY = _maxY / 2;
-                        }
-                        _isZoomed = !_isZoomed;
-                      });
-                    },
-                    child: Text(_isZoomed ? 'Reset Zoom' : 'Zoom In'),
-                  ),
-                ],
+              SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildLegend(),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          if (_isZoomed) {
+                            _updateBoundaries();
+                          } else {
+                            _minX = _maxX / 2;
+                            _minY = _maxY / 2;
+                          }
+                          _isZoomed = !_isZoomed;
+                        });
+                      },
+                      child: Text(_isZoomed ? 'Reset Zoom' : 'Zoom In'),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      );
-    });
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildLegend() {
@@ -216,5 +237,49 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
       dotData: FlDotData(show: false),
       belowBarData: BarAreaData(show: false),
     );
+  }
+
+  List<double> _generateYAxisTicks(
+      double min, double max, int desiredTickCount) {
+    double range = max - min;
+    double unroundedTickSize = range / (desiredTickCount - 1);
+    double tickSize = _roundToNiceInterval(unroundedTickSize);
+    double start = (min / tickSize).floor() * tickSize;
+    List<double> ticks = [];
+    for (int i = 0; i < desiredTickCount; i++) {
+      double tick = start + (i * tickSize);
+      if (tick >= min && tick <= max) {
+        ticks.add(tick);
+      }
+    }
+    return ticks;
+  }
+
+  double _roundToNiceInterval(double value) {
+    double exponent = (log(value) / ln10).floor().toDouble();
+    double fraction = value / pow(10, exponent);
+    double niceFraction;
+
+    if (fraction < 1.5) {
+      niceFraction = 1;
+    } else if (fraction < 3) {
+      niceFraction = 2;
+    } else if (fraction < 7) {
+      niceFraction = 5;
+    } else {
+      niceFraction = 10;
+    }
+
+    return niceFraction * pow(10, exponent);
+  }
+
+  String _formatAxisLabel(double value) {
+    if (value >= 1000000) {
+      return '${(value / 1000000).toStringAsFixed(1)}M';
+    } else if (value >= 1000) {
+      return '${(value / 1000).toStringAsFixed(1)}K';
+    } else {
+      return value.toStringAsFixed(0);
+    }
   }
 }
