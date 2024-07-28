@@ -121,7 +121,7 @@ class _UserInputFormState extends State<UserInputForm> {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
-                      backgroundColor: Color(0xFF1E3354),
+                      backgroundColor: Color.fromARGB(255, 34, 34, 34),
                       textStyle: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.normal),
                     ),

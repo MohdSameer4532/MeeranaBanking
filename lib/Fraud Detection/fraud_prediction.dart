@@ -234,7 +234,7 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
                 style: TextStyle(color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 30, 51, 84),
+                backgroundColor: Color.fromARGB(255, 34, 34, 34),
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 textStyle:
                     TextStyle(fontSize: 16, fontWeight: FontWeight.normal),

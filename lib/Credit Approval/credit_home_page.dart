@@ -97,7 +97,7 @@ class _CreditHomePageState extends State<CreditHomePage> {
           },
           label: Text('Get Approval', style: TextStyle(color: Colors.white)),
           icon: Icon(Icons.add, color: Colors.white),
-          backgroundColor: Color.fromARGB(255, 30, 51, 84),
+          backgroundColor: Color.fromARGB(255, 34, 34, 34),
         ),
       ),
     );

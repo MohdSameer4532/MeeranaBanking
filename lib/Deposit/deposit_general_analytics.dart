@@ -92,7 +92,7 @@ class DepositPredictionPage extends StatelessWidget {
               Icons.add,
               color: Colors.white,
             ),
-            backgroundColor: Color.fromARGB(255, 30, 51, 84),
+            backgroundColor: Color.fromARGB(255, 34, 34, 34),
           ),
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../custom_app_bar.dart'; // Import the CustomAppBar file
-import 'loan_result_page.dart'; // Import the LoanResultPage file
+import '../custom_app_bar.dart';
+import 'loan_result_page.dart';
 
 final Map<String, String> loanFieldLabels = {
   'income': 'Income',
@@ -152,13 +152,12 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         c: context,
         title: 'Loan Prediction',
-        backButton: true, // Enable back button
-        backgroundColor: Color.fromARGB(
-            255, 255, 255, 255), // Set the background color of the AppBar
+        backButton: true,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -235,9 +234,8 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
                   child: ElevatedButton(
                     onPressed: _predictLoanRisk,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color.fromARGB(255, 30, 51, 84), // background color
-                      foregroundColor: Colors.white, // text color
+                      backgroundColor: Color.fromARGB(255, 34, 34, 34),
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
                       textStyle: const TextStyle(
@@ -313,22 +311,26 @@ class _CustomDropdownState extends State<CustomDropdown> {
         ),
         if (_isExpanded)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(10),
               color: Colors.grey[100],
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: widget.items.map((item) {
-                return ListTile(
-                  title: Text(item),
+                return GestureDetector(
                   onTap: () {
-                    widget.onChanged(item);
                     setState(() {
+                      widget.onChanged(item);
                       _isExpanded = false;
                     });
                   },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Text(item, style: const TextStyle(fontSize: 16)),
+                  ),
                 );
               }).toList(),
             ),
