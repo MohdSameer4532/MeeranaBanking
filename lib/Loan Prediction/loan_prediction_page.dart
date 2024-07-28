@@ -158,7 +158,7 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
         title: 'Loan Prediction',
         backButton: true, // Enable back button
         backgroundColor: Color.fromARGB(
-            255, 30, 51, 84), // Set the background color of the AppBar
+            255, 255, 255, 255), // Set the background color of the AppBar
       ),
       body: SingleChildScrollView(
         child: Padding(

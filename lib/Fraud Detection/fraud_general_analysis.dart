@@ -232,7 +232,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
         title: 'Fraud Detection',
         backButton: true, // Enable back button
         backgroundColor: Color.fromARGB(
-            255, 30, 51, 84), // Set the background color of the AppBar
+            255, 255, 255, 255), // Set the background color of the AppBar
       ),
       body: SingleChildScrollView(
         child: Column(
