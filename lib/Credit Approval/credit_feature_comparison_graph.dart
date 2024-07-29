@@ -1,5 +1,3 @@
-// ignore_for_file: use_super_parameters, library_private_types_in_public_api, prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'credit_person.dart';
@@ -33,13 +31,20 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   }
 
   void _updateBoundaries() {
-    final List<double> featureValues =
-        widget.dummyData.map((person) => _getFeatureValue(person)).toList();
-    if (featureValues.isNotEmpty) {
+    final List<double> allValues = [
+      ...widget.dummyData.map((person) => _getFeatureValue(person)),
+      _getFeatureValue(widget.userInput)
+    ];
+    if (allValues.isNotEmpty) {
       _minX = 0;
-      _maxX = widget.dummyData.length.toDouble() - 1;
-      _minY = featureValues.reduce((a, b) => a < b ? a : b);
-      _maxY = featureValues.reduce((a, b) => a > b ? a : b);
+      _maxX = widget.dummyData.length.toDouble();
+      _minY = allValues.reduce((a, b) => a < b ? a : b);
+      _maxY = allValues.reduce((a, b) => a > b ? a : b);
+      
+      // Add some padding to the Y-axis
+      double yPadding = (_maxY - _minY) * 0.1;
+      _minY -= yPadding;
+      _maxY += yPadding;
     }
   }
 
@@ -55,6 +60,8 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
     final double meanVal =
         featureValues.reduce((a, b) => a + b) / featureValues.length;
     final double medianVal = _calculateMedian(featureValues);
+
+    _updateBoundaries();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -78,8 +85,13 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
+                          reservedSize: 40,
+                          interval: (_maxY - _minY) / 5,
                           getTitlesWidget: (value, meta) {
-                            return Text(value.toStringAsFixed(0));
+                            return Text(
+                              _formatYAxisLabel(value),
+                              style: TextStyle(fontSize: 10),
+                            );
                           },
                         ),
                       ),
@@ -103,7 +115,7 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
                             padding: const EdgeInsets.only(right: 5, top: 5),
                             style: const TextStyle(color: Colors.black),
                             labelResolver: (line) =>
-                                'User: ${userValue.toStringAsFixed(2)}',
+                                'User: ${_formatValue(userValue)}',
                           ),
                         ),
                       ],
@@ -114,7 +126,7 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
                           return touchedBarSpots.map((barSpot) {
                             final flSpot = barSpot;
                             return LineTooltipItem(
-                              '${widget.feature}: ${flSpot.y.toStringAsFixed(2)}',
+                              '${widget.feature}: ${_formatValue(flSpot.y)}',
                               const TextStyle(color: Colors.white),
                             );
                           }).toList();
@@ -174,9 +186,9 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
       case 'annualIncome':
         return person.annualIncome;
       case 'daysBirth':
-        return person.daysBirth.toDouble();
+        return person.daysBirth / 365; // Convert days to years
       case 'daysEmployed':
-        return person.daysEmployed.toDouble();
+        return person.daysEmployed / 365; // Convert days to years
       case 'noOfChildren':
         return person.noOfChildren.toDouble();
       case 'totalFamilyMembers':
@@ -199,7 +211,9 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   LineChartBarData _createLineChartBarData(List<double> values, Color color) {
     return LineChartBarData(
       spots: values.asMap().entries.map((entry) {
-        return FlSpot(entry.key.toDouble(), entry.value);
+        double y = entry.value;
+        y = y.clamp(_minY, _maxY); // Clamp the y value to the chart boundaries
+        return FlSpot(entry.key.toDouble(), y);
       }).toList(),
       isCurved: true,
       color: color,
@@ -209,11 +223,32 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   }
 
   LineChartBarData _createHorizontalLine(double y, Color color) {
+    y = y.clamp(_minY, _maxY); // Clamp the y value to the chart boundaries
     return LineChartBarData(
       spots: [FlSpot(_minX, y), FlSpot(_maxX, y)],
       color: color,
       dotData: const FlDotData(show: false),
       belowBarData: BarAreaData(show: false),
     );
+  }
+
+  String _formatYAxisLabel(double value) {
+    if (widget.feature == 'annualIncome') {
+      return '\$${(value / 1000).toStringAsFixed(0)}K';
+    } else if (widget.feature == 'daysBirth' || widget.feature == 'daysEmployed') {
+      return '${value.toStringAsFixed(0)}y';
+    } else {
+      return value.toStringAsFixed(1);
+    }
+  }
+
+  String _formatValue(double value) {
+    if (widget.feature == 'annualIncome') {
+      return '\$${value.toStringAsFixed(0)}';
+    } else if (widget.feature == 'daysBirth' || widget.feature == 'daysEmployed') {
+      return '${value.toStringAsFixed(1)} years';
+    } else {
+      return value.toStringAsFixed(1);
+    }
   }
 }

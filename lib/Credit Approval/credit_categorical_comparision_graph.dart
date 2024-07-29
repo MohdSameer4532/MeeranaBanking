@@ -49,10 +49,10 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            labels[value.toInt()],
+                            _abbreviateLabel(labels[value.toInt()]),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              fontSize: 12,
                             ),
                           ),
                         );
@@ -83,7 +83,7 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
                     final count = categoryCounts[category]!;
                     final percentage = (count / widget.dummyData.length * 100).toStringAsFixed(1);
                     return BarTooltipItem(
-                      '$category: $count ($percentage%)',
+                      '$category\n$count ($percentage%)',
                       const TextStyle(color: Colors.white),
                     );
                   },
@@ -124,7 +124,7 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
           BarChartRodData(
             toY: entry.value.toDouble(),
             color: isUserCategory ? Colors.orange : colors[index % colors.length],
-            width: 60,
+            width: 40,
             borderRadius: BorderRadius.circular(4),
           ),
         ],
@@ -233,5 +233,10 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
   double _getMaxCount(Map<String, int> categoryCounts) {
     final max = categoryCounts.values.reduce((a, b) => a > b ? a : b);
     return (max * 1.2).toDouble();
+  }
+
+  String _abbreviateLabel(String label) {
+    if (label.length <= 5) return label;
+    return label.substring(0, 3) + '...';
   }
 }
