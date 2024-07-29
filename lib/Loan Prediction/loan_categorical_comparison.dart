@@ -94,6 +94,7 @@ class CategoricalComparison extends StatelessWidget {
                       BarChartRodData(
                         toY: categoryCounts['Success']!.toDouble(),
                         color: Colors.green,
+                        width: userCategory == 'Success' ? 15 : 10,
                       ),
                     ],
                   ),
@@ -103,6 +104,7 @@ class CategoricalComparison extends StatelessWidget {
                       BarChartRodData(
                         toY: categoryCounts['Denied']!.toDouble(),
                         color: Colors.red,
+                        width: userCategory == 'Denied' ? 15 : 10,
                       ),
                     ],
                   ),
