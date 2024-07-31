@@ -306,15 +306,15 @@ class LoanResultPage extends StatelessWidget {
 
   Widget _buildCategoricalComparisonChart(String title, String feature) {
     var data = _getCategoricalComparison(feature);
-    if (data.isEmpty)
-      return SizedBox.shrink(); // Avoid rendering an empty chart
-    var colors = [Colors.blue, Colors.green, Colors.red];
+    if (data.isEmpty) return SizedBox.shrink();
 
-    // Ensure the number of categories does not exceed the available colors
-    if (data.length > colors.length) {
-      colors = List.generate(data.length,
-          (index) => Colors.primaries[index % Colors.primaries.length]);
-    }
+    var colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.red,
+      Colors.orange,
+      Colors.purple
+    ];
 
     return BarChart(
       BarChartData(
@@ -326,11 +326,15 @@ class LoanResultPage extends StatelessWidget {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(data.keys.elementAt(value.toInt()),
-                      style: TextStyle(fontSize: 12)),
-                );
+                if (value.toInt() < data.keys.length) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(data.keys.elementAt(value.toInt()),
+                        style: TextStyle(fontSize: 10),
+                        textAlign: TextAlign.center),
+                  );
+                }
+                return Text('');
               },
               reservedSize: 40,
             ),
@@ -340,9 +344,32 @@ class LoanResultPage extends StatelessWidget {
               showTitles: true,
               reservedSize: 40,
               getTitlesWidget: (value, meta) {
-                return Text(value.toInt().toString(),
-                    style: TextStyle(fontSize: 12));
+                if (value % 20 == 0) {
+                  // Show 0%, 20%, 40%, 60%, 80%, 100%
+                  return Text("${value.toInt()}%",
+                      style: TextStyle(fontSize: 10));
+                }
+                return Text('');
               },
+              interval: 20,
+            ),
+          ),
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) {
+                // Convert percentage to 0-10 scale
+                double scaledValue = value / 10;
+                if (scaledValue % 1 == 0) {
+                  // Show whole numbers from 0 to 10
+                  return Text(scaledValue.toInt().toString(),
+                      style: TextStyle(fontSize: 10));
+                }
+                return Text('');
+              },
+              interval:
+                  10, // Interval of 10% corresponds to 1 on the 0-10 scale
             ),
           ),
         ),
@@ -353,8 +380,10 @@ class LoanResultPage extends StatelessWidget {
               x: i,
               barRods: [
                 BarChartRodData(
-                    toY: data.values.elementAt(i),
-                    color: colors[i % colors.length])
+                  toY: data.values.elementAt(i),
+                  color: colors[i % colors.length],
+                  width: 20,
+                )
               ],
             ),
         ],
@@ -426,6 +455,8 @@ class LoanResultPage extends StatelessWidget {
       percentages[key] = (value / total) * 100;
     });
 
+    print(
+        "Categorical comparison for $feature: $percentages"); // Debugging print statement
     return percentages;
   }
 
@@ -439,7 +470,7 @@ class LoanResultPage extends StatelessWidget {
         return person.carOwnership;
       case 'profession':
         return person.profession;
-      case 'status': // New case for Success vs Denied
+      case 'status':
         return person.loanStatus;
       default:
         return '';
