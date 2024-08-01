@@ -45,6 +45,9 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
       double yPadding = (_maxY - _minY) * 0.1;
       _minY -= yPadding;
       _maxY += yPadding;
+      
+      // Ensure minimum Y value is not negative
+      _minY = _minY < 0 ? 0 : _minY;
     }
   }
 
@@ -57,8 +60,7 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
     }
 
     final double userValue = _getFeatureValue(widget.userInput);
-    final double meanVal =
-        featureValues.reduce((a, b) => a + b) / featureValues.length;
+    final double meanVal = featureValues.reduce((a, b) => a + b) / featureValues.length;
     final double medianVal = _calculateMedian(featureValues);
 
     _updateBoundaries();
@@ -186,9 +188,9 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
       case 'annualIncome':
         return person.annualIncome;
       case 'daysBirth':
-        return person.daysBirth / 365; // Convert days to years
+        return person.daysBirth.abs().toDouble(); // Convert negative to positive
       case 'daysEmployed':
-        return person.daysEmployed / 365; // Convert days to years
+        return person.daysEmployed.abs().toDouble(); // Convert negative to positive
       case 'noOfChildren':
         return person.noOfChildren.toDouble();
       case 'totalFamilyMembers':
@@ -236,7 +238,7 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
     if (widget.feature == 'annualIncome') {
       return '\$${(value / 1000).toStringAsFixed(0)}K';
     } else if (widget.feature == 'daysBirth' || widget.feature == 'daysEmployed') {
-      return '${value.toStringAsFixed(0)}y';
+      return '${value.toStringAsFixed(0)} years'; // Display in years
     } else {
       return value.toStringAsFixed(1);
     }
@@ -246,7 +248,7 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
     if (widget.feature == 'annualIncome') {
       return '\$${value.toStringAsFixed(0)}';
     } else if (widget.feature == 'daysBirth' || widget.feature == 'daysEmployed') {
-      return '${value.toStringAsFixed(1)} years';
+      return '${value.toStringAsFixed(0)} years'; // Display in years
     } else {
       return value.toStringAsFixed(1);
     }

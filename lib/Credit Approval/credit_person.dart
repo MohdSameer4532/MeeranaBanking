@@ -30,10 +30,6 @@ class CreditPerson {
     required this.totalFamilyMembers,
     required this.result,
   });
-
-  get education => null;
-
-  get maritalStatus => null;
 }
 
 List<CreditPerson> dummyCreditData = [
@@ -47,11 +43,11 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Married',
     housingType: 'House / apartment',
-    daysBirth: -12000,
-    daysEmployed: -2000,
+    daysBirth: (-12000 / 365).floor(),
+    daysEmployed: (-2000 / 365).floor(),
     occupationType: 'Manager',
     totalFamilyMembers: 4,
-    result: true, // Added result
+    result: true,
   ),
   CreditPerson(
     gender: 'F',
@@ -63,8 +59,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Secondary education',
     familyStatus: 'Single',
     housingType: 'Rented apartment',
-    daysBirth: -10000,
-    daysEmployed: -1500,
+    daysBirth: (-10000 / 365).floor(),
+    daysEmployed: (-1500 / 365).floor(),
     occupationType: 'Sales staff',
     totalFamilyMembers: 2,
     result: false,
@@ -79,11 +75,11 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Married',
     housingType: 'Municipal apartment',
-    daysBirth: -15000,
-    daysEmployed: -3000,
+    daysBirth: (-15000 / 365).floor(),
+    daysEmployed: (-3000 / 365).floor(),
     occupationType: 'Doctor',
     totalFamilyMembers: 5,
-    result: true, // Added result
+    result: true,
   ),
   CreditPerson(
     gender: 'F',
@@ -95,11 +91,11 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Incomplete higher',
     familyStatus: 'Widow',
     housingType: 'Co-op apartment',
-    daysBirth: -18000,
-    daysEmployed: -1000,
+    daysBirth: (-18000 / 365).floor(),
+    daysEmployed: (-1000 / 365).floor(),
     occupationType: 'Laborers',
     totalFamilyMembers: 1,
-    result: false, // Added result
+    result: false,
   ),
   CreditPerson(
     gender: 'M',
@@ -111,11 +107,11 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Civil marriage',
     housingType: 'Office apartment',
-    daysBirth: -11000,
-    daysEmployed: -2500,
+    daysBirth: (-11000 / 365).floor(),
+    daysEmployed: (-2500 / 365).floor(),
     occupationType: 'Core staff',
     totalFamilyMembers: 4,
-    result: true, // Added result
+    result: true,
   ),
   CreditPerson(
     gender: 'F',
@@ -127,11 +123,11 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Secondary education',
     familyStatus: 'Single',
     housingType: 'House / apartment',
-    daysBirth: -12500,
-    daysEmployed: -1700,
+    daysBirth: (-12500 / 365).floor(),
+    daysEmployed: (-1700 / 365).floor(),
     occupationType: 'Waiters/barmen staff',
     totalFamilyMembers: 1,
-    result: false, // Added result
+    result: false,
   ),
   CreditPerson(
     gender: 'M',
@@ -143,11 +139,11 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Married',
     housingType: 'With parents',
-    daysBirth: -14000,
-    daysEmployed: -2200,
+    daysBirth: (-14000 / 365).floor(),
+    daysEmployed: (-2200 / 365).floor(),
     occupationType: 'High skill tech staff',
     totalFamilyMembers: 3,
-    result: true, // Added result
+    result: true,
   ),
   CreditPerson(
     gender: 'F',
@@ -159,11 +155,11 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Married',
     housingType: 'Rented apartment',
-    daysBirth: -16000,
-    daysEmployed: -2100,
+    daysBirth: (-16000 / 365).floor(),
+    daysEmployed: (-2100 / 365).floor(),
     occupationType: 'Medicine staff',
     totalFamilyMembers: 4,
-    result: true, // Added result
+    result: true,
   ),
   CreditPerson(
     gender: 'M',
@@ -175,11 +171,11 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Civil marriage',
     housingType: 'House / apartment',
-    daysBirth: -17000,
-    daysEmployed: -2700,
+    daysBirth: (-17000 / 365).floor(),
+    daysEmployed: (-2700 / 365).floor(),
     occupationType: 'Security staff',
     totalFamilyMembers: 5,
-    result: true, // Added result
+    result: true,
   ),
   CreditPerson(
     gender: 'F',
@@ -191,10 +187,10 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Incomplete higher',
     familyStatus: 'Widow',
     housingType: 'Co-op apartment',
-    daysBirth: -19000,
-    daysEmployed: -800,
+    daysBirth: (-19000 / 365).floor(),
+    daysEmployed: (-800 / 365).floor(),
     occupationType: 'Drivers',
     totalFamilyMembers: 1,
-    result: false, // Added result
+    result: false,
   ),
 ];
