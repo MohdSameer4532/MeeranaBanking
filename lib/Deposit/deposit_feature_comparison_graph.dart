@@ -33,10 +33,17 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   void _updateBoundaries() {
     final List<double> featureValues =
         widget.dummyData.map((person) => _getFeatureValue(person)).toList();
+
+    double minFeatureValue = featureValues.reduce((a, b) => a < b ? a : b);
+    double maxFeatureValue = featureValues.reduce((a, b) => a > b ? a : b);
+
     _minX = 0;
     _maxX = widget.dummyData.length.toDouble() - 1;
-    _minY = featureValues.reduce((a, b) => a < b ? a : b);
-    _maxY = featureValues.reduce((a, b) => a > b ? a : b);
+
+    // Ensure user input values are included in the boundaries
+    final double userValue = _getFeatureValue(widget.userInput);
+    _minY = (userValue < minFeatureValue) ? userValue : minFeatureValue;
+    _maxY = (userValue > maxFeatureValue) ? userValue : maxFeatureValue;
   }
 
   @override

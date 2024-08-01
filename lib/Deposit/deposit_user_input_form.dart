@@ -3,7 +3,6 @@ import 'deposit_person.dart';
 import 'deposit_resultscreen.dart';
 import '../custom_app_bar.dart';
 
-// Extracted label texts
 final Map<String, String> fieldLabels = {
   'age': 'Age',
   'job': 'Job',
@@ -31,21 +30,23 @@ class _UserInputFormState extends State<UserInputForm> {
   final TextEditingController _daysController = TextEditingController();
   final TextEditingController _previousContactsController =
       TextEditingController();
-  String _selectedJob = '';
-  String _selectedMaritalStatus = '';
-  String _selectedEducation = '';
+  String? _selectedJob;
+  String? _selectedMaritalStatus;
+  String? _selectedEducation;
   String _selectedHousingLoan = '';
   String _selectedPersonalLoan = '';
+  String? _selectedPreviousCampaignOutcome;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, // Set the background color of the Scaffold
       appBar: CustomAppBar(
         c: context,
-        title: 'Loan Prediction',
-        backButton: true,
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        title: 'Deposit Prediction',
+        backButton: true, // Enable back button
+        backgroundColor: Color.fromARGB(
+            255, 255, 255, 255), // Set the background color of the AppBar
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -59,54 +60,34 @@ class _UserInputFormState extends State<UserInputForm> {
                 _buildTextField('age', _ageController, TextInputType.number,
                     'Please enter age'),
                 const SizedBox(height: 20),
-                _buildDropdownField(
+                _buildCustomDropdown(
                   'job',
-                  const [
-                    DropdownMenuItem(value: 'admin.', child: Text('Admin')),
-                    DropdownMenuItem(
-                        value: 'blue-collar', child: Text('Blue-collar')),
-                    DropdownMenuItem(
-                        value: 'entrepreneur', child: Text('Entrepreneur')),
-                    DropdownMenuItem(
-                        value: 'housemaid', child: Text('Housemaid')),
-                    DropdownMenuItem(
-                        value: 'management', child: Text('Management')),
-                    DropdownMenuItem(value: 'retired', child: Text('Retired')),
-                    DropdownMenuItem(
-                        value: 'self-employed', child: Text('Self-employed')),
-                    DropdownMenuItem(
-                        value: 'services', child: Text('Services')),
-                    DropdownMenuItem(value: 'student', child: Text('Student')),
-                    DropdownMenuItem(
-                        value: 'technician', child: Text('Technician')),
-                    DropdownMenuItem(
-                        value: 'unemployed', child: Text('Unemployed')),
+                  [
+                    'Admin',
+                    'Blue-collar',
+                    'Entrepreneur',
+                    'Housemaid',
+                    'Management',
+                    'Retired',
+                    'Self-employed',
+                    'Services',
+                    'Student',
+                    'Technician',
+                    'Unemployed'
                   ],
-                  'Please select a job',
+                  (value) => setState(() => _selectedJob = value),
                 ),
                 const SizedBox(height: 20),
-                _buildDropdownField(
+                _buildCustomDropdown(
                   'maritalStatus',
-                  const [
-                    DropdownMenuItem(value: 'single', child: Text('Single')),
-                    DropdownMenuItem(value: 'married', child: Text('Married')),
-                    DropdownMenuItem(
-                        value: 'divorced', child: Text('Divorced')),
-                  ],
-                  'Please select marital status',
+                  ['Single', 'Married', 'Divorced'],
+                  (value) => setState(() => _selectedMaritalStatus = value),
                 ),
                 const SizedBox(height: 20),
-                _buildDropdownField(
+                _buildCustomDropdown(
                   'education',
-                  const [
-                    DropdownMenuItem(value: 'primary', child: Text('Primary')),
-                    DropdownMenuItem(
-                        value: 'secondary', child: Text('Secondary')),
-                    DropdownMenuItem(
-                        value: 'tertiary', child: Text('Tertiary')),
-                    DropdownMenuItem(value: 'unknown', child: Text('Unknown')),
-                  ],
-                  'Please select education level',
+                  ['Primary', 'Secondary', 'Tertiary', 'Unknown'],
+                  (value) => setState(() => _selectedEducation = value),
                 ),
                 const SizedBox(height: 20),
                 _buildTextField('balance', _balanceController,
@@ -127,29 +108,22 @@ class _UserInputFormState extends State<UserInputForm> {
                 _buildTextField('previousContacts', _previousContactsController,
                     TextInputType.number, 'Please enter number of contacts'),
                 const SizedBox(height: 20),
-                _buildDropdownField(
+                _buildCustomDropdown(
                   'previousCampaignOutcome',
-                  const [
-                    DropdownMenuItem(value: 'success', child: Text('Success')),
-                    DropdownMenuItem(value: 'failure', child: Text('Failure')),
-                    DropdownMenuItem(value: 'other', child: Text('Other')),
-                    DropdownMenuItem(value: 'unknown', child: Text('Unknown')),
-                  ],
-                  'Please select the outcome of the previous campaign',
+                  ['Success', 'Failure', 'Other', 'Unknown'],
+                  (value) =>
+                      setState(() => _selectedPreviousCampaignOutcome = value),
                 ),
                 const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 34, 34, 34),
-                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
+                      backgroundColor: Color.fromARGB(255, 34, 34, 34),
                       textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                      ),
+                          fontSize: 16, fontWeight: FontWeight.normal),
                     ),
                     child: const Text(
                       'Submit',
@@ -167,62 +141,63 @@ class _UserInputFormState extends State<UserInputForm> {
 
   Widget _buildTextField(String fieldName, TextEditingController controller,
       TextInputType inputType, String validationMessage) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: fieldLabels[fieldName],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          fieldLabels[fieldName]!,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
-        filled: true,
-        fillColor: Colors.grey[100],
-      ),
-      keyboardType: inputType,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return validationMessage;
-        }
-        return null;
-      },
+        const SizedBox(height: 5),
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: 'Enter ${fieldLabels[fieldName]}',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+          ),
+          keyboardType: inputType,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return validationMessage;
+            }
+            return null;
+          },
+        ),
+      ],
     );
   }
 
-  Widget _buildDropdownField(String fieldName,
-      List<DropdownMenuItem<String>> items, String validationMessage) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: fieldLabels[fieldName],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        filled: true,
-        fillColor: Colors.grey[100],
-      ),
+  Widget _buildCustomDropdown(
+      String fieldName, List<String> items, Function(String?) onChanged) {
+    return CustomDropdown(
+      label: fieldLabels[fieldName]!,
       items: items,
-      onChanged: (value) {
-        setState(() {
-          switch (fieldName) {
-            case 'job':
-              _selectedJob = value!;
-              break;
-            case 'maritalStatus':
-              _selectedMaritalStatus = value!;
-              break;
-            case 'education':
-              _selectedEducation = value!;
-              break;
-            case 'previousCampaignOutcome':
-              break;
-          }
-        });
-      },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return validationMessage;
-        }
-        return null;
-      },
+      value: _getSelectedValueForField(fieldName),
+      onChanged: onChanged,
     );
+  }
+
+  String? _getSelectedValueForField(String fieldName) {
+    switch (fieldName) {
+      case 'job':
+        return _selectedJob;
+      case 'maritalStatus':
+        return _selectedMaritalStatus;
+      case 'education':
+        return _selectedEducation;
+      case 'previousCampaignOutcome':
+        return _selectedPreviousCampaignOutcome;
+      default:
+        return null;
+    }
   }
 
   Widget _buildSectionHeader(String fieldName) {
@@ -231,7 +206,7 @@ class _UserInputFormState extends State<UserInputForm> {
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: Colors.blueGrey[700],
+        color: Colors.black,
       ),
     );
   }
@@ -283,13 +258,13 @@ class _UserInputFormState extends State<UserInputForm> {
     if (_formKey.currentState!.validate()) {
       Person userInput = Person(
         age: int.parse(_ageController.text),
-        job: _selectedJob,
-        marital: _selectedMaritalStatus,
-        education: _selectedEducation,
+        job: _selectedJob ?? '',
+        marital: _selectedMaritalStatus ?? '',
+        education: _selectedEducation ?? '',
         balance: int.parse(_balanceController.text),
         personalLoan: _selectedPersonalLoan == 'yes',
         housingLoan: _selectedHousingLoan == 'yes',
-        result: false, // Placeholder for result calculation
+        result: true, // Placeholder for result calculation
       );
 
       Navigator.push(
@@ -300,5 +275,96 @@ class _UserInputFormState extends State<UserInputForm> {
         ),
       );
     }
+  }
+}
+
+class CustomDropdown extends StatefulWidget {
+  final String label;
+  final List<String> items;
+  final String? value;
+  final ValueChanged<String?> onChanged;
+
+  const CustomDropdown({
+    Key? key,
+    required this.label,
+    required this.items,
+    required this.value,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  _CustomDropdownState createState() => _CustomDropdownState();
+}
+
+class _CustomDropdownState extends State<CustomDropdown> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.label,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 5),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _isExpanded = !_isExpanded;
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.grey[100],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.value ?? 'Select ${widget.label}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                Icon(_isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+              ],
+            ),
+          ),
+        ),
+        if (_isExpanded)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.grey[100],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: widget.items.map((item) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      widget.onChanged(item);
+                      _isExpanded = false;
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Text(item, style: const TextStyle(fontSize: 16)),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+      ],
+    );
   }
 }

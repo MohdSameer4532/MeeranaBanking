@@ -7,16 +7,17 @@ class CategoricalComparisonGraph extends StatelessWidget {
   final Person userInput;
   final String feature;
 
-  CategoricalComparisonGraph({
+  const CategoricalComparisonGraph({
+    Key? key,
     required this.dummyData,
     required this.userInput,
     required this.feature,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final String userCategory = _getFeatureValue(userInput);
-    final Map<String, int> categoryCounts = _getCategoryCounts(userCategory);
+    final Map<String, int> categoryCounts = _getCategoryCounts();
 
     return Column(
       children: [
@@ -31,21 +32,22 @@ class CategoricalComparisonGraph extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (value, meta) {
-                      final labels = ['Yes', 'No'];
+                      final labels = categoryCounts.keys.toList();
                       if (value.toInt() < labels.length) {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             labels[value.toInt()],
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
                           ),
                         );
                       }
-                      return Text('');
+                      return const Text('');
                     },
+                    reservedSize: 40,
                   ),
                 ),
                 leftTitles: AxisTitles(
@@ -58,44 +60,20 @@ class CategoricalComparisonGraph extends StatelessWidget {
                   ),
                 ),
                 topTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 rightTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               borderData: FlBorderData(show: false),
-              barGroups: [
-                BarChartGroupData(
-                  x: 0,
-                  barRods: [
-                    BarChartRodData(
-                      toY: categoryCounts['yes']!.toDouble(),
-                      color: Colors.green,
-                      width: 60,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ],
-                ),
-                BarChartGroupData(
-                  x: 1,
-                  barRods: [
-                    BarChartRodData(
-                      toY: categoryCounts['no']!.toDouble(),
-                      color: Colors.red,
-                      width: 60,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ],
-                ),
-              ],
+              barGroups: _getBarGroups(categoryCounts),
               barTouchData: BarTouchData(
                 touchTooltipData: BarTouchTooltipData(
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    final isYes = group.x == 0;
-                    final count =
-                        isYes ? categoryCounts['yes']! : categoryCounts['no']!;
+                    final category = categoryCounts.keys.toList()[group.x];
+                    final count = categoryCounts[category]!;
                     return BarTooltipItem(
-                      '${isYes ? 'Yes' : 'No'}: $count',
-                      TextStyle(color: Colors.white),
+                      '$category: $count',
+                      const TextStyle(color: Colors.white),
                     );
                   },
                 ),
@@ -103,25 +81,43 @@ class CategoricalComparisonGraph extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         _buildLegend(userCategory),
       ],
     );
   }
 
-  Map<String, int> _getCategoryCounts(String userCategory) {
-    int yesCount = 0;
-    int noCount = 0;
+  Map<String, int> _getCategoryCounts() {
+    final counts = <String, int>{};
     for (final person in dummyData) {
-      if (_getFeatureValue(person) == userCategory) {
-        if (person.result) {
-          yesCount++;
-        } else {
-          noCount++;
-        }
-      }
+      final category = _getFeatureValue(person);
+      counts[category] = (counts[category] ?? 0) + 1;
     }
-    return {'yes': yesCount, 'no': noCount};
+    return counts;
+  }
+
+  List<BarChartGroupData> _getBarGroups(Map<String, int> categoryCounts) {
+    final List<Color> colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.red,
+      Colors.yellow,
+      Colors.purple
+    ];
+    return categoryCounts.entries.map((entry) {
+      final index = categoryCounts.keys.toList().indexOf(entry.key);
+      return BarChartGroupData(
+        x: index,
+        barRods: [
+          BarChartRodData(
+            toY: entry.value.toDouble(),
+            color: colors[index % colors.length],
+            width: 60,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ],
+      );
+    }).toList();
   }
 
   Widget _buildLegend(String userCategory) {
@@ -129,16 +125,24 @@ class CategoricalComparisonGraph extends StatelessWidget {
       children: [
         Text(
           'Comparison for ${_getFeatureName()}: $userCategory',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _legendItem(Colors.green, 'Yes'),
-            SizedBox(width: 20),
-            _legendItem(Colors.red, 'No'),
-          ],
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          alignment: WrapAlignment.center,
+          children: _getCategoryCounts().keys.map((category) {
+            final index = _getCategoryCounts().keys.toList().indexOf(category);
+            final List<Color> colors = [
+              Colors.blue,
+              Colors.green,
+              Colors.red,
+              Colors.yellow,
+              Colors.purple
+            ];
+            return _legendItem(colors[index % colors.length], category);
+          }).toList(),
         ),
       ],
     );
@@ -153,7 +157,7 @@ class CategoricalComparisonGraph extends StatelessWidget {
           height: 16,
           color: color,
         ),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         Text(label),
       ],
     );
@@ -195,6 +199,6 @@ class CategoricalComparisonGraph extends StatelessWidget {
 
   double _getMaxCount(Map<String, int> categoryCounts) {
     final max = categoryCounts.values.reduce((a, b) => a > b ? a : b);
-    return (max * 1.2).toDouble();
+    return (max * 1.2).toDouble(); // Add 20% padding to the top
   }
 }
