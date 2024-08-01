@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 30, 51, 84),
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   'Meerana Banking Engine',
                   style: TextStyle(
                     fontSize: 18,
-                    color: Colors.white,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -51,14 +51,14 @@ class _SplashScreenState extends State<SplashScreen> {
             SizedBox(height: 20),
             // Loading indicator
             CircularProgressIndicator(
-              color: Colors.white, // Customize progress indicator color
+              color: Colors.black, // Customize progress indicator color
             ),
             SizedBox(height: 20),
             Text(
               'Loading...',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
           ],
