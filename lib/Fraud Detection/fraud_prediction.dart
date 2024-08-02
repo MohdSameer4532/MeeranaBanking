@@ -60,13 +60,12 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         c: context,
         title: 'Fraud Detection',
-        backButton: true, // Enable back button
-        backgroundColor: Color.fromARGB(
-            255, 255, 255, 255), // Set the background color of the AppBar
+        backButton: true,
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -81,7 +80,7 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
               },
               decoration: InputDecoration(
                 labelText: 'Customer',
-                hintText: 'C1093826151',
+                hintText: 'C1551465414',
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
@@ -107,10 +106,22 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
               maxLength: 2,
             ),
             SizedBox(height: 10),
-            CustomDropdown(
-              label: 'Gender',
+            DropdownButtonFormField<String>(
               value: selectedGender,
-              items: ['M', 'F'],
+              decoration: InputDecoration(
+                labelText: 'Gender',
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                filled: true,
+                fillColor: Colors.grey[100],
+              ),
+              items: ['M', 'F'].map((gender) {
+                return DropdownMenuItem<String>(
+                  value: gender,
+                  child: Text(gender),
+                );
+              }).toList(),
               onChanged: (value) {
                 setState(() {
                   selectedGender = value;
@@ -144,7 +155,7 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
               },
               decoration: InputDecoration(
                 labelText: 'Merchant',
-                hintText: 'M1931927982',
+                hintText: 'M1823072687',
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
@@ -171,9 +182,16 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
               maxLength: 5,
             ),
             SizedBox(height: 10),
-            CustomDropdown(
-              label: 'Category',
+            DropdownButtonFormField<String>(
               value: selectedCategory,
+              decoration: InputDecoration(
+                labelText: 'Category',
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                filled: true,
+                fillColor: Colors.grey[100],
+              ),
               items: [
                 'es_transportation',
                 'es_health',
@@ -192,7 +210,12 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
                 'es_contents',
                 'es_fashion',
                 'es_hyper'
-              ],
+              ].map((category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
               onChanged: (value) {
                 setState(() {
                   selectedCategory = value;
@@ -234,7 +257,7 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
                 style: TextStyle(color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 34, 34, 34),
+                backgroundColor: const Color.fromARGB(255, 30, 51, 84),
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 textStyle:
                     TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
@@ -267,98 +290,9 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
         zipMerchant: zipMerchantController.text,
         category: selectedCategory ?? '',
         amount: double.tryParse(amountController.text) ?? 0.0,
+        fraudDetected:
+            false, // Default value; actual detection logic can be added
       );
     });
-  }
-}
-
-class CustomDropdown extends StatefulWidget {
-  final String label;
-  final List<String> items;
-  final String? value;
-  final ValueChanged<String?> onChanged;
-
-  const CustomDropdown({
-    Key? key,
-    required this.label,
-    required this.items,
-    required this.value,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  _CustomDropdownState createState() => _CustomDropdownState();
-}
-
-class _CustomDropdownState extends State<CustomDropdown> {
-  bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 5),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _isExpanded = !_isExpanded;
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[100],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.value ?? 'Select ${widget.label}',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Icon(_isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-              ],
-            ),
-          ),
-        ),
-        if (_isExpanded)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[100],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: widget.items.map((item) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      widget.onChanged(item);
-                      _isExpanded = false;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Text(item, style: const TextStyle(fontSize: 16)),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-      ],
-    );
   }
 }

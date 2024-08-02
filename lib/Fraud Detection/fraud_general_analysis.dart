@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'fraud_data.dart'; // Assuming this imports your data structure
-import 'fraud_prediction.dart'; // Import your prediction page
+import 'fraud_data.dart'; // Import your data file
+// Import FraudPredictionPage
 import '../custom_app_bar.dart';
 
 class FraudGeneralAnalyticsPage extends StatefulWidget {
@@ -18,6 +18,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
   Map<String, double> genderData = {};
   Map<String, double> categoriesData = {};
   Map<String, double> amountData = {};
+  Map<String, double> fraudStatusData = {};
 
   @override
   void initState() {
@@ -36,7 +37,11 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
       // Calculate categories data
       categoriesData = _calculateCategoriesData();
 
+      // Calculate amount data
       amountData = _calculateAmountData();
+
+      // Calculate fraud status data
+      fraudStatusData = _calculateFraudStatusData();
     });
   }
 
@@ -114,6 +119,24 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
     return categoriesCounts;
   }
 
+  Map<String, double> _calculateFraudStatusData() {
+    Map<String, double> fraudCounts = {
+      'Fraud Detected': 0,
+      'Fraud Not Detected': 0
+    };
+
+    for (var person in data) {
+      if (person.fraudDetected) {
+        fraudCounts['Fraud Detected'] = fraudCounts['Fraud Detected']! + 1;
+      } else {
+        fraudCounts['Fraud Not Detected'] =
+            fraudCounts['Fraud Not Detected']! + 1;
+      }
+    }
+
+    return fraudCounts;
+  }
+
   List<PieChartSectionData> _generatePieChartSections(
       Map<String, double> data) {
     List<PieChartSectionData> sections = [];
@@ -122,8 +145,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
         PieChartSectionData(
           color: _getColorForKey(key),
           value: value,
-          title:
-              '${value.toStringAsFixed(0)}', // Show counts instead of percentage
+          title: '${value.toStringAsFixed(0)}',
           radius: 30,
           titleStyle: TextStyle(
             fontSize: 12,
@@ -162,6 +184,10 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
         return Colors.orange;
       case '100+':
         return Colors.red;
+      case 'Fraud Detected':
+        return Colors.red;
+      case 'Fraud Not Detected':
+        return Colors.green;
       default:
         return Colors.grey;
     }
@@ -231,8 +257,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
         c: context,
         title: 'Fraud Detection',
         backButton: true, // Enable back button
-        backgroundColor: Color.fromARGB(
-            255, 255, 255, 255), // Set the background color of the AppBar
+        backgroundColor: Colors.white, // Set the background color of the AppBar
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -249,10 +274,10 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
-                  _buildChartCard('Age Range', _buildPieChart(ageRangeData), [
-                    _buildLegendItem(Colors.blue, '18-30'),
-                    _buildLegendItem(Colors.green, '30-50'),
-                    _buildLegendItem(Colors.red, '50+'),
+                  _buildChartCard(
+                      'Total Clients', _buildPieChart(fraudStatusData), [
+                    _buildLegendItem(Colors.red, 'Fraud Detected'),
+                    _buildLegendItem(Colors.green, 'Fraud Not Detected'),
                   ]),
                   _buildChartCard('Gender', _buildPieChart(genderData), [
                     _buildLegendItem(Colors.blue, 'Male'),
@@ -272,49 +297,28 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
-                  _buildChartCard(
-                      'Categories Type', _buildPieChart(categoriesData), [
-                    _buildLegendItem(Colors.blue, 'es_travel'),
-                    _buildLegendItem(Colors.orange, 'es_tech'),
-                    _buildLegendItem(Colors.green, 'es_health'),
-                    _buildLegendItem(Colors.red, 'es_food'),
+                  _buildChartCard('Category', _buildPieChart(categoriesData), [
+                    _buildLegendItem(Colors.blue, 'Travel'),
+                    _buildLegendItem(Colors.orange, 'Tech'),
+                    _buildLegendItem(Colors.green, 'Health'),
+                    _buildLegendItem(Colors.red, 'Food'),
                   ]),
-                  _buildChartCard('Amount', _buildPieChart(amountData), [
+                  _buildChartCard('Amount Range', _buildPieChart(amountData), [
                     _buildLegendItem(Colors.blue, '1-50'),
                     _buildLegendItem(Colors.orange, '50-100'),
                     _buildLegendItem(Colors.red, '100+'),
                   ]),
+                  _buildChartCard('Age Range', _buildPieChart(ageRangeData), [
+                    _buildLegendItem(Colors.blue, '18-30'),
+                    _buildLegendItem(Colors.green, '30-50'),
+                    _buildLegendItem(Colors.red, '50+'),
+                  ]),
                 ],
               ),
             ),
-            SizedBox(height: 16),
           ],
-        ),
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Align(
-          alignment: Alignment.bottomRight,
-          child: FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => FraudPredictionPage()),
-              );
-            },
-            label:
-                Text('Detect FraudRisk', style: TextStyle(color: Colors.white)),
-            icon: Icon(Icons.add, color: Colors.white),
-            backgroundColor: Color.fromARGB(255, 34, 34, 34),
-          ),
         ),
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: FraudGeneralAnalyticsPage(),
-  ));
 }

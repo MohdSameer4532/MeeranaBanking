@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'fraud_data.dart'; // Import your FraudPerson class
+import 'fraud_data.dart';
 
 class FeatureComparisonGraph extends StatelessWidget {
   final FraudPerson userInput;
@@ -28,10 +28,24 @@ class FeatureComparisonGraph extends StatelessWidget {
   }
 
   Widget _buildComparisonChart() {
+    // Determine the chart type based on the feature
+    switch (feature) {
+      case 'age':
+        return _buildBarChartForFeature(
+            'Age', dummyData.map((e) => e.age.toDouble()).toList());
+      case 'amount':
+        return _buildBarChartForFeature(
+            'Amount', dummyData.map((e) => e.amount).toList());
+      default:
+        return Container(); // Handle other features or return an empty container
+    }
+  }
+
+  Widget _buildBarChartForFeature(String title, List<double> values) {
     double userValue = _getUserValue();
-    double meanValue = _getMeanValue();
-    double medianValue = _getMedianValue();
-    double averageValue = _getAverageValue();
+    double meanValue = _calculateMean(values);
+    double medianValue = _calculateMedian(values);
+    double averageValue = _calculateMean(values);
 
     return Card(
       elevation: 5,
@@ -41,28 +55,27 @@ class FeatureComparisonGraph extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(
-              '${feature.toUpperCase()} Comparison',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
-              ),
-            ),
+            // Text(
+            //   '$title Comparison',
+            //   style: TextStyle(
+            //     fontSize: 18,
+            //     fontWeight: FontWeight.bold,
+            //     color: Colors.teal,
+            //   ),
+            // ),
             SizedBox(height: 10),
             Container(
               height: 300,
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
-                  maxY: 100, // Adjust as per your data range
+                  maxY: 200,
                   barTouchData: BarTouchData(enabled: false),
                   titlesData: FlTitlesData(
-                    show: true,
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        getTitlesWidget: (double value, TitleMeta meta) {
+                        getTitlesWidget: (value, meta) {
                           const style = TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -128,8 +141,8 @@ class FeatureComparisonGraph extends StatelessWidget {
         BarChartRodData(
           toY: value,
           color: color,
-          width: 12,
-          borderRadius: BorderRadius.circular(1),
+          width: 10,
+          borderRadius: BorderRadius.circular(2),
           borderSide: BorderSide(color: Colors.black, width: 1),
         ),
       ],
@@ -142,44 +155,6 @@ class FeatureComparisonGraph extends StatelessWidget {
         return userInput.age.toDouble();
       case 'amount':
         return userInput.amount;
-      // Add more cases for other features as needed
-      default:
-        return 0;
-    }
-  }
-
-  double _getMeanValue() {
-    switch (feature) {
-      case 'age':
-        return _calculateMean(dummyData.map((e) => e.age.toDouble()).toList());
-      case 'amount':
-        return _calculateMean(dummyData.map((e) => e.amount).toList());
-      // Add more cases for other features as needed
-      default:
-        return 0;
-    }
-  }
-
-  double _getMedianValue() {
-    switch (feature) {
-      case 'age':
-        return _calculateMedian(
-            dummyData.map((e) => e.age.toDouble()).toList());
-      case 'amount':
-        return _calculateMedian(dummyData.map((e) => e.amount).toList());
-      // Add more cases for other features as needed
-      default:
-        return 0;
-    }
-  }
-
-  double _getAverageValue() {
-    switch (feature) {
-      case 'age':
-        return _calculateMean(dummyData.map((e) => e.age.toDouble()).toList());
-      case 'amount':
-        return _calculateMean(dummyData.map((e) => e.amount).toList());
-      // Add more cases for other features as needed
       default:
         return 0;
     }
@@ -207,13 +182,12 @@ class FeatureComparisonGraph extends StatelessWidget {
     switch (feature) {
       case 'age':
         comparisonText =
-            'Your age: ${userInput.age}, Mean age: ${_getMeanValue().toStringAsFixed(2)}, Median age: ${_getMedianValue().toStringAsFixed(2)}, Average age: ${_getAverageValue().toStringAsFixed(2)}';
+            'Your age: ${userInput.age}, Mean age: ${_calculateMean(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Median age: ${_calculateMedian(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Average age: ${_calculateMean(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}';
         break;
       case 'amount':
         comparisonText =
-            'Your amount: \$${userInput.amount.toStringAsFixed(2)}, Mean amount: \$${_getMeanValue().toStringAsFixed(2)}, Median amount: \$${_getMedianValue().toStringAsFixed(2)}, Average amount: \$${_getAverageValue().toStringAsFixed(2)}';
+            'Your amount: \$${userInput.amount.toStringAsFixed(2)}, Mean amount: \$${_calculateMean(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}, Median amount: \$${_calculateMedian(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}, Average amount: \$${_calculateMean(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}';
         break;
-      // Add more cases for other features as needed
       default:
         comparisonText = 'No data';
     }
@@ -232,29 +206,26 @@ class FeatureComparisonGraph extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Icon(
-        //   isFraud ? Icons.thumb_down : Icons.thumb_up,
-        //   color: isFraud ? Colors.red : Colors.green,
-        //   size: 40,
-        // ),
-        SizedBox(width: 10),
-        // Text(
-        //   isFraud ? 'Fraud Detected' : 'No Fraud Detected',
-        //   style: TextStyle(
-        //     fontSize: 18,
-        //     color: isFraud ? Colors.red : Colors.green,
-        //   ),
-        // ),
-      ],
+      // children: [
+      //   // Icon(
+      //   //   isFraud ? Icons.thumb_down : Icons.thumb_up,
+      //   //   color: isFraud ? Colors.red : Colors.green,
+      //   //   size: 40,
+      //   // ),
+      //   SizedBox(width: 10),
+      //   // Text(
+      //   //   isFraud ? 'Fraud Detected' : 'No Fraud Detected',
+      //   //   style: TextStyle(
+      //   //     fontSize: 18,
+      //   //     color: isFraud ? Colors.red : Colors.green,
+      //   //   ),
+      //   // ),
+      // ],
     );
   }
 
   bool _isFraudDetected() {
-    // Implement your fraud detection logic here
-    // This is a placeholder implementation
     if (userInput.amount > 1000) {
-      // Example logic
       return true;
     }
     return false;
