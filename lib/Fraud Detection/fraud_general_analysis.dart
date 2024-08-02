@@ -319,6 +319,20 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
           ],
         ),
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FraudPredictionPage()),
+            );
+          },
+          label: Text('Detect Fraud', style: TextStyle(color: Colors.white)),
+          icon: Icon(Icons.add, color: Colors.white),
+          backgroundColor: Color.fromARGB(255, 34, 34, 34),
+        ),
+      ),
     );
   }
 }
