@@ -188,9 +188,9 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
       case 'annualIncome':
         return person.annualIncome;
       case 'daysBirth':
-        return person.daysBirth.abs().toDouble(); // Convert negative to positive
+        return person.yearsBirth.abs().toDouble(); // Convert negative to positive
       case 'daysEmployed':
-        return person.daysEmployed.abs().toDouble(); // Convert negative to positive
+        return person.yearsEmployed.abs().toDouble(); // Convert negative to positive
       case 'noOfChildren':
         return person.noOfChildren.toDouble();
       case 'totalFamilyMembers':
@@ -237,7 +237,7 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   String _formatYAxisLabel(double value) {
     if (widget.feature == 'annualIncome') {
       return '\$${(value / 1000).toStringAsFixed(0)}K';
-    } else if (widget.feature == 'daysBirth' || widget.feature == 'daysEmployed') {
+    } else if (widget.feature == 'yearsBirth' || widget.feature == 'yearsEmployed') {
       return '${value.toStringAsFixed(0)} years'; // Display in years
     } else {
       return value.toStringAsFixed(1);
@@ -247,10 +247,11 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   String _formatValue(double value) {
     if (widget.feature == 'annualIncome') {
       return '\$${value.toStringAsFixed(0)}';
-    } else if (widget.feature == 'daysBirth' || widget.feature == 'daysEmployed') {
+    } else if (widget.feature == 'yearsBirth' || widget.feature == 'yearsEmployed') {
       return '${value.toStringAsFixed(0)} years'; // Display in years
     } else {
       return value.toStringAsFixed(1);
     }
   }
 }
+

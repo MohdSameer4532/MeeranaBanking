@@ -16,13 +16,12 @@ class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         c: context,
         title: 'Credit Result',
-        backButton: true, // Enable back button
-        backgroundColor: Color.fromARGB(
-            255, 255, 255, 255), // Set the background color of the AppBar
+        backButton: true,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -155,33 +154,32 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            _buildProfileItem('Gender', userInput.gender),
-            _buildProfileItem('Own Car', userInput.ownCar ? 'Yes' : 'No'),
-            _buildProfileItem(
-                'Own Property', userInput.ownProperty ? 'Yes' : 'No'),
-            _buildProfileItem(
-                'Number of Children', '${userInput.noOfChildren}'),
-            _buildProfileItem('Annual Income', '${userInput.annualIncome}'),
-            _buildProfileItem('Income Type', userInput.incomeType),
-            _buildProfileItem('Education Type', userInput.educationType),
-            _buildProfileItem('Family Status', userInput.familyStatus),
-            _buildProfileItem('Housing Type', userInput.housingType),
-            _buildProfileItem('Days Birth', '${userInput.daysBirth}'),
-            _buildProfileItem('Days Employed', '${userInput.daysEmployed}'),
-            _buildProfileItem('Occupation Type', userInput.occupationType),
-            _buildProfileItem(
-                'Total Family Members', '${userInput.totalFamilyMembers}'),
+            _buildProfileItem('Gender', userInput.gender, Icons.person),
+            _buildProfileItem('Own Car', userInput.ownCar ? 'Yes' : 'No', Icons.directions_car),
+            _buildProfileItem('Own Property', userInput.ownProperty ? 'Yes' : 'No', Icons.home),
+            _buildProfileItem('Number of Children', '${userInput.noOfChildren}', Icons.child_care),
+            _buildProfileItem('Annual Income', '${userInput.annualIncome}', Icons.attach_money),
+            _buildProfileItem('Income Type', userInput.incomeType, Icons.work),
+            _buildProfileItem('Education Type', userInput.educationType, Icons.school),
+            _buildProfileItem('Family Status', userInput.familyStatus, Icons.family_restroom),
+            _buildProfileItem('Housing Type', userInput.housingType, Icons.house),
+            _buildProfileItem('Years Birth', '${userInput.yearsBirth}', Icons.cake),
+            _buildProfileItem('Years Employed', '${userInput.yearsEmployed}', Icons.business_center),
+            _buildProfileItem('Occupation Type', userInput.occupationType, Icons.work_outline),
+            _buildProfileItem('Total Family Members', '${userInput.totalFamilyMembers}', Icons.groups),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileItem(String label, String value) {
+  Widget _buildProfileItem(String label, String value, IconData icon) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
+          Icon(icon, size: 20, color: Colors.blue[900]),
+          SizedBox(width: 10),
           Expanded(
             flex: 1,
             child: Text(

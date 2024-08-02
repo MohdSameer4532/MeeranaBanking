@@ -13,8 +13,8 @@ final Map<String, String> fieldLabels = {
   'educationType': 'Education Type',
   'familyStatus': 'Family Status',
   'housingType': 'Housing Type',
-  'daysBirth': 'Days since Birth',
-  'daysEmployed': 'Days Employed',
+  'yearsBirth': 'Age',
+  'yearsEmployed': 'years Employed',
   'occupationType': 'Occupation Type',
   'totalFamilyMembers': 'Total Family Members',
 };
@@ -124,11 +124,11 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                   (value) => setState(() => _selectedHousingType = value),
                 ),
                 const SizedBox(height: 20),
-                _buildTextField('daysBirth', _daysBirthController,
-                    TextInputType.number, 'Please enter days since birth'),
+                _buildTextField('yearsBirth', _daysBirthController,
+                    TextInputType.number, 'Please enter age'),
                 const SizedBox(height: 20),
-                _buildTextField('daysEmployed', _daysEmployedController,
-                    TextInputType.number, 'Please enter days employed'),
+                _buildTextField('yearsEmployed', _daysEmployedController,
+                    TextInputType.number, 'Please enter years employed'),
                 const SizedBox(height: 20),
                 _buildCustomDropdown(
                   'occupationType',
@@ -195,7 +195,7 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.blueGrey[700],
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 5),
@@ -256,7 +256,7 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: Colors.blueGrey[700],
+        color: Colors.black,
       ),
     );
   }
@@ -314,11 +314,11 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
         educationType: _selectedEducationType ?? '',
         familyStatus: _selectedFamilyStatus ?? '',
         housingType: _selectedHousingType ?? '',
-        daysBirth: int.parse(_daysBirthController.text),
-        daysEmployed: int.parse(_daysEmployedController.text),
+        yearsBirth: int.parse(_daysBirthController.text),
+        yearsEmployed: int.parse(_daysEmployedController.text),
         occupationType: _selectedOccupationType ?? '',
         totalFamilyMembers: int.parse(_totalFamilyMembersController.text),
-        result: false,
+        result: true,
       );
 
       Navigator.push(

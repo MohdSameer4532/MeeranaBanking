@@ -8,8 +8,8 @@ class CreditPerson {
   final String educationType;
   final String familyStatus;
   final String housingType;
-  final int daysBirth;
-  final int daysEmployed;
+  final int yearsBirth;
+  final int yearsEmployed;
   final String occupationType;
   final int totalFamilyMembers;
   final bool result;
@@ -24,8 +24,8 @@ class CreditPerson {
     required this.educationType,
     required this.familyStatus,
     required this.housingType,
-    required this.daysBirth,
-    required this.daysEmployed,
+    required this.yearsBirth,
+    required this.yearsEmployed,
     required this.occupationType,
     required this.totalFamilyMembers,
     required this.result,
@@ -43,8 +43,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Married',
     housingType: 'House / apartment',
-    daysBirth: (-12000 / 365).floor(),
-    daysEmployed: (-2000 / 365).floor(),
+    yearsBirth: 33, // Converted from -12000 days
+    yearsEmployed: 5, // Converted from -2000 days
     occupationType: 'Manager',
     totalFamilyMembers: 4,
     result: true,
@@ -59,8 +59,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Secondary education',
     familyStatus: 'Single',
     housingType: 'Rented apartment',
-    daysBirth: (-10000 / 365).floor(),
-    daysEmployed: (-1500 / 365).floor(),
+    yearsBirth: 27, // Converted from -10000 days
+    yearsEmployed: 4, // Converted from -1500 days
     occupationType: 'Sales staff',
     totalFamilyMembers: 2,
     result: false,
@@ -75,8 +75,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Married',
     housingType: 'Municipal apartment',
-    daysBirth: (-15000 / 365).floor(),
-    daysEmployed: (-3000 / 365).floor(),
+    yearsBirth: 41, // Converted from -15000 days
+    yearsEmployed: 8, // Converted from -3000 days
     occupationType: 'Doctor',
     totalFamilyMembers: 5,
     result: true,
@@ -91,8 +91,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Incomplete higher',
     familyStatus: 'Widow',
     housingType: 'Co-op apartment',
-    daysBirth: (-18000 / 365).floor(),
-    daysEmployed: (-1000 / 365).floor(),
+    yearsBirth: 49, // Converted from -18000 days
+    yearsEmployed: 3, // Converted from -1000 days
     occupationType: 'Laborers',
     totalFamilyMembers: 1,
     result: false,
@@ -107,8 +107,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Civil marriage',
     housingType: 'Office apartment',
-    daysBirth: (-11000 / 365).floor(),
-    daysEmployed: (-2500 / 365).floor(),
+    yearsBirth: 30, // Converted from -11000 days
+    yearsEmployed: 7, // Converted from -2500 days
     occupationType: 'Core staff',
     totalFamilyMembers: 4,
     result: true,
@@ -123,8 +123,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Secondary education',
     familyStatus: 'Single',
     housingType: 'House / apartment',
-    daysBirth: (-12500 / 365).floor(),
-    daysEmployed: (-1700 / 365).floor(),
+    yearsBirth: 34, // Converted from -12500 days
+    yearsEmployed: 5, // Converted from -1700 days
     occupationType: 'Waiters/barmen staff',
     totalFamilyMembers: 1,
     result: false,
@@ -139,8 +139,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Married',
     housingType: 'With parents',
-    daysBirth: (-14000 / 365).floor(),
-    daysEmployed: (-2200 / 365).floor(),
+    yearsBirth: 38, // Converted from -14000 days
+    yearsEmployed: 6, // Converted from -2200 days
     occupationType: 'High skill tech staff',
     totalFamilyMembers: 3,
     result: true,
@@ -155,8 +155,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Married',
     housingType: 'Rented apartment',
-    daysBirth: (-16000 / 365).floor(),
-    daysEmployed: (-2100 / 365).floor(),
+    yearsBirth: 44, // Converted from -16000 days
+    yearsEmployed: 6, // Converted from -2100 days
     occupationType: 'Medicine staff',
     totalFamilyMembers: 4,
     result: true,
@@ -171,8 +171,8 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Higher education',
     familyStatus: 'Civil marriage',
     housingType: 'House / apartment',
-    daysBirth: (-17000 / 365).floor(),
-    daysEmployed: (-2700 / 365).floor(),
+    yearsBirth: 47, // Converted from -17000 days
+    yearsEmployed: 7, // Converted from -2700 days
     occupationType: 'Security staff',
     totalFamilyMembers: 5,
     result: true,
@@ -187,10 +187,90 @@ List<CreditPerson> dummyCreditData = [
     educationType: 'Incomplete higher',
     familyStatus: 'Widow',
     housingType: 'Co-op apartment',
-    daysBirth: (-19000 / 365).floor(),
-    daysEmployed: (-800 / 365).floor(),
+    yearsBirth: 52, // Converted from -19000 days
+    yearsEmployed: 2, // Converted from -800 days
     occupationType: 'Drivers',
     totalFamilyMembers: 1,
     result: false,
+  ),
+  CreditPerson(
+    gender: 'M',
+    ownCar: false,
+    ownProperty: true,
+    noOfChildren: 1,
+    annualIncome: 110000,
+    incomeType: 'Working',
+    educationType: 'Incomplete higher',
+    familyStatus: 'Separated',
+    housingType: 'House / apartment',
+    yearsBirth: 36,
+    yearsEmployed: 8,
+    occupationType: 'IT staff',
+    totalFamilyMembers: 2,
+    result: true,
+  ),
+  CreditPerson(
+    gender: 'F',
+    ownCar: true,
+    ownProperty: false,
+    noOfChildren: 2,
+    annualIncome: 140000,
+    incomeType: 'Commercial associate',
+    educationType: 'Higher education',
+    familyStatus: 'Married',
+    housingType: 'Municipal apartment',
+    yearsBirth: 39,
+    yearsEmployed: 10,
+    occupationType: 'Accountants',
+    totalFamilyMembers: 4,
+    result: true,
+  ),
+  CreditPerson(
+    gender: 'M',
+    ownCar: true,
+    ownProperty: true,
+    noOfChildren: 0,
+    annualIncome: 250000,
+    incomeType: 'Working',
+    educationType: 'Higher education',
+    familyStatus: 'Single',
+    housingType: 'Office apartment',
+    yearsBirth: 42,
+    yearsEmployed: 15,
+    occupationType: 'Managers',
+    totalFamilyMembers: 1,
+    result: true,
+  ),
+  CreditPerson(
+    gender: 'F',
+    ownCar: false,
+    ownProperty: false,
+    noOfChildren: 1,
+    annualIncome: 75000,
+    incomeType: 'State servant',
+    educationType: 'Secondary education',
+    familyStatus: 'Civil marriage',
+    housingType: 'Rented apartment',
+    yearsBirth: 29,
+    yearsEmployed: 3,
+    occupationType: 'Low-skill Laborers',
+    totalFamilyMembers: 3,
+    result: false,
+  ),
+  CreditPerson(
+    gender: 'M',
+    ownCar: true,
+    ownProperty: false,
+    noOfChildren: 3,
+    annualIncome: 160000,
+    incomeType: 'Working',
+    educationType: 'Higher education',
+    familyStatus: 'Married',
+    housingType: 'House / apartment',
+    yearsBirth: 45,
+    yearsEmployed: 12,
+    occupationType: 'Sales staff',
+    totalFamilyMembers: 5,
+    result: true,
   ),
 ];

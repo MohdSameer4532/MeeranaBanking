@@ -306,7 +306,7 @@ class _CreditHomePageState extends State<CreditHomePage> {
       '50+': 0
     };
     for (var person in people) {
-      int age = (-person.daysBirth ~/ 365);
+      int age = (person.yearsBirth);
       if (age >= 20 && age < 30)
         ageGroupMap['20-29'] = (ageGroupMap['20-29'] ?? 0) + 1;
       else if (age >= 30 && age < 40)

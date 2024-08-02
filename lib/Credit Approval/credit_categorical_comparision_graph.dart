@@ -109,8 +109,8 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
 
   List<BarChartGroupData> _getBarGroups(Map<String, int> categoryCounts) {
     final List<Color> colors = [
-      Colors.blue,
       Colors.green,
+      Colors.blue,
       Colors.red,
       Colors.yellow,
       Colors.purple
@@ -123,7 +123,7 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
         barRods: [
           BarChartRodData(
             toY: entry.value.toDouble(),
-            color: isUserCategory ? Colors.orange : colors[index % colors.length],
+            color: isUserCategory ? Colors.green : colors[index % colors.length],
             width: 40,
             borderRadius: BorderRadius.circular(4),
           ),
@@ -155,13 +155,13 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
           children: categoryCounts.keys.map((category) {
             final index = categoryCounts.keys.toList().indexOf(category);
             final List<Color> colors = [
+              Colors.orange,
               Colors.blue,
-              Colors.green,
               Colors.red,
               Colors.yellow,
               Colors.purple
             ];
-            final color = category == userCategory ? Colors.orange : colors[index % colors.length];
+            final color = category == userCategory ? Colors.green : colors[index % colors.length];
             return _legendItem(color, category);
           }).toList(),
         ),
