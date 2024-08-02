@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'fraud_data.dart'; // Import your data file
-// Import FraudPredictionPage
+import 'fraud_prediction.dart'; // Import FraudPredictionPage
 import '../custom_app_bar.dart';
 
 class FraudGeneralAnalyticsPage extends StatefulWidget {
