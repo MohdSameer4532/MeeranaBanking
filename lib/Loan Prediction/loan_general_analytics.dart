@@ -344,6 +344,12 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Sample values, replace these with your actual data
+    final int totalClients = 1000;
+    final int acceptedClients = 650;
+    final int deniedClients = 350;
+    final int pendingClients = 200; // Example additional metric
+
     return Scaffold(
       backgroundColor: Colors.white, // Set the background color of the Scaffold
       appBar: CustomAppBar(
@@ -357,6 +363,39 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 1.5,
+                ),
+                itemCount: 4,
+                itemBuilder: (context, index) {
+                  switch (index) {
+                    case 0:
+                      return _buildCard(
+                          'Total Clients', totalClients.toString());
+                    case 1:
+                      return _buildCard(
+                          'Accepted Clients', acceptedClients.toString());
+                    case 2:
+                      return _buildCard(
+                          'Denied Clients', deniedClients.toString());
+                    case 3:
+                      return _buildCard(
+                          'Pending Clients', pendingClients.toString());
+                    default:
+                      return Container(); // Should never be reached
+                  }
+                },
+              ),
+            ),
             SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -435,6 +474,39 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
             ),
             backgroundColor: Color.fromARGB(255, 34, 34, 34),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(String title, String value) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.grey[200],
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ],
         ),
       ),
     );
