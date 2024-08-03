@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'fraud_data.dart'; // Import your data file
 import 'fraud_result_page.dart'; // Import FraudResultPage
 import '../custom_app_bar.dart';
+import '../custom_dropdown.dart';
 
 class FraudPredictionPage extends StatefulWidget {
   @override
@@ -106,22 +107,10 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
               maxLength: 2,
             ),
             SizedBox(height: 10),
-            DropdownButtonFormField<String>(
+            CustomDropdown(
+              label: 'Gender',
+              items: ['M', 'F'],
               value: selectedGender,
-              decoration: InputDecoration(
-                labelText: 'Gender',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
-              items: ['M', 'F'].map((gender) {
-                return DropdownMenuItem<String>(
-                  value: gender,
-                  child: Text(gender),
-                );
-              }).toList(),
               onChanged: (value) {
                 setState(() {
                   selectedGender = value;
@@ -182,16 +171,8 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
               maxLength: 5,
             ),
             SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              value: selectedCategory,
-              decoration: InputDecoration(
-                labelText: 'Category',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
+            CustomDropdown(
+              label: 'Category',
               items: [
                 'es_transportation',
                 'es_health',
@@ -210,12 +191,8 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
                 'es_contents',
                 'es_fashion',
                 'es_hyper'
-              ].map((category) {
-                return DropdownMenuItem<String>(
-                  value: category,
-                  child: Text(category),
-                );
-              }).toList(),
+              ],
+              value: selectedCategory,
               onChanged: (value) {
                 setState(() {
                   selectedCategory = value;
@@ -257,7 +234,7 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
                 style: TextStyle(color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 30, 51, 84),
+                backgroundColor: Color.fromARGB(255, 0, 0, 0),
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 textStyle:
                     TextStyle(fontSize: 16, fontWeight: FontWeight.normal),

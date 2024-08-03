@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'deposit_person.dart';
-import 'deposit_feature_comparison_graph.dart';
-import 'deposit_categorical_comparison_graph.dart';
+import 'person.dart';
+import 'feature_comparison_graph.dart';
+import 'categorical_comparison_graph.dart';
 import '../custom_app_bar.dart';
 
 class ResultScreen extends StatelessWidget {

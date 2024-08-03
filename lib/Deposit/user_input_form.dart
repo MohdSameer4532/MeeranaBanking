@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'deposit_person.dart';
-import 'deposit_resultscreen.dart';
+import 'person.dart';
+import 'result_screen.dart';
+import '../custom_dropdown.dart';
 import '../custom_app_bar.dart';
 
+// Extracted label texts
 final Map<String, String> fieldLabels = {
   'age': 'Age',
   'job': 'Job',
@@ -40,13 +42,11 @@ class _UserInputFormState extends State<UserInputForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
       appBar: CustomAppBar(
+        backButton: true,
         c: context,
         title: 'Deposit Prediction',
-        backButton: true, // Enable back button
-        backgroundColor: Color.fromARGB(
-            255, 255, 255, 255), // Set the background color of the AppBar
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -60,34 +60,49 @@ class _UserInputFormState extends State<UserInputForm> {
                 _buildTextField('age', _ageController, TextInputType.number,
                     'Please enter age'),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'job',
-                  [
-                    'Admin',
-                    'Blue-collar',
-                    'Entrepreneur',
-                    'Housemaid',
-                    'Management',
-                    'Retired',
-                    'Self-employed',
-                    'Services',
-                    'Student',
-                    'Technician',
-                    'Unemployed'
+                CustomDropdown(
+                  label: fieldLabels['job']!,
+                  items: [
+                    'admin.',
+                    'blue-collar',
+                    'entrepreneur',
+                    'housemaid',
+                    'management',
+                    'retired',
+                    'self-employed',
+                    'services',
+                    'student',
+                    'technician',
+                    'unemployed'
                   ],
-                  (value) => setState(() => _selectedJob = value),
+                  value: _selectedJob,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedJob = value;
+                    });
+                  },
                 ),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'maritalStatus',
-                  ['Single', 'Married', 'Divorced'],
-                  (value) => setState(() => _selectedMaritalStatus = value),
+                CustomDropdown(
+                  label: fieldLabels['maritalStatus']!,
+                  items: ['single', 'married', 'divorced'],
+                  value: _selectedMaritalStatus,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedMaritalStatus = value;
+                    });
+                  },
                 ),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'education',
-                  ['Primary', 'Secondary', 'Tertiary', 'Unknown'],
-                  (value) => setState(() => _selectedEducation = value),
+                CustomDropdown(
+                  label: fieldLabels['education']!,
+                  items: ['primary', 'secondary', 'tertiary', 'unknown'],
+                  value: _selectedEducation,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedEducation = value;
+                    });
+                  },
                 ),
                 const SizedBox(height: 20),
                 _buildTextField('balance', _balanceController,
@@ -108,22 +123,29 @@ class _UserInputFormState extends State<UserInputForm> {
                 _buildTextField('previousContacts', _previousContactsController,
                     TextInputType.number, 'Please enter number of contacts'),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'previousCampaignOutcome',
-                  ['Success', 'Failure', 'Other', 'Unknown'],
-                  (value) =>
-                      setState(() => _selectedPreviousCampaignOutcome = value),
+                CustomDropdown(
+                  label: fieldLabels['previousCampaignOutcome']!,
+                  items: ['success', 'failure', 'other', 'unknown'],
+                  value: _selectedPreviousCampaignOutcome,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedPreviousCampaignOutcome = value;
+                    });
+                  },
                 ),
                 const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 34, 34, 34),
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
-                      backgroundColor: Color.fromARGB(255, 34, 34, 34),
                       textStyle: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.normal),
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
                     child: const Text(
                       'Submit',
@@ -131,6 +153,7 @@ class _UserInputFormState extends State<UserInputForm> {
                     ),
                   ),
                 ),
+                // _submitForm,
               ],
             ),
           ),
@@ -141,63 +164,24 @@ class _UserInputFormState extends State<UserInputForm> {
 
   Widget _buildTextField(String fieldName, TextEditingController controller,
       TextInputType inputType, String validationMessage) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          fieldLabels[fieldName]!,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: fieldLabels[fieldName],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
         ),
-        const SizedBox(height: 5),
-        TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: 'Enter ${fieldLabels[fieldName]}',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            filled: true,
-            fillColor: Colors.grey[100],
-          ),
-          keyboardType: inputType,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return validationMessage;
-            }
-            return null;
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCustomDropdown(
-      String fieldName, List<String> items, Function(String?) onChanged) {
-    return CustomDropdown(
-      label: fieldLabels[fieldName]!,
-      items: items,
-      value: _getSelectedValueForField(fieldName),
-      onChanged: onChanged,
-    );
-  }
-
-  String? _getSelectedValueForField(String fieldName) {
-    switch (fieldName) {
-      case 'job':
-        return _selectedJob;
-      case 'maritalStatus':
-        return _selectedMaritalStatus;
-      case 'education':
-        return _selectedEducation;
-      case 'previousCampaignOutcome':
-        return _selectedPreviousCampaignOutcome;
-      default:
+        filled: true,
+        fillColor: Colors.grey[100],
+      ),
+      keyboardType: inputType,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return validationMessage;
+        }
         return null;
-    }
+      },
+    );
   }
 
   Widget _buildSectionHeader(String fieldName) {
@@ -206,7 +190,7 @@ class _UserInputFormState extends State<UserInputForm> {
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: Colors.black,
+        color: Colors.blueGrey[700],
       ),
     );
   }
@@ -264,7 +248,7 @@ class _UserInputFormState extends State<UserInputForm> {
         balance: int.parse(_balanceController.text),
         personalLoan: _selectedPersonalLoan == 'yes',
         housingLoan: _selectedHousingLoan == 'yes',
-        result: true, // Placeholder for result calculation
+        result: false, // Placeholder for result calculation
       );
 
       Navigator.push(
@@ -275,96 +259,5 @@ class _UserInputFormState extends State<UserInputForm> {
         ),
       );
     }
-  }
-}
-
-class CustomDropdown extends StatefulWidget {
-  final String label;
-  final List<String> items;
-  final String? value;
-  final ValueChanged<String?> onChanged;
-
-  const CustomDropdown({
-    Key? key,
-    required this.label,
-    required this.items,
-    required this.value,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  _CustomDropdownState createState() => _CustomDropdownState();
-}
-
-class _CustomDropdownState extends State<CustomDropdown> {
-  bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 5),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _isExpanded = !_isExpanded;
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[100],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.value ?? 'Select ${widget.label}',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Icon(_isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-              ],
-            ),
-          ),
-        ),
-        if (_isExpanded)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[100],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: widget.items.map((item) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      widget.onChanged(item);
-                      _isExpanded = false;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Text(item, style: const TextStyle(fontSize: 16)),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-      ],
-    );
   }
 }

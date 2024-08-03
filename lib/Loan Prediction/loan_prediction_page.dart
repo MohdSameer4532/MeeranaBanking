@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../custom_app_bar.dart';
 import 'loan_result_page.dart';
+import '../custom_dropdown.dart';
 
 final Map<String, String> loanFieldLabels = {
   'income': 'Income',
@@ -125,30 +126,6 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
     );
   }
 
-  Widget _buildCustomDropdown(String fieldName, List<String> items,
-      String? selectedValue, void Function(String?) onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          loanFieldLabels[fieldName]!,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 5),
-        CustomDropdown(
-          label: loanFieldLabels[fieldName]!,
-          items: items,
-          value: selectedValue,
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,44 +163,44 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
                     TextInputType.number,
                     'Please enter current house years'),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'maritalStatus',
-                  ['Married', 'Single'],
-                  _maritalStatus,
-                  (value) {
+                CustomDropdown(
+                  label: loanFieldLabels['maritalStatus']!,
+                  items: ['Married', 'Single'],
+                  value: _maritalStatus,
+                  onChanged: (value) {
                     setState(() {
                       _maritalStatus = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'houseOwnership',
-                  ['Owned', 'Rented'],
-                  _houseOwnership,
-                  (value) {
+                CustomDropdown(
+                  label: loanFieldLabels['houseOwnership']!,
+                  items: ['Owned', 'Rented'],
+                  value: _houseOwnership,
+                  onChanged: (value) {
                     setState(() {
                       _houseOwnership = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'carOwnership',
-                  ['Yes', 'No'],
-                  _carOwnership,
-                  (value) {
+                CustomDropdown(
+                  label: loanFieldLabels['carOwnership']!,
+                  items: ['Yes', 'No'],
+                  value: _carOwnership,
+                  onChanged: (value) {
                     setState(() {
                       _carOwnership = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'profession',
-                  ['Engineer', 'Teacher', 'Doctor', 'Chef'],
-                  _profession,
-                  (value) {
+                CustomDropdown(
+                  label: loanFieldLabels['profession']!,
+                  items: ['Engineer', 'Teacher', 'Doctor', 'Chef'],
+                  value: _profession,
+                  onChanged: (value) {
                     setState(() {
                       _profession = value;
                     });
@@ -254,88 +231,6 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class CustomDropdown extends StatefulWidget {
-  final String label;
-  final List<String> items;
-  final String? value;
-  final ValueChanged<String?> onChanged;
-
-  const CustomDropdown({
-    Key? key,
-    required this.label,
-    required this.items,
-    required this.value,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  _CustomDropdownState createState() => _CustomDropdownState();
-}
-
-class _CustomDropdownState extends State<CustomDropdown> {
-  bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _isExpanded = !_isExpanded;
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[100],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.value ?? 'Select ${widget.label}',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Icon(_isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-              ],
-            ),
-          ),
-        ),
-        if (_isExpanded)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[100],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: widget.items.map((item) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      widget.onChanged(item);
-                      _isExpanded = false;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Text(item, style: const TextStyle(fontSize: 16)),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-      ],
     );
   }
 }

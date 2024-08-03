@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'credit_person.dart';
 import 'credit_result_screen.dart';
 import '../custom_app_bar.dart';
+import '../custom_dropdown.dart';
 
 final Map<String, String> fieldLabels = {
   'gender': 'Gender',
@@ -47,13 +48,12 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         c: context,
         title: 'Credit Approval',
-        backButton: true, // Enable back button
-        backgroundColor: Color.fromARGB(
-            255, 255, 255, 255), // Set the background color of the AppBar
+        backButton: true,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -64,10 +64,11 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'gender',
-                  ['Male', 'Female'],
-                  (value) => setState(() => _selectedGender = value),
+                CustomDropdown(
+                  label: fieldLabels['gender']!,
+                  items: ['Male', 'Female'],
+                  value: _selectedGender,
+                  onChanged: (value) => setState(() => _selectedGender = value),
                 ),
                 const SizedBox(height: 20),
                 _buildSectionHeader('ownCar'),
@@ -82,46 +83,60 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                 _buildTextField('annualIncome', _annualIncomeController,
                     TextInputType.number, 'Please enter annual income'),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'incomeType',
-                  [
+                CustomDropdown(
+                  label: fieldLabels['incomeType']!,
+                  items: [
                     'Working',
                     'Commercial Associate',
                     'Pensioner',
                     'State Servant',
                     'Student'
                   ],
-                  (value) => setState(() => _selectedIncomeType = value),
+                  value: _selectedIncomeType,
+                  onChanged: (value) =>
+                      setState(() => _selectedIncomeType = value),
                 ),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'educationType',
-                  [
+                CustomDropdown(
+                  label: fieldLabels['educationType']!,
+                  items: [
                     'Secondary',
                     'Higher Education',
                     'Incomplete Higher',
                     'Lower Secondary',
                     'Academic Degree'
                   ],
-                  (value) => setState(() => _selectedEducationType = value),
+                  value: _selectedEducationType,
+                  onChanged: (value) =>
+                      setState(() => _selectedEducationType = value),
                 ),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'familyStatus',
-                  ['Married', 'Single', 'Civil Marriage', 'Separated', 'Widow'],
-                  (value) => setState(() => _selectedFamilyStatus = value),
+                CustomDropdown(
+                  label: fieldLabels['familyStatus']!,
+                  items: [
+                    'Married',
+                    'Single',
+                    'Civil Marriage',
+                    'Separated',
+                    'Widow'
+                  ],
+                  value: _selectedFamilyStatus,
+                  onChanged: (value) =>
+                      setState(() => _selectedFamilyStatus = value),
                 ),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'housingType',
-                  [
+                CustomDropdown(
+                  label: fieldLabels['housingType']!,
+                  items: [
                     'House/Apartment',
                     'With Parents',
                     'Municipal Apartment',
                     'Rented Apartment',
                     'Office Apartment'
                   ],
-                  (value) => setState(() => _selectedHousingType = value),
+                  value: _selectedHousingType,
+                  onChanged: (value) =>
+                      setState(() => _selectedHousingType = value),
                 ),
                 const SizedBox(height: 20),
                 _buildTextField('yearsBirth', _daysBirthController,
@@ -130,9 +145,9 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                 _buildTextField('yearsEmployed', _daysEmployedController,
                     TextInputType.number, 'Please enter years employed'),
                 const SizedBox(height: 20),
-                _buildCustomDropdown(
-                  'occupationType',
-                  [
+                CustomDropdown(
+                  label: fieldLabels['occupationType']!,
+                  items: [
                     'Laborers',
                     'Core Staff',
                     'Managers',
@@ -152,7 +167,9 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                     'HR Staff',
                     'IT Staff'
                   ],
-                  (value) => setState(() => _selectedOccupationType = value),
+                  value: _selectedOccupationType,
+                  onChanged: (value) =>
+                      setState(() => _selectedOccupationType = value),
                 ),
                 const SizedBox(height: 20),
                 _buildTextField(
@@ -171,10 +188,8 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                           fontSize: 16, fontWeight: FontWeight.normal),
                       backgroundColor: Color.fromARGB(255, 34, 34, 34),
                     ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: const Text('Submit',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
@@ -193,19 +208,14 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
         Text(
           fieldLabels[fieldName]!,
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         const SizedBox(height: 5),
         TextFormField(
           controller: controller,
           decoration: InputDecoration(
             hintText: 'Enter ${fieldLabels[fieldName]}',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             filled: true,
             fillColor: Colors.grey[100],
           ),
@@ -221,43 +231,11 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
     );
   }
 
-  Widget _buildCustomDropdown(
-      String fieldName, List<String> items, Function(String?) onChanged) {
-    return CustomDropdown(
-      label: fieldLabels[fieldName]!,
-      items: items,
-      value: _getSelectedValueForField(fieldName),
-      onChanged: onChanged,
-    );
-  }
-
-  String? _getSelectedValueForField(String fieldName) {
-    switch (fieldName) {
-      case 'gender':
-        return _selectedGender;
-      case 'incomeType':
-        return _selectedIncomeType;
-      case 'educationType':
-        return _selectedEducationType;
-      case 'familyStatus':
-        return _selectedFamilyStatus;
-      case 'housingType':
-        return _selectedHousingType;
-      case 'occupationType':
-        return _selectedOccupationType;
-      default:
-        return null;
-    }
-  }
-
   Widget _buildSectionHeader(String fieldName) {
     return Text(
       fieldLabels[fieldName]!,
       style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-      ),
+          fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
     );
   }
 
@@ -329,96 +307,5 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
         ),
       );
     }
-  }
-}
-
-class CustomDropdown extends StatefulWidget {
-  final String label;
-  final List<String> items;
-  final String? value;
-  final ValueChanged<String?> onChanged;
-
-  const CustomDropdown({
-    Key? key,
-    required this.label,
-    required this.items,
-    required this.value,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  _CustomDropdownState createState() => _CustomDropdownState();
-}
-
-class _CustomDropdownState extends State<CustomDropdown> {
-  bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 5),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _isExpanded = !_isExpanded;
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[100],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.value ?? 'Select ${widget.label}',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Icon(_isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-              ],
-            ),
-          ),
-        ),
-        if (_isExpanded)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[100],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: widget.items.map((item) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      widget.onChanged(item);
-                      _isExpanded = false;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Text(item, style: const TextStyle(fontSize: 16)),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-      ],
-    );
   }
 }
