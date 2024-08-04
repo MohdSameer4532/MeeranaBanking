@@ -26,57 +26,64 @@ class LoanResultPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
-            _buildSectionTitle('User Input Summary'),
             _buildUserInputSummary(context),
             _buildSectionTitle('Prediction Result'),
             _buildResultDisplay(),
             _buildSectionTitle('Income Comparison'),
             _buildComparisonSection(
-              child:
-                  _buildNumericalComparisonChart('Income Comparison', 'income'),
+              child: FeatureComparisonGraph(
+                dataset: dataset,
+                userInput: userInputData,
+                feature: 'income',
+              ),
             ),
             _buildSectionTitle('Age Comparison'),
             _buildComparisonSection(
-              child: _buildNumericalComparisonChart('Age Comparison', 'age'),
+              child: FeatureComparisonGraph(
+                dataset: dataset,
+                userInput: userInputData,
+                feature: 'age',
+              ),
             ),
             _buildSectionTitle('Experience Comparison'),
             _buildComparisonSection(
-              child: _buildNumericalComparisonChart(
-                  'Experience Comparison', 'experience'),
-            ),
-            _buildSectionTitle('Current Job Years Comparison'),
-            _buildComparisonSection(
-              child: _buildNumericalComparisonChart(
-                  'Current Job Years Comparison', 'currentJobYears'),
-            ),
-            _buildSectionTitle('Current House Years Comparison'),
-            _buildComparisonSection(
-              child: _buildNumericalComparisonChart(
-                  'Current House Years Comparison', 'currentHouseYears'),
+              child: FeatureComparisonGraph(
+                dataset: dataset,
+                userInput: userInputData,
+                feature: 'experience',
+              ),
             ),
             _buildSectionTitle('Marital Status Comparison'),
             _buildComparisonSection(
-              child: _buildCategoricalComparisonChart(
-                  'Marital Status', 'maritalStatus'),
+              child: CategoricalComparisonGraph(
+                dataset: dataset,
+                userInput: userInputData,
+                feature: 'maritalStatus',
+              ),
             ),
             _buildSectionTitle('House Ownership Comparison'),
             _buildComparisonSection(
-              child: _buildCategoricalComparisonChart(
-                  'House Ownership', 'houseOwnership'),
+              child: CategoricalComparisonGraph(
+                dataset: dataset,
+                userInput: userInputData,
+                feature: 'houseOwnership',
+              ),
             ),
             _buildSectionTitle('Car Ownership Comparison'),
             _buildComparisonSection(
-              child: _buildCategoricalComparisonChart(
-                  'Car Ownership', 'carOwnership'),
+              child: CategoricalComparisonGraph(
+                dataset: dataset,
+                userInput: userInputData,
+                feature: 'carOwnership',
+              ),
             ),
             _buildSectionTitle('Profession Comparison'),
             _buildComparisonSection(
-              child:
-                  _buildCategoricalComparisonChart('Profession', 'profession'),
-            ),
-            _buildSectionTitle('Loan Status Comparison'),
-            _buildComparisonSection(
-              child: _buildCategoricalComparisonChart('Loan Status', 'status'),
+              child: CategoricalComparisonGraph(
+                dataset: dataset,
+                userInput: userInputData,
+                feature: 'profession',
+              ),
             ),
             SizedBox(height: 20),
           ],
@@ -96,6 +103,14 @@ class LoanResultPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              'User Input Summary',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[900],
+              ),
+            ),
             SizedBox(height: 16),
             _buildProfileItem(context, Icons.attach_money, 'Income',
                 '${userInputData['income']}'),
@@ -186,9 +201,9 @@ class LoanResultPage extends StatelessWidget {
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: Colors.blue[900],
         ),
       ),
     );
@@ -236,7 +251,7 @@ class LoanResultPage extends StatelessWidget {
               child: Text(
                 isApproved ? 'Loan Approved' : 'Loan Denied',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -246,23 +261,26 @@ class LoanResultPage extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildNumericalComparisonChart(String title, String feature) {
-    var data = _getNumericalComparison(feature);
-    if (data.isEmpty)
-      return SizedBox.shrink(); // Avoid rendering an empty chart
-    var colors = [
-      Colors.blue,
-      Colors.orange,
-      Colors.brown,
-      Colors.yellow,
-      Colors.green
-    ];
+class FeatureComparisonGraph extends StatelessWidget {
+  final List<LoanPerson> dataset;
+  final Map<String, dynamic> userInput;
+  final String feature;
 
+  FeatureComparisonGraph({
+    required this.dataset,
+    required this.userInput,
+    required this.feature,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    List<double> data = _getFeatureData();
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        maxY: data.isNotEmpty ? data.reduce((a, b) => a > b ? a : b) : 1,
+        maxY: data.reduce((a, b) => a > b ? a : b),
         titlesData: FlTitlesData(
           show: true,
           bottomTitles: AxisTitles(
@@ -296,7 +314,9 @@ class LoanResultPage extends StatelessWidget {
             BarChartGroupData(
               x: i,
               barRods: [
-                BarChartRodData(toY: data[i], color: colors[i % colors.length])
+                BarChartRodData(
+                    toY: data[i],
+                    color: i == data.length - 1 ? Colors.green : Colors.blue)
               ],
             ),
         ],
@@ -304,18 +324,61 @@ class LoanResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoricalComparisonChart(String title, String feature) {
-    var data = _getCategoricalComparison(feature);
-    if (data.isEmpty) return SizedBox.shrink();
+  List<double> _getFeatureData() {
+    List<double> featureValues =
+        dataset.map((person) => _getFeatureValue(person)).toList();
 
-    var colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.red,
-      Colors.orange,
-      Colors.purple
+    return [
+      featureValues.reduce((a, b) => a < b ? a : b), // Min
+      featureValues.reduce((a, b) => a > b ? a : b), // Max
+      _mean(featureValues), // Mean
+      _median(featureValues), // Median
+      userInput[feature].toDouble(), // User
     ];
+  }
 
+  double _getFeatureValue(LoanPerson person) {
+    switch (feature) {
+      case 'income':
+        return person.income;
+      case 'age':
+        return person.age;
+      case 'experience':
+        return person.experience;
+      default:
+        return 0.0;
+    }
+  }
+
+  double _mean(List<double> values) {
+    return values.reduce((a, b) => a + b) / values.length;
+  }
+
+  double _median(List<double> values) {
+    values.sort();
+    int middle = values.length ~/ 2;
+    if (values.length % 2 == 0) {
+      return (values[middle - 1] + values[middle]) / 2;
+    } else {
+      return values[middle];
+    }
+  }
+}
+
+class CategoricalComparisonGraph extends StatelessWidget {
+  final List<LoanPerson> dataset;
+  final Map<String, dynamic> userInput;
+  final String feature;
+
+  CategoricalComparisonGraph({
+    required this.dataset,
+    required this.userInput,
+    required this.feature,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Map<String, double> data = _getCategoricalData();
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -345,31 +408,12 @@ class LoanResultPage extends StatelessWidget {
               reservedSize: 40,
               getTitlesWidget: (value, meta) {
                 if (value % 20 == 0) {
-                  // Show 0%, 20%, 40%, 60%, 80%, 100%
                   return Text("${value.toInt()}%",
                       style: TextStyle(fontSize: 10));
                 }
                 return Text('');
               },
               interval: 20,
-            ),
-          ),
-          rightTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 40,
-              getTitlesWidget: (value, meta) {
-                // Convert percentage to 0-10 scale
-                double scaledValue = value / 10;
-                if (scaledValue % 1 == 0) {
-                  // Show whole numbers from 0 to 10
-                  return Text(scaledValue.toInt().toString(),
-                      style: TextStyle(fontSize: 10));
-                }
-                return Text('');
-              },
-              interval:
-                  10, // Interval of 10% corresponds to 1 on the 0-10 scale
             ),
           ),
         ),
@@ -381,7 +425,9 @@ class LoanResultPage extends StatelessWidget {
               barRods: [
                 BarChartRodData(
                   toY: data.values.elementAt(i),
-                  color: colors[i % colors.length],
+                  color: data.keys.elementAt(i) == userInput[feature]
+                      ? Colors.green
+                      : Colors.blue,
                   width: 20,
                 )
               ],
@@ -391,60 +437,10 @@ class LoanResultPage extends StatelessWidget {
     );
   }
 
-  List<double> _getNumericalComparison(String feature) {
-    List<double> featureValues =
-        dataset.map((person) => _getFeatureValue(person, feature)).toList();
-
-    return [
-      if (featureValues.isNotEmpty)
-        featureValues.reduce((a, b) => a < b ? a : b), // Min
-      if (featureValues.isNotEmpty)
-        featureValues.reduce((a, b) => a > b ? a : b), // Max
-      if (featureValues.isNotEmpty) _mean(featureValues), // Mean
-      if (featureValues.isNotEmpty) _median(featureValues), // Median
-      userInputData.containsKey(feature)
-          ? userInputData[feature].toDouble()
-          : 0.0 // User
-    ];
-  }
-
-  double _getFeatureValue(LoanPerson person, String feature) {
-    switch (feature) {
-      case 'income':
-        return person.income;
-      case 'age':
-        return person.age;
-      case 'experience':
-        return person.experience;
-      case 'currentJobYears':
-        return person.currentJobYears;
-      case 'currentHouseYears':
-        return person.currentHouseYears;
-      default:
-        return 0.0;
-    }
-  }
-
-  double _mean(List<double> values) {
-    if (values.isEmpty) return 0.0;
-    return values.reduce((a, b) => a + b) / values.length;
-  }
-
-  double _median(List<double> values) {
-    if (values.isEmpty) return 0.0;
-    values.sort();
-    int middle = values.length ~/ 2;
-    if (values.length % 2 == 0) {
-      return (values[middle - 1] + values[middle]) / 2;
-    } else {
-      return values[middle];
-    }
-  }
-
-  Map<String, double> _getCategoricalComparison(String feature) {
+  Map<String, double> _getCategoricalData() {
     Map<String, int> counts = {};
     for (var person in dataset) {
-      String value = _getCategoricalFeatureValue(person, feature);
+      String value = _getCategoricalFeatureValue(person);
       counts[value] = (counts[value] ?? 0) + 1;
     }
 
@@ -455,12 +451,10 @@ class LoanResultPage extends StatelessWidget {
       percentages[key] = (value / total) * 100;
     });
 
-    print(
-        "Categorical comparison for $feature: $percentages"); // Debugging print statement
     return percentages;
   }
 
-  String _getCategoricalFeatureValue(LoanPerson person, String feature) {
+  String _getCategoricalFeatureValue(LoanPerson person) {
     switch (feature) {
       case 'maritalStatus':
         return person.maritalStatus;
@@ -470,8 +464,6 @@ class LoanResultPage extends StatelessWidget {
         return person.carOwnership;
       case 'profession':
         return person.profession;
-      case 'status':
-        return person.loanStatus;
       default:
         return '';
     }

@@ -1,189 +1,170 @@
+import 'package:bankpredictionapp/Deposit/person.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+// Assume this file contains the Loan class
 
-class CategoricalComparison extends StatelessWidget {
-  final String title;
+class LoanFeatureComparisonGraph extends StatefulWidget {
   final List<Person> dummyData;
   final Person userInput;
   final String feature;
 
-  CategoricalComparison({
-    required this.title,
+  LoanFeatureComparisonGraph({
     required this.dummyData,
     required this.userInput,
     required this.feature,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final userCategory = getFeatureValue(userInput, feature);
-    final categoryCounts = _getCategoryCounts();
-    final maxCount = _getMaxCount(categoryCounts);
+  _LoanFeatureComparisonGraphState createState() =>
+      _LoanFeatureComparisonGraphState();
+}
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildComparisonItem('Your Value', userCategory),
-              _buildComparisonItem('Feature', getFeatureName(feature)),
-            ],
-          ),
-          SizedBox(height: 20),
-          Container(
-            height: 300,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: maxCount.toDouble(),
-                titlesData: FlTitlesData(
-                  show: true,
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        const titles = ['Success', 'Denied'];
-                        return Text(titles[value.toInt()]);
-                      },
-                      reservedSize: 30,
+class _LoanFeatureComparisonGraphState
+    extends State<LoanFeatureComparisonGraph> {
+  double _minX = 0;
+  double _maxX = 0;
+  double _minY = 0;
+  double _maxY = 0;
+  bool _isZoomed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateBoundaries();
+  }
+
+  void _updateBoundaries() {
+    final List<double> featureValues =
+        widget.dummyData.map((loan) => _getFeatureValue(loan)).toList();
+    _minX = 0;
+    _maxX = widget.dummyData.length.toDouble() - 1;
+    _minY = featureValues.reduce((a, b) => a < b ? a : b);
+    _maxY = featureValues.reduce((a, b) => a > b ? a : b);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final List<double> featureValues =
+        widget.dummyData.map((loan) => _getFeatureValue(loan)).toList();
+    final double userValue = _getFeatureValue(widget.userInput);
+    final double meanVal =
+        featureValues.reduce((a, b) => a + b) / featureValues.length;
+    final double medianVal = _calculateMedian(featureValues);
+
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        height: constraints.maxHeight,
+        width: constraints.maxWidth,
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Expanded(
+              child: LineChart(
+                LineChartData(
+                  minX: _minX,
+                  maxX: _maxX,
+                  minY: _minY,
+                  maxY: _maxY,
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          return Text(value.toStringAsFixed(0));
+                        },
+                      ),
                     ),
                   ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 40,
-                      getTitlesWidget: (value, meta) {
-                        return Text(value.toInt().toString());
-                      },
-                    ),
-                  ),
-                  topTitles:
-                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles:
-                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                ),
-                borderData: FlBorderData(show: false),
-                barGroups: [
-                  BarChartGroupData(
-                    x: 0,
-                    barRods: [
-                      BarChartRodData(
-                        toY: categoryCounts['Success']!.toDouble(),
+                  borderData: FlBorderData(show: true),
+                  lineBarsData: [
+                    _createLineChartBarData(featureValues, Colors.blue),
+                    _createHorizontalLine(_maxY, Colors.orange, 'Maximum'),
+                    _createHorizontalLine(meanVal, Colors.purple, 'Mean'),
+                    _createHorizontalLine(medianVal, Colors.yellow, 'Median'),
+                    _createHorizontalLine(userValue, Colors.green, 'User Data'),
+                  ],
+                  extraLinesData: ExtraLinesData(
+                    horizontalLines: [
+                      HorizontalLine(
+                        y: userValue,
                         color: Colors.green,
-                        width: userCategory == 'Success' ? 15 : 10,
+                        strokeWidth: 2,
+                        label: HorizontalLineLabel(
+                          show: true,
+                          alignment: Alignment.topRight,
+                          padding: EdgeInsets.only(right: 5, top: 5),
+                          style: TextStyle(color: Colors.black),
+                          labelResolver: (line) =>
+                              'User: ${userValue.toStringAsFixed(2)}',
+                        ),
                       ),
                     ],
                   ),
-                  BarChartGroupData(
-                    x: 1,
-                    barRods: [
-                      BarChartRodData(
-                        toY: categoryCounts['Denied']!.toDouble(),
-                        color: Colors.red,
-                        width: userCategory == 'Denied' ? 15 : 10,
-                      ),
-                    ],
-                  ),
-                ],
-                barTouchData: BarTouchData(
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      return BarTooltipItem(
-                        rod.toY.round().toString(),
-                        TextStyle(color: Colors.white),
-                      );
-                    },
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+                        return touchedBarSpots.map((barSpot) {
+                          final flSpot = barSpot;
+                          return LineTooltipItem(
+                            '${widget.feature}: ${flSpot.y.toStringAsFixed(2)}',
+                            TextStyle(color: Colors.white),
+                          );
+                        }).toList();
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 20),
-          _buildLegend(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildComparisonItem(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+            SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildLegend(),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        if (_isZoomed) {
+                          _updateBoundaries();
+                        } else {
+                          _minX = _maxX / 2;
+                          _minY = _maxY / 2;
+                        }
+                        _isZoomed = !_isZoomed;
+                      });
+                    },
+                    child: Text(_isZoomed ? 'Reset Zoom' : 'Zoom In'),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        SizedBox(height: 5),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[800],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Map<String, int> _getCategoryCounts() {
-    int successCount = 0;
-    int deniedCount = 0;
-
-    for (var person in dummyData) {
-      if (getFeatureValue(person, feature) ==
-          getFeatureValue(userInput, feature)) {
-        if (person.status == 'Success') {
-          successCount++;
-        } else if (person.status == 'Denied') {
-          deniedCount++;
-        }
-      }
-    }
-
-    return {'Success': successCount, 'Denied': deniedCount};
+      );
+    });
   }
 
   Widget _buildLegend() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _legendItem(Colors.green, 'Success'),
-        SizedBox(width: 20),
-        _legendItem(Colors.red, 'Denied'),
+        _legendItem(Colors.blue, 'Data'),
+        _legendItem(Colors.orange, 'Max'),
+        _legendItem(Colors.purple, 'Mean'),
+        _legendItem(Colors.yellow, 'Median'),
+        _legendItem(Colors.green, 'User'),
       ],
     );
   }
 
   Widget _legendItem(Color color, String label) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 16,
@@ -192,51 +173,50 @@ class CategoricalComparison extends StatelessWidget {
         ),
         SizedBox(width: 4),
         Text(label),
+        SizedBox(width: 8),
       ],
     );
   }
 
-  String getFeatureValue(Person person, String feature) {
-    switch (feature) {
-      case 'MaritalStatus':
-        return person.maritalStatus;
-      case 'HouseOwnership':
-        return person.houseOwnership;
-      case 'CarOwnership':
-        return person.carOwnership;
+  double _getFeatureValue(loan) {
+    switch (widget.feature) {
+      case 'amount':
+        return loan.amount.toDouble();
+      case 'term':
+        return loan.term.toDouble();
       default:
-        return 'Unknown';
+        return 0;
     }
   }
 
-  String getFeatureName(String feature) {
-    switch (feature) {
-      case 'MaritalStatus':
-        return 'Marital Status';
-      case 'HouseOwnership':
-        return 'House Ownership';
-      case 'CarOwnership':
-        return 'Car Ownership';
-      default:
-        return 'Unknown';
+  double _calculateMedian(List<double> values) {
+    values.sort();
+    final middle = values.length ~/ 2;
+    if (values.length % 2 == 0) {
+      return (values[middle - 1] + values[middle]) / 2;
+    } else {
+      return values[middle];
     }
   }
 
-  int _getMaxCount(Map<String, int> counts) {
-    return counts.values.reduce((max, value) => max > value ? max : value);
+  LineChartBarData _createLineChartBarData(List<double> values, Color color) {
+    return LineChartBarData(
+      spots: values.asMap().entries.map((entry) {
+        return FlSpot(entry.key.toDouble(), entry.value);
+      }).toList(),
+      isCurved: true,
+      color: color,
+      dotData: FlDotData(show: false),
+      belowBarData: BarAreaData(show: false),
+    );
   }
-}
 
-class Person {
-  final String maritalStatus;
-  final String houseOwnership;
-  final String carOwnership;
-  final String status;
-
-  Person({
-    required this.maritalStatus,
-    required this.houseOwnership,
-    required this.carOwnership,
-    required this.status,
-  });
+  LineChartBarData _createHorizontalLine(double y, Color color, String label) {
+    return LineChartBarData(
+      spots: [FlSpot(_minX, y), FlSpot(_maxX, y)],
+      color: color,
+      dotData: FlDotData(show: false),
+      belowBarData: BarAreaData(show: false),
+    );
+  }
 }
