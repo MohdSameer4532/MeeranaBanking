@@ -59,21 +59,26 @@ class _CreditHomePageState extends State<CreditHomePage> {
           children: [
             SizedBox(height: 16),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Overall Statistics',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                'General Analytics',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
+            SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
-                childAspectRatio: 2,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
+                childAspectRatio: 1.5,
                 children: [
                   _buildStatisticCard('Average Age', '${averageAge?.toStringAsFixed(1) ?? 'N/A'} years'),
                   _buildStatisticCard('Average Income', '\$${averageIncome?.toStringAsFixed(2) ?? 'N/A'}'),
@@ -162,7 +167,7 @@ class _CreditHomePageState extends State<CreditHomePage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.all(0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -267,59 +272,92 @@ class _CreditHomePageState extends State<CreditHomePage> {
       PieChartData(
         sectionsSpace: 0,
         centerSpaceRadius: 22,
-        sections: educationData.entries.map((entry) {
-          Color color = _getEducationColor(entry.key);
-          return PieChartSectionData(
-            color: color,
-            value: entry.value.toDouble(),
-            title: entry.value.toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-          );
-        }).toList(),
+        sections: educationData.entries
+            .map((entry) => PieChartSectionData(
+                  color: _getCategoryColor(entry.key),
+                  value: entry.value.toDouble(),
+                  title: entry.value.toString(),
+                  radius: 30,
+                  titleStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ))
+            .toList(),
       ),
     );
   }
 
   Widget _buildAgeGroupChart() {
-    Map<String, int> ageGroupData = _calculateAgeGroupData();
+    Map<String, int> ageGroups = {
+      '20-29': 0,
+      '30-39': 0,
+      '40-49': 0,
+      '50+': 0,
+    };
+    for (var person in people) {
+      if (person.yearsBirth >= 20 && person.yearsBirth < 30) {
+        ageGroups['20-29'] = ageGroups['20-29']! + 1;
+      } else if (person.yearsBirth >= 30 && person.yearsBirth < 40) {
+        ageGroups['30-39'] = ageGroups['30-39']! + 1;
+      } else if (person.yearsBirth >= 40 && person.yearsBirth < 50) {
+        ageGroups['40-49'] = ageGroups['40-49']! + 1;
+      } else if (person.yearsBirth >= 50) {
+        ageGroups['50+'] = ageGroups['50+']! + 1;
+      }
+    }
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
         centerSpaceRadius: 22,
-        sections: ageGroupData.entries.map((entry) {
-          Color color = _getAgeGroupColor(entry.key);
-          return PieChartSectionData(
-            color: color,
-            value: entry.value.toDouble(),
-            title: entry.value.toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-          );
-        }).toList(),
+        sections: ageGroups.entries
+            .map((entry) => PieChartSectionData(
+                  color: _getAgeGroupColor(entry.key),
+                  value: entry.value.toDouble(),
+                  title: entry.value.toString(),
+                  radius: 30,
+                  titleStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ))
+            .toList(),
       ),
     );
   }
 
   Widget _buildIncomeRangeChart() {
-    Map<String, int> incomeRangeData = _calculateIncomeRangeData();
+    Map<String, int> incomeRanges = {
+      'Low': 0,
+      'Medium': 0,
+      'High': 0,
+    };
+    for (var person in people) {
+      if (person.annualIncome < 50000) {
+        incomeRanges['Low'] = incomeRanges['Low']! + 1;
+      } else if (person.annualIncome >= 50000 &&
+          person.annualIncome < 100000) {
+        incomeRanges['Medium'] = incomeRanges['Medium']! + 1;
+      } else {
+        incomeRanges['High'] = incomeRanges['High']! + 1;
+      }
+    }
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
         centerSpaceRadius: 22,
-        sections: incomeRangeData.entries.map((entry) {
-          Color color = _getIncomeRangeColor(entry.key);
-          return PieChartSectionData(
-            color: color,
-            value: entry.value.toDouble(),
-            title: entry.value.toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-          );
-        }).toList(),
+        sections: incomeRanges.entries
+            .map((entry) => PieChartSectionData(
+                  color: _getIncomeRangeColor(entry.key),
+                  value: entry.value.toDouble(),
+                  title: entry.value.toString(),
+                  radius: 30,
+                  titleStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ))
+            .toList(),
       ),
     );
   }
@@ -331,17 +369,18 @@ class _CreditHomePageState extends State<CreditHomePage> {
       PieChartData(
         sectionsSpace: 0,
         centerSpaceRadius: 22,
-        sections: familyStatusData.entries.map((entry) {
-          Color color = _getFamilyStatusColor(entry.key);
-          return PieChartSectionData(
-            color: color,
-            value: entry.value.toDouble(),
-            title: entry.value.toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-          );
-        }).toList(),
+        sections: familyStatusData.entries
+            .map((entry) => PieChartSectionData(
+                  color: _getFamilyStatusColor(entry.key),
+                  value: entry.value.toDouble(),
+                  title: entry.value.toString(),
+                  radius: 30,
+                  titleStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ))
+            .toList(),
       ),
     );
   }
@@ -353,65 +392,32 @@ class _CreditHomePageState extends State<CreditHomePage> {
       PieChartData(
         sectionsSpace: 0,
         centerSpaceRadius: 22,
-        sections: housingTypeData.entries.map((entry) {
-          Color color = _getHousingTypeColor(entry.key);
-          return PieChartSectionData(
-            color: color,
-            value: entry.value.toDouble(),
-            title: entry.value.toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-          );
-        }).toList(),
+        sections: housingTypeData.entries
+            .map((entry) => PieChartSectionData(
+                  color: _getHousingTypeColor(entry.key),
+                  value: entry.value.toDouble(),
+                  title: entry.value.toString(),
+                  radius: 30,
+                  titleStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ))
+            .toList(),
       ),
     );
   }
 
   Map<String, int> _calculateCategoryData(List<String> categories) {
-    Map<String, int> categoryCounts = {};
+    Map<String, int> categoryData = {};
     for (var category in categories) {
-      categoryCounts[category] = (categoryCounts[category] ?? 0) + 1;
+      categoryData[category] = (categoryData[category] ?? 0) + 1;
     }
-    return categoryCounts;
+    return categoryData;
   }
 
-  Map<String, int> _calculateAgeGroupData() {
-    Map<String, int> ageGroupCounts = {};
-    for (var person in people) {
-      String ageGroup;
-      if (person.yearsBirth < 30) {
-        ageGroup = '20-29';
-      } else if (person.yearsBirth < 40) {
-        ageGroup = '30-39';
-      } else if (person.yearsBirth < 50) {
-        ageGroup = '40-49';
-      } else {
-        ageGroup = '50+';
-      }
-      ageGroupCounts[ageGroup] = (ageGroupCounts[ageGroup] ?? 0) + 1;
-    }
-    return ageGroupCounts;
-  }
-
-  Map<String, int> _calculateIncomeRangeData() {
-    Map<String, int> incomeRangeCounts = {};
-    for (var person in people) {
-      String incomeRange;
-      if (person.annualIncome < 50000) {
-        incomeRange = 'Low';
-      } else if (person.annualIncome < 100000) {
-        incomeRange = 'Medium';
-      } else {
-        incomeRange = 'High';
-      }
-      incomeRangeCounts[incomeRange] = (incomeRangeCounts[incomeRange] ?? 0) + 1;
-    }
-    return incomeRangeCounts;
-  }
-
-  Color _getEducationColor(String educationType) {
-    switch (educationType) {
+  Color _getCategoryColor(String category) {
+    switch (category) {
       case 'Higher education':
         return Colors.blue;
       case 'Secondary education':
@@ -438,8 +444,8 @@ class _CreditHomePageState extends State<CreditHomePage> {
     }
   }
 
-  Color _getIncomeRangeColor(String incomeRange) {
-    switch (incomeRange) {
+  Color _getIncomeRangeColor(String range) {
+    switch (range) {
       case 'Low':
         return Colors.blue;
       case 'Medium':
@@ -451,8 +457,8 @@ class _CreditHomePageState extends State<CreditHomePage> {
     }
   }
 
-  Color _getFamilyStatusColor(String familyStatus) {
-    switch (familyStatus) {
+  Color _getFamilyStatusColor(String status) {
+    switch (status) {
       case 'Married':
         return Colors.blue;
       case 'Single':
@@ -466,8 +472,8 @@ class _CreditHomePageState extends State<CreditHomePage> {
     }
   }
 
-  Color _getHousingTypeColor(String housingType) {
-    switch (housingType) {
+  Color _getHousingTypeColor(String type) {
+    switch (type) {
       case 'House / apartment':
         return Colors.blue;
       case 'With parents':
