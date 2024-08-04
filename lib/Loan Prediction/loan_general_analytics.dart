@@ -14,6 +14,9 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   final List<Map<String, dynamic>> data = dummyData;
 
   int totalClients = 0;
+  int acceptedClients = 0;
+  int deniedClients = 0;
+  int pendingClients = 0;
   Map<String, double> averages = {};
 
   @override
@@ -25,6 +28,13 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   void calculateAnalytics() {
     setState(() {
       totalClients = data.length;
+      acceptedClients =
+          data.where((person) => person['loanStatus'] == 'Accepted').length;
+      deniedClients =
+          data.where((person) => person['loanStatus'] == 'Denied').length;
+      pendingClients =
+          data.where((person) => person['loanStatus'] == 'Pending').length;
+
       List<String> numericFields = [
         'income',
         'age',
@@ -88,7 +98,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   }
 
   Widget _buildTotalClientsChart() {
-    Map<String, int> totalClientsData = _calculateTotalClientsData(dummyData);
+    Map<String, int> totalClientsData = _calculateTotalClientsData(data);
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -112,7 +122,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   }
 
   Widget _buildIncomeChart() {
-    Map<String, int> incomeData = _calculateIncomeData(dummyData);
+    Map<String, int> incomeData = _calculateIncomeData(data);
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -153,7 +163,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   }
 
   Widget _buildExperienceChart() {
-    Map<String, int> experienceData = _calculateExperienceData(dummyData);
+    Map<String, int> experienceData = _calculateExperienceData(data);
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -194,7 +204,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   }
 
   Widget _buildAgeGroupChart() {
-    Map<String, int> ageGroupData = _calculateAgeGroupData(dummyData);
+    Map<String, int> ageGroupData = _calculateAgeGroupData(data);
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -235,8 +245,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   }
 
   Widget _buildCurrentJobYearsChart() {
-    Map<String, int> currentJobYearsData =
-        _calculateCurrentJobYearsData(dummyData);
+    Map<String, int> currentJobYearsData = _calculateCurrentJobYearsData(data);
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -278,7 +287,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
 
   Widget _buildCurrentHouseYearsChart() {
     Map<String, int> currentHouseYearsData =
-        _calculateCurrentHouseYearsData(dummyData);
+        _calculateCurrentHouseYearsData(data);
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -319,7 +328,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   }
 
   Widget _buildMaritalStatusChart() {
-    Map<String, int> maritalStatusData = _calculateMaritalStatusData(dummyData);
+    Map<String, int> maritalStatusData = _calculateMaritalStatusData(data);
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -344,20 +353,13 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Sample values, replace these with your actual data
-    final int totalClients = 1000;
-    final int acceptedClients = 650;
-    final int deniedClients = 350;
-    final int pendingClients = 200; // Example additional metric
-
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         c: context,
         title: 'Loan Prediction',
-        backButton: true, // Enable back button
-        backgroundColor: Color.fromARGB(
-            255, 255, 255, 255), // Set the background color of the AppBar
+        backButton: true,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -365,35 +367,44 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
           children: [
             SizedBox(height: 16),
             Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'General Analytics',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            Padding(
               padding: const EdgeInsets.all(16.0),
-              child: GridView.builder(
+              child: GridView.count(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1.5,
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildCard('Total Clients', totalClients.toString()),
+                  _buildCard('Accepted Clients', '$acceptedClients'),
+                  _buildCard('Denied Clients', '$deniedClients'),
+                  _buildCard('Pending Clients', '$pendingClients'),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Graphical View',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  switch (index) {
-                    case 0:
-                      return _buildCard(
-                          'Total Clients', totalClients.toString());
-                    case 1:
-                      return _buildCard(
-                          'Accepted Clients', acceptedClients.toString());
-                    case 2:
-                      return _buildCard(
-                          'Denied Clients', deniedClients.toString());
-                    case 3:
-                      return _buildCard(
-                          'Pending Clients', pendingClients.toString());
-                    default:
-                      return Container(); // Should never be reached
-                  }
-                },
               ),
             ),
             SizedBox(height: 16),

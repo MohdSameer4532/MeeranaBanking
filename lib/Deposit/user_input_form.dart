@@ -4,7 +4,6 @@ import 'result_screen.dart';
 import '../custom_dropdown.dart';
 import '../custom_app_bar.dart';
 
-// Extracted label texts
 final Map<String, String> fieldLabels = {
   'age': 'Age',
   'job': 'Job',
@@ -58,22 +57,22 @@ class _UserInputFormState extends State<UserInputForm> {
               children: [
                 const SizedBox(height: 20),
                 _buildTextField('age', _ageController, TextInputType.number,
-                    'Please enter age'),
+                    'Please enter age', 'Enter age'),
                 const SizedBox(height: 20),
                 CustomDropdown(
                   label: fieldLabels['job']!,
                   items: [
-                    'admin.',
-                    'blue-collar',
-                    'entrepreneur',
-                    'housemaid',
-                    'management',
-                    'retired',
-                    'self-employed',
-                    'services',
-                    'student',
-                    'technician',
-                    'unemployed'
+                    'Admin',
+                    'Blue-Collar',
+                    'Entrepreneur',
+                    'Housemaid',
+                    'Management',
+                    'Retired',
+                    'Self-Employed',
+                    'Services',
+                    'Student',
+                    'Technician',
+                    'Un-Employed'
                   ],
                   value: _selectedJob,
                   onChanged: (value) {
@@ -85,7 +84,7 @@ class _UserInputFormState extends State<UserInputForm> {
                 const SizedBox(height: 20),
                 CustomDropdown(
                   label: fieldLabels['maritalStatus']!,
-                  items: ['single', 'married', 'divorced'],
+                  items: ['Single', 'Married', 'Divorced'],
                   value: _selectedMaritalStatus,
                   onChanged: (value) {
                     setState(() {
@@ -96,7 +95,7 @@ class _UserInputFormState extends State<UserInputForm> {
                 const SizedBox(height: 20),
                 CustomDropdown(
                   label: fieldLabels['education']!,
-                  items: ['primary', 'secondary', 'tertiary', 'unknown'],
+                  items: ['Primary', 'Secondary', 'Tertiary', 'UnKnown'],
                   value: _selectedEducation,
                   onChanged: (value) {
                     setState(() {
@@ -105,8 +104,12 @@ class _UserInputFormState extends State<UserInputForm> {
                   },
                 ),
                 const SizedBox(height: 20),
-                _buildTextField('balance', _balanceController,
-                    TextInputType.number, 'Please enter balance'),
+                _buildTextField(
+                    'balance',
+                    _balanceController,
+                    TextInputType.number,
+                    'Please enter balance',
+                    'Enter balance'),
                 const SizedBox(height: 20),
                 _buildSectionHeader('personalLoan'),
                 _buildRadioGroup('personalLoan'),
@@ -114,18 +117,30 @@ class _UserInputFormState extends State<UserInputForm> {
                 _buildSectionHeader('housingLoan'),
                 _buildRadioGroup('housingLoan'),
                 const SizedBox(height: 20),
-                _buildTextField('campaign', _campaignController,
-                    TextInputType.number, 'Please enter a campaign number'),
+                _buildTextField(
+                    'campaign',
+                    _campaignController,
+                    TextInputType.number,
+                    'Please enter a campaign number',
+                    'Enter Campaign number'),
                 const SizedBox(height: 20),
-                _buildTextField('daysSincePreviousContact', _daysController,
-                    TextInputType.number, 'Please enter number of days'),
+                _buildTextField(
+                    'daysSincePreviousContact',
+                    _daysController,
+                    TextInputType.number,
+                    'Please enter number of days',
+                    'Enter Number of Days'),
                 const SizedBox(height: 20),
-                _buildTextField('previousContacts', _previousContactsController,
-                    TextInputType.number, 'Please enter number of contacts'),
+                _buildTextField(
+                    'previousContacts',
+                    _previousContactsController,
+                    TextInputType.number,
+                    'Please enter number of contacts',
+                    'Enter Number of Contacts'),
                 const SizedBox(height: 20),
                 CustomDropdown(
                   label: fieldLabels['previousCampaignOutcome']!,
-                  items: ['success', 'failure', 'other', 'unknown'],
+                  items: ['Success', 'Failure', 'Others', 'Unknown'],
                   value: _selectedPreviousCampaignOutcome,
                   onChanged: (value) {
                     setState(() {
@@ -138,7 +153,7 @@ class _UserInputFormState extends State<UserInputForm> {
                   child: ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 34, 34, 34),
+                      backgroundColor: const Color.fromARGB(255, 34, 34, 34),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
@@ -153,7 +168,6 @@ class _UserInputFormState extends State<UserInputForm> {
                     ),
                   ),
                 ),
-                // _submitForm,
               ],
             ),
           ),
@@ -163,34 +177,55 @@ class _UserInputFormState extends State<UserInputForm> {
   }
 
   Widget _buildTextField(String fieldName, TextEditingController controller,
-      TextInputType inputType, String validationMessage) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: fieldLabels[fieldName],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+      TextInputType inputType, String validationMessage, String hintText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          fieldLabels[fieldName]!,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
-        filled: true,
-        fillColor: Colors.grey[100],
-      ),
-      keyboardType: inputType,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return validationMessage;
-        }
-        return null;
-      },
+        const SizedBox(height: 5),
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          ),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+            color: Colors.grey[800],
+          ),
+          keyboardType: inputType,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return validationMessage;
+            }
+            return null;
+          },
+        ),
+      ],
     );
   }
 
   Widget _buildSectionHeader(String fieldName) {
     return Text(
       fieldLabels[fieldName]!,
-      style: TextStyle(
-        fontSize: 18,
+      style: const TextStyle(
+        fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Colors.blueGrey[700],
+        color: Colors.black,
       ),
     );
   }
