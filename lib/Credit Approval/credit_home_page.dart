@@ -184,6 +184,7 @@ class _CreditHomePageState extends State<CreditHomePage> {
               value,
               style: TextStyle(
                 fontSize: 14,
+                fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
             ),
