@@ -142,8 +142,8 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
                 childAspectRatio: 1.5,
                 children: [
                   _buildCard('Total Clients', totalClients.toString()),
-                  _buildCard('Accepted Clients', acceptedClients.toString()),
-                  _buildCard('Rejected Clients', rejectedClients.toString()),
+                  _buildCard('Likely Clients', acceptedClients.toString()),
+                  _buildCard('Unlikely Clients', rejectedClients.toString()),
                   _buildCard(
                       'Average Age', _calculateAverageAge().toStringAsFixed(1)),
                 ],
