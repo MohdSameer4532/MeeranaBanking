@@ -13,29 +13,76 @@ class CreditHomePage extends StatefulWidget {
 
 class _CreditHomePageState extends State<CreditHomePage> {
   List<CreditPerson> people = [];
+  double? averageAge;
+  double? averageIncome;
+  String? mostCommonHousingType;
+  double? goodCustomerPercentage;
 
   @override
   void initState() {
     super.initState();
     people = dummyCreditData;
+    _calculateAverages();
+  }
+
+  void _calculateAverages() {
+    if (people.isNotEmpty) {
+      averageAge = people.map((p) => p.yearsBirth).reduce((a, b) => a + b) / people.length;
+      averageIncome = people.map((p) => p.annualIncome).reduce((a, b) => a + b) / people.length;
+      
+      Map<String, int> housingTypeCounts = {};
+      for (var person in people) {
+        housingTypeCounts[person.housingType] = (housingTypeCounts[person.housingType] ?? 0) + 1;
+      }
+      mostCommonHousingType = housingTypeCounts.entries
+          .reduce((a, b) => a.value > b.value ? a : b)
+          .key;
+
+      int goodCustomers = people.where((p) => p.result).length;
+      goodCustomerPercentage = (goodCustomers / people.length) * 100;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         c: context,
         title: 'Credit Approval',
-        backButton: true, // Enable back button
-        backgroundColor: Color.fromARGB(
-            255, 255, 255, 255), // Set the background color of the AppBar
+        backButton: true,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Overall Statistics',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                childAspectRatio: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                children: [
+                  _buildStatisticCard('Average Age', '${averageAge?.toStringAsFixed(1) ?? 'N/A'} years'),
+                  _buildStatisticCard('Average Income', '\$${averageIncome?.toStringAsFixed(2) ?? 'N/A'}'),
+                  _buildStatisticCard('Most Common Housing Type', mostCommonHousingType ?? 'N/A'),
+                  _buildStatisticCard('Good Customer Percentage', '${goodCustomerPercentage?.toStringAsFixed(1) ?? 'N/A'}%'),
+                  _buildStatisticCard('Bad Customer Percentage', '${goodCustomerPercentage != null ? (100 - goodCustomerPercentage!).toStringAsFixed(1) : 'N/A'}%'),
+                ],
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
@@ -79,7 +126,14 @@ class _CreditHomePageState extends State<CreditHomePage> {
                     _buildLegendItem(Colors.red, 'Rented apartment'),
                     _buildLegendItem(Colors.purple, 'Office apartment'),
                   ]),
-                  _buildEmptyCard(), // New empty card
+                  // Empty card
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    color: Colors.white,
+                    child: Center(
+                      child: Text(''),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -98,6 +152,37 @@ class _CreditHomePageState extends State<CreditHomePage> {
           label: Text('Get Approval', style: TextStyle(color: Colors.white)),
           icon: Icon(Icons.add, color: Colors.white),
           backgroundColor: Color.fromARGB(255, 34, 34, 34),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatisticCard(String title, String value) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -126,13 +211,6 @@ class _CreditHomePageState extends State<CreditHomePage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildEmptyCard() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
     );
   }
 
@@ -290,49 +368,50 @@ class _CreditHomePageState extends State<CreditHomePage> {
     );
   }
 
-  Map<String, int> _calculateCategoryData(List<String> data) {
-    Map<String, int> categoryMap = {};
-    for (var item in data) {
-      categoryMap[item] = (categoryMap[item] ?? 0) + 1;
+  Map<String, int> _calculateCategoryData(List<String> categories) {
+    Map<String, int> categoryCounts = {};
+    for (var category in categories) {
+      categoryCounts[category] = (categoryCounts[category] ?? 0) + 1;
     }
-    return categoryMap;
+    return categoryCounts;
   }
 
   Map<String, int> _calculateAgeGroupData() {
-    Map<String, int> ageGroupMap = {
-      '20-29': 0,
-      '30-39': 0,
-      '40-49': 0,
-      '50+': 0
-    };
+    Map<String, int> ageGroupCounts = {};
     for (var person in people) {
-      int age = (person.yearsBirth);
-      if (age >= 20 && age < 30)
-        ageGroupMap['20-29'] = (ageGroupMap['20-29'] ?? 0) + 1;
-      else if (age >= 30 && age < 40)
-        ageGroupMap['30-39'] = (ageGroupMap['30-39'] ?? 0) + 1;
-      else if (age >= 40 && age < 50)
-        ageGroupMap['40-49'] = (ageGroupMap['40-49'] ?? 0) + 1;
-      else if (age >= 50) ageGroupMap['50+'] = (ageGroupMap['50+'] ?? 0) + 1;
+      String ageGroup;
+      if (person.yearsBirth < 30) {
+        ageGroup = '20-29';
+      } else if (person.yearsBirth < 40) {
+        ageGroup = '30-39';
+      } else if (person.yearsBirth < 50) {
+        ageGroup = '40-49';
+      } else {
+        ageGroup = '50+';
+      }
+      ageGroupCounts[ageGroup] = (ageGroupCounts[ageGroup] ?? 0) + 1;
     }
-    return ageGroupMap;
+    return ageGroupCounts;
   }
 
   Map<String, int> _calculateIncomeRangeData() {
-    Map<String, int> incomeRangeMap = {'Low': 0, 'Medium': 0, 'High': 0};
+    Map<String, int> incomeRangeCounts = {};
     for (var person in people) {
-      if (person.annualIncome < 50000)
-        incomeRangeMap['Low'] = (incomeRangeMap['Low'] ?? 0) + 1;
-      else if (person.annualIncome < 100000)
-        incomeRangeMap['Medium'] = (incomeRangeMap['Medium'] ?? 0) + 1;
-      else
-        incomeRangeMap['High'] = (incomeRangeMap['High'] ?? 0) + 1;
+      String incomeRange;
+      if (person.annualIncome < 50000) {
+        incomeRange = 'Low';
+      } else if (person.annualIncome < 100000) {
+        incomeRange = 'Medium';
+      } else {
+        incomeRange = 'High';
+      }
+      incomeRangeCounts[incomeRange] = (incomeRangeCounts[incomeRange] ?? 0) + 1;
     }
-    return incomeRangeMap;
+    return incomeRangeCounts;
   }
 
-  Color _getEducationColor(String education) {
-    switch (education) {
+  Color _getEducationColor(String educationType) {
+    switch (educationType) {
       case 'Higher education':
         return Colors.blue;
       case 'Secondary education':
