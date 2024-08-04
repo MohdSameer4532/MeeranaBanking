@@ -16,13 +16,22 @@ class _CreditHomePageState extends State<CreditHomePage> {
   double? averageAge;
   double? averageIncome;
   String? mostCommonHousingType;
-  double? goodCustomerPercentage;
+  int goodCustomers = 0;
+  int badCustomers = 0;
+  int totalClients = 0;
 
   @override
   void initState() {
     super.initState();
-    people = dummyCreditData;
-    _calculateAverages();
+    _loadData();
+  }
+
+  void _loadData() {
+    setState(() {
+      people = dummyCreditData;
+      totalClients = people.length;
+      _calculateAverages();
+    });
   }
 
   void _calculateAverages() {
@@ -38,8 +47,8 @@ class _CreditHomePageState extends State<CreditHomePage> {
           .reduce((a, b) => a.value > b.value ? a : b)
           .key;
 
-      int goodCustomers = people.where((p) => p.result).length;
-      goodCustomerPercentage = (goodCustomers / people.length) * 100;
+      goodCustomers = people.where((p) => p.result).length;
+      badCustomers = people.length - goodCustomers;
     }
   }
 
@@ -80,11 +89,12 @@ class _CreditHomePageState extends State<CreditHomePage> {
                 crossAxisSpacing: 16,
                 childAspectRatio: 1.5,
                 children: [
+                  _buildStatisticCard('Total Clients', '$totalClients'),
+                  _buildStatisticCard('Accepted Clients', '$goodCustomers'),
+                  _buildStatisticCard('Denied Clients', '$badCustomers'),
                   _buildStatisticCard('Average Age', '${averageAge?.toStringAsFixed(1) ?? 'N/A'} years'),
                   _buildStatisticCard('Average Income', '\$${averageIncome?.toStringAsFixed(2) ?? 'N/A'}'),
-                  _buildStatisticCard('Most Common Housing Type', mostCommonHousingType ?? 'N/A'),
-                  _buildStatisticCard('Good Customer Percentage', '${goodCustomerPercentage?.toStringAsFixed(1) ?? 'N/A'}%'),
-                  _buildStatisticCard('Bad Customer Percentage', '${goodCustomerPercentage != null ? (100 - goodCustomerPercentage!).toStringAsFixed(1) : 'N/A'}%'),
+                  _buildStatisticCard('Most Housing Type', mostCommonHousingType ?? 'N/A'),
                 ],
               ),
             ),
@@ -99,8 +109,8 @@ class _CreditHomePageState extends State<CreditHomePage> {
                 crossAxisSpacing: 16,
                 children: [
                   _buildChartCard('Credit Result', _buildCreditResultChart(), [
-                    _buildLegendItem(Colors.green, 'Good Credit'),
-                    _buildLegendItem(Colors.red, 'Bad Credit'),
+                    _buildLegendItem(Colors.green, 'Accepted Credit'),
+                    _buildLegendItem(Colors.red, 'Denied Credit'),
                   ]),
                   _buildChartCard('Education', _buildEducationChart(), [
                     _buildLegendItem(Colors.blue, 'Higher education'),
@@ -164,17 +174,18 @@ class _CreditHomePageState extends State<CreditHomePage> {
 
   Widget _buildStatisticCard(String title, String value) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.grey[200],
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 13,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
@@ -183,7 +194,7 @@ class _CreditHomePageState extends State<CreditHomePage> {
             Text(
               value,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
