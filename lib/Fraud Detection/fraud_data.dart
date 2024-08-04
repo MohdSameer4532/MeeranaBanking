@@ -8,6 +8,7 @@ class FraudPerson {
   final String category;
   final double amount;
   final bool fraudDetected;
+  final String fraudStatus;
 
   FraudPerson({
     required this.customer,
@@ -18,7 +19,8 @@ class FraudPerson {
     required this.zipMerchant,
     required this.category,
     required this.amount,
-    this.fraudDetected = false, // Set default value to false
+    this.fraudDetected = false,
+    required this.fraudStatus,
   });
 
   factory FraudPerson.fromMap(Map<String, dynamic> map) {
@@ -34,10 +36,9 @@ class FraudPerson {
           ? (map['amount'] as int).toDouble()
           : map['amount'],
       fraudDetected: map['fraudDetected'] ?? false,
+      fraudStatus: map['fraudStatus'],
     );
   }
-
-  get fraud => null;
 
   Map<String, dynamic> toMap() {
     return {
@@ -50,6 +51,7 @@ class FraudPerson {
       'category': category,
       'amount': amount,
       'fraudDetected': fraudDetected,
+      'fraudStatus': fraudStatus,
     };
   }
 }
@@ -65,7 +67,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28007',
         category: 'es_transportation',
         amount: 1.51,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C623601481',
         age: 32,
@@ -75,7 +78,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28007',
         category: 'es_health',
         amount: 68.79,
-        fraudDetected: true),
+        fraudDetected: true,
+        fraudStatus: 'Denied'),
     FraudPerson(
         customer: 'C1865204568',
         age: 35,
@@ -85,7 +89,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28007',
         category: 'es_transportation',
         amount: 20.32,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C156162339',
         age: 62,
@@ -95,7 +100,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28007',
         category: 'es_food',
         amount: 32.6,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Denied'),
     FraudPerson(
         customer: 'C2092526272',
         age: 56,
@@ -105,7 +111,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28007',
         category: 'es_tech',
         amount: 163.56,
-        fraudDetected: true),
+        fraudDetected: true,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C1234567891',
         age: 45,
@@ -115,7 +122,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28017',
         category: 'es_food',
         amount: 65.32,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Denied'),
     FraudPerson(
         customer: 'C2345678901',
         age: 26,
@@ -125,7 +133,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28018',
         category: 'es_health',
         amount: 70.10,
-        fraudDetected: true),
+        fraudDetected: true,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C3456789012',
         age: 24,
@@ -135,7 +144,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28019',
         category: 'es_travel',
         amount: 90.75,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Denied'),
     FraudPerson(
         customer: 'C4567890123',
         age: 33,
@@ -145,7 +155,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28020',
         category: 'es_tech',
         amount: 350.45,
-        fraudDetected: true),
+        fraudDetected: true,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C5678901234',
         age: 33,
@@ -155,7 +166,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28021',
         category: 'es_food',
         amount: 42.32,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Denied'),
     FraudPerson(
         customer: 'C6789012345',
         age: 55,
@@ -165,7 +177,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28022',
         category: 'es_transportation',
         amount: 78.90,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C7890123456',
         age: 28,
@@ -175,7 +188,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28023',
         category: 'es_bills',
         amount: 120.75,
-        fraudDetected: true),
+        fraudDetected: true,
+        fraudStatus: 'Denied'),
     FraudPerson(
         customer: 'C8901234567',
         age: 39,
@@ -185,7 +199,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28024',
         category: 'es_fashion',
         amount: 150.50,
-        fraudDetected: true),
+        fraudDetected: true,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C9012345678',
         age: 50,
@@ -195,7 +210,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28025',
         category: 'es_automotive',
         amount: 75.25,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Denied'),
     FraudPerson(
         customer: 'C0123456789',
         age: 34,
@@ -205,7 +221,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28026',
         category: 'es_hyper',
         amount: 65.45,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C1122334455',
         age: 27,
@@ -215,7 +232,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28027',
         category: 'es_tech',
         amount: 190.85,
-        fraudDetected: true),
+        fraudDetected: true,
+        fraudStatus: 'Denied'),
     FraudPerson(
         customer: 'C2233445566',
         age: 41,
@@ -225,7 +243,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28028',
         category: 'es_contents',
         amount: 90.15,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C3344556677',
         age: 55,
@@ -235,7 +254,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28029',
         category: 'es_wellnessandbeauty',
         amount: 130.45,
-        fraudDetected: true),
+        fraudDetected: true,
+        fraudStatus: 'Denied'),
     FraudPerson(
         customer: 'C4455667788',
         age: 63,
@@ -245,7 +265,8 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28030',
         category: 'es_travel',
         amount: 70.25,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Accepted'),
     FraudPerson(
         customer: 'C5566778899',
         age: 37,
@@ -255,6 +276,7 @@ List<FraudPerson> getFraudPersons() {
         zipMerchant: '28031',
         category: 'es_hometools',
         amount: 85.30,
-        fraudDetected: false),
+        fraudDetected: false,
+        fraudStatus: 'Denied'),
   ];
 }

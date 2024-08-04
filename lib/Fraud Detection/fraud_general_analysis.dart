@@ -11,8 +11,12 @@ class FraudGeneralAnalyticsPage extends StatefulWidget {
 }
 
 class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
-  final List<FraudPerson> data =
-      getFraudPersons(); // Replace with your data source
+  final List<FraudPerson> data = getFraudPersons();
+
+  int totalClients = 0;
+  int acceptedClients = 0;
+  int deniedClients = 0;
+  int pendingClients = 0;
 
   Map<String, double> ageRangeData = {};
   Map<String, double> genderData = {};
@@ -28,19 +32,21 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
 
   void calculateAnalytics() {
     setState(() {
-      // Calculate age range data
+      totalClients = data.length;
+      acceptedClients = data
+          .where((person) => !person.fraudDetected)
+          .length; // Assuming not detected as accepted
+      deniedClients = data
+          .where((person) => person.fraudDetected)
+          .length; // Assuming detected as denied
+      pendingClients =
+          0; // Adjust based on your data logic if you have a pending status
+
+      // Calculate other analytics
       ageRangeData = _calculateAgeRangeData();
-
-      // Calculate gender data
       genderData = _calculateGenderData();
-
-      // Calculate categories data
       categoriesData = _calculateCategoriesData();
-
-      // Calculate amount data
       amountData = _calculateAmountData();
-
-      // Calculate fraud status data
       fraudStatusData = _calculateFraudStatusData();
     });
   }
@@ -195,7 +201,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
 
   Widget _buildPieChart(Map<String, double> data) {
     return Container(
-      height: 200, // Set a fixed height for the pie chart
+      height: 200,
       child: PieChart(
         PieChartData(
           sections: _generatePieChartSections(data),
@@ -252,17 +258,46 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         c: context,
         title: 'Fraud Detection',
-        backButton: true, // Enable back button
-        backgroundColor: Colors.white, // Set the background color of the AppBar
+        backButton: true,
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'General Analytics',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildCard('Total Clients' , totalClients.toString()),
+                  _buildCard('Accepted Clients', '$acceptedClients'),
+                  _buildCard('Denied Clients', '$deniedClients'),
+                  _buildCard('Pending Clients', '$pendingClients'),
+                ],
+              ),
+            ),
             SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -331,6 +366,37 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
           label: Text('Detect Fraud', style: TextStyle(color: Colors.white)),
           icon: Icon(Icons.add, color: Colors.white),
           backgroundColor: Color.fromARGB(255, 34, 34, 34),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(String title, String value) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+          ],
         ),
       ),
     );

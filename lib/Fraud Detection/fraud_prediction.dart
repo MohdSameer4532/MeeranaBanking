@@ -267,8 +267,7 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
         zipMerchant: zipMerchantController.text,
         category: selectedCategory ?? '',
         amount: double.tryParse(amountController.text) ?? 0.0,
-        fraudDetected:
-            false, // Default value; actual detection logic can be added
+        fraudStatus: 'Accepted', 
       );
     });
   }
