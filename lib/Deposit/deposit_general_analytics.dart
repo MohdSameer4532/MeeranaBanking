@@ -4,22 +4,163 @@ import 'person.dart'; // Import your Person class and dummyData list
 import 'user_input_form.dart'; // Import your UserInputForm widget
 import '../custom_app_bar.dart';
 
-class DepositPredictionPage extends StatelessWidget {
+class DepositPredictionPage extends StatefulWidget {
+  @override
+  _DepositPredictionPageState createState() => _DepositPredictionPageState();
+}
+
+class _DepositPredictionPageState extends State<DepositPredictionPage> {
+  int totalClients = 0;
+  int acceptedClients = 0;
+  int rejectedClients = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    calculateAnalytics();
+  }
+
+  void calculateAnalytics() {
+    setState(() {
+      totalClients = dummyData.length;
+      acceptedClients = dummyData.where((person) => person.result).length;
+      rejectedClients = dummyData.where((person) => !person.result).length;
+    });
+  }
+
+  Widget _buildCard(String title, String value) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.grey[200],
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            Expanded(child: chart),
+            SizedBox(height: 8),
+            ...legendItems,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            color: color,
+          ),
+          SizedBox(width: 4),
+          Text(label, style: TextStyle(fontSize: 10)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color of the Scaffold
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         c: context,
         title: 'Deposit Prediction',
-        backButton: true, // Enable back button
-        backgroundColor: Color.fromARGB(
-            255, 255, 255, 255), // Set the background color of the AppBar
+        backButton: true,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'General Analytics',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildCard('Total Clients', totalClients.toString()),
+                  _buildCard('Likely Clients', acceptedClients.toString()),
+                  _buildCard('Unlikely Clients', rejectedClients.toString()),
+                  _buildCard(
+                      'Average Age', _calculateAverageAge().toStringAsFixed(1)),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Graphical View',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
             SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -79,15 +220,13 @@ class DepositPredictionPage extends StatelessWidget {
           alignment: Alignment.bottomRight,
           child: FloatingActionButton.extended(
             onPressed: () {
-              // Navigate to user input form
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => UserInputForm()),
               );
             },
-            label: Text('Start Prediction',
-                style:
-                    TextStyle(color: Colors.white)), // Set text color to white
+            label:
+                Text('Start Prediction', style: TextStyle(color: Colors.white)),
             icon: Icon(
               Icons.add,
               color: Colors.white,
@@ -99,47 +238,10 @@ class DepositPredictionPage extends StatelessWidget {
     );
   }
 
-  Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            Expanded(child: chart),
-            SizedBox(height: 8),
-            ...legendItems,
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLegendItem(Color color, String label) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4.0),
-      child: Row(
-        children: [
-          Container(
-            width: 12,
-            height: 12,
-            color: color,
-          ),
-          SizedBox(width: 4),
-          Text(label, style: TextStyle(fontSize: 10)),
-        ],
-      ),
-    );
+  double _calculateAverageAge() {
+    if (dummyData.isEmpty) return 0;
+    int totalAge = dummyData.fold(0, (sum, person) => sum + person.age);
+    return totalAge / dummyData.length;
   }
 
   Widget _buildTotalClientsChart() {

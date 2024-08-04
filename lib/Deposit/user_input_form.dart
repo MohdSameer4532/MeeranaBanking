@@ -84,7 +84,7 @@ class _UserInputFormState extends State<UserInputForm> {
                 const SizedBox(height: 20),
                 CustomDropdown(
                   label: fieldLabels['maritalStatus']!,
-                  items: ['Single', 'Married', 'Divorced'],
+                  items: ['single', 'married', 'divorced'],
                   value: _selectedMaritalStatus,
                   onChanged: (value) {
                     setState(() {
@@ -95,7 +95,7 @@ class _UserInputFormState extends State<UserInputForm> {
                 const SizedBox(height: 20),
                 CustomDropdown(
                   label: fieldLabels['education']!,
-                  items: ['Primary', 'Secondary', 'Tertiary', 'UnKnown'],
+                  items: ['primary', 'secondary', 'tertiary', 'unknown'],
                   value: _selectedEducation,
                   onChanged: (value) {
                     setState(() {
