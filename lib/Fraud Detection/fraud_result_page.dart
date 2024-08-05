@@ -43,13 +43,12 @@ class _FraudResultPageState extends State<FraudResultPage> {
               SizedBox(height: 20),
               _buildComparisonSection('Amount Comparison', 'amount'),
               SizedBox(height: 20),
-              _buildLineChartSection('Gender Comparison', 'gender'),
+              _buildComparisonSection(
+                  'Gender Comparison', 'gender'), // Gender comparison
               SizedBox(height: 20),
-              _buildLineChartSection('Age Comparison', 'age'),
+              _buildComparisonSection(
+                  'Category Comparison', 'category'), // Category comparison
               SizedBox(height: 20),
-              _buildLineChartSection('Age vs Amount', 'ageAmount'),
-              SizedBox(height: 20),
-              _buildLineChartSection('Category by Gender', 'categoryGender'),
             ],
           ),
         ),
@@ -59,7 +58,7 @@ class _FraudResultPageState extends State<FraudResultPage> {
 
   Widget _buildUserInputSummary() {
     return Card(
-      elevation: 5,
+      elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: EdgeInsets.all(16.0),
@@ -67,14 +66,14 @@ class _FraudResultPageState extends State<FraudResultPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Selected Person',
+              'User Input Summary',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.teal,
+                color: Colors.blue[900],
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 16),
             _buildProfileItem(
                 Icons.person, 'Customer', widget.userInput.customer),
             _buildProfileItem(
@@ -98,13 +97,18 @@ class _FraudResultPageState extends State<FraudResultPage> {
 
   Widget _buildProfileItem(IconData icon, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, color: const Color.fromARGB(255, 146, 211, 205), size: 20),
-          SizedBox(width: 10),
-          Text('$label: ', style: TextStyle(fontWeight: FontWeight.bold)),
-          Text(value),
+          Icon(icon, size: 28, color: const Color.fromARGB(255, 146, 211, 205)),
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('$label: ', style: TextStyle(fontWeight: FontWeight.w500)),
+              Text(value),
+            ],
+          ),
         ],
       ),
     );
@@ -122,10 +126,7 @@ class _FraudResultPageState extends State<FraudResultPage> {
             Row(
               children: [
                 Icon(Icons.thumb_up, color: Colors.green, size: 70),
-                SizedBox(
-                  width: 10,
-                  height: 100,
-                ),
+                SizedBox(width: 10, height: 100),
                 Text(
                   'No Fraud Detected',
                   style: TextStyle(
@@ -143,85 +144,27 @@ class _FraudResultPageState extends State<FraudResultPage> {
   }
 
   Widget _buildComparisonSection(String title, String feature) {
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
-              ),
-            ),
-            SizedBox(height: 10),
-            FeatureComparisonGraph(
-              dummyData: widget.dummyData,
-              userInput: widget.userInput,
-              feature: feature,
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.teal,
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildLineChartSection(String title, String feature) {
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
-              ),
-            ),
-            SizedBox(height: 10),
-            SizedBox(
-              height: 300,
-              child: LineChart(
-                LineChartData(
-                  lineBarsData: _generateLineData(feature),
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          return Text(
-                            value.toInt().toString(),
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  borderData: FlBorderData(show: true),
-                  gridData: FlGridData(show: true),
-                  lineTouchData: LineTouchData(enabled: false),
-                ),
-              ),
-            ),
-          ],
+        SizedBox(height: 10),
+        Card(
+          elevation: 5,
+          child: FeatureComparisonGraph(
+            dummyData: widget.dummyData,
+            userInput: widget.userInput,
+            feature: feature,
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -241,7 +184,6 @@ class _FraudResultPageState extends State<FraudResultPage> {
   }
 
   List<LineChartBarData> _genderComparisonData() {
-    // Sample implementation for gender comparison
     return [
       LineChartBarData(
         spots: _generateGenderComparisonSpots(),
@@ -254,9 +196,8 @@ class _FraudResultPageState extends State<FraudResultPage> {
   }
 
   List<FlSpot> _generateGenderComparisonSpots() {
-    // Generate sample data for gender comparison
     return [
-      FlSpot(0, 1), // Example values
+      FlSpot(0, 1),
       FlSpot(1, 3),
       FlSpot(2, 2),
       FlSpot(3, 4),
@@ -264,7 +205,6 @@ class _FraudResultPageState extends State<FraudResultPage> {
   }
 
   List<LineChartBarData> _ageComparisonData() {
-    // Sample implementation for age comparison
     return [
       LineChartBarData(
         spots: _generateAgeComparisonSpots(),
@@ -277,7 +217,6 @@ class _FraudResultPageState extends State<FraudResultPage> {
   }
 
   List<FlSpot> _generateAgeComparisonSpots() {
-    // Generate sample data for age comparison
     return [
       FlSpot(0, 25),
       FlSpot(1, 30),
@@ -287,7 +226,6 @@ class _FraudResultPageState extends State<FraudResultPage> {
   }
 
   List<LineChartBarData> _ageAmountComparisonData() {
-    // Sample implementation for age vs amount comparison
     return [
       LineChartBarData(
         spots: _generateAgeAmountComparisonSpots(),
@@ -300,7 +238,6 @@ class _FraudResultPageState extends State<FraudResultPage> {
   }
 
   List<FlSpot> _generateAgeAmountComparisonSpots() {
-    // Generate sample data for age vs amount comparison
     return [
       FlSpot(0, 500),
       FlSpot(1, 1000),
@@ -310,7 +247,6 @@ class _FraudResultPageState extends State<FraudResultPage> {
   }
 
   List<LineChartBarData> _categoryGenderComparisonData() {
-    // Sample implementation for category by gender comparison
     return [
       LineChartBarData(
         spots: _generateCategoryGenderComparisonSpots(),
@@ -323,7 +259,6 @@ class _FraudResultPageState extends State<FraudResultPage> {
   }
 
   List<FlSpot> _generateCategoryGenderComparisonSpots() {
-    // Generate sample data for category by gender comparison
     return [
       FlSpot(0, 1),
       FlSpot(1, 2),

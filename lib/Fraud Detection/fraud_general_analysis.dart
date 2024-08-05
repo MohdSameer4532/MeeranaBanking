@@ -249,7 +249,10 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
             color: color,
           ),
           SizedBox(width: 4),
-          Text(label, style: TextStyle(fontSize: 10)),
+          Text(
+            label,
+            style: TextStyle(fontSize: 10),
+          ),
         ],
       ),
     );
@@ -291,7 +294,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                 crossAxisSpacing: 16,
                 childAspectRatio: 1.5,
                 children: [
-                  _buildCard('Total Clients' , totalClients.toString()),
+                  _buildCard('Total Clients', totalClients.toString()),
                   _buildCard('Accepted Clients', '$acceptedClients'),
                   _buildCard('Denied Clients', '$deniedClients'),
                   _buildCard('Pending Clients', '$pendingClients'),
@@ -310,7 +313,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                 crossAxisSpacing: 16,
                 children: [
                   _buildChartCard(
-                      'Total Clients', _buildPieChart(fraudStatusData), [
+                      'Previous Clients', _buildPieChart(fraudStatusData), [
                     _buildLegendItem(Colors.red, 'Fraud Detected'),
                     _buildLegendItem(Colors.green, 'Fraud Not Detected'),
                   ]),
@@ -374,7 +377,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
   Widget _buildCard(String title, String value) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
+      color: Colors.grey[200],
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -384,6 +387,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
               title,
               style: TextStyle(
                 fontSize: 14,
+                fontWeight: FontWeight.bold, // Make the title bold
                 color: Colors.black54,
               ),
             ),

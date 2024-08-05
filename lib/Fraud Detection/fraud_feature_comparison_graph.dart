@@ -15,20 +15,22 @@ class FeatureComparisonGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        _buildComparisonChart(),
-        SizedBox(height: 20),
-        _buildComparisonText(),
-        SizedBox(height: 20),
-        _buildFraudDetection(),
-      ],
+    return Padding(
+      padding:
+          const EdgeInsets.all(16.0), // Add padding around the entire widget
+      child: Column(
+        children: <Widget>[
+          _buildComparisonChart(),
+          SizedBox(height: 20),
+          _buildComparisonText(),
+          SizedBox(height: 20),
+          _buildFraudDetection(),
+        ],
+      ),
     );
   }
 
   Widget _buildComparisonChart() {
-    // Determine the chart type based on the feature
     switch (feature) {
       case 'age':
         return _buildBarChartForFeature(
@@ -36,100 +38,100 @@ class FeatureComparisonGraph extends StatelessWidget {
       case 'amount':
         return _buildBarChartForFeature(
             'Amount', dummyData.map((e) => e.amount).toList());
+      case 'gender':
+        return _buildBoxPlotForGender();
+      case 'category':
+        return _buildPieChartForCategories();
       default:
-        return Container(); // Handle other features or return an empty container
+        return Container();
     }
   }
 
   Widget _buildBarChartForFeature(String title, List<double> values) {
     double userValue = _getUserValue();
     double meanValue = _calculateMean(values);
-    double medianValue = _calculateMedian(values);
-    double averageValue = _calculateMean(values);
+    double minValue = _calculateMin(values);
+    double maxValue = _calculateMax(values);
 
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            // Text(
-            //   '$title Comparison',
-            //   style: TextStyle(
-            //     fontSize: 18,
-            //     fontWeight: FontWeight.bold,
-            //     color: Colors.teal,
-            //   ),
-            // ),
-            SizedBox(height: 10),
-            Container(
-              height: 300,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  maxY: 200,
-                  barTouchData: BarTouchData(enabled: false),
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          const style = TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          );
-                          Widget text;
-                          switch (value.toInt()) {
-                            case 0:
-                              text = const Text('User Input', style: style);
-                              break;
-                            case 1:
-                              text = const Text('Mean', style: style);
-                              break;
-                            case 2:
-                              text = const Text('Median', style: style);
-                              break;
-                            case 3:
-                              text = const Text('Average', style: style);
-                              break;
-                            default:
-                              text = const Text('');
-                              break;
-                          }
-                          return SideTitleWidget(
-                            axisSide: meta.axisSide,
-                            child: text,
-                          );
-                        },
-                        reservedSize: 28,
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  barGroups: _buildBarGroups(
-                      userValue, meanValue, medianValue, averageValue),
-                ),
+    double maxY = [userValue, meanValue, minValue, maxValue]
+            .reduce((a, b) => a > b ? a : b) *
+        1.2;
+
+    return Container(
+      height: 300,
+      child: BarChart(
+        BarChartData(
+          alignment: BarChartAlignment.spaceBetween,
+          maxY: maxY,
+          barTouchData: BarTouchData(enabled: false),
+          titlesData: FlTitlesData(
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  const style = TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  );
+                  Widget text;
+                  switch (value.toInt()) {
+                    case 0:
+                      text = const Text('User Input', style: style);
+                      break;
+                    case 1:
+                      text = const Text('Mean', style: style);
+                      break;
+                    case 2:
+                      text = const Text('Min', style: style);
+                      break;
+                    case 3:
+                      text = const Text('Max', style: style);
+                      break;
+                    default:
+                      text = const Text('');
+                      break;
+                  }
+                  return SideTitleWidget(
+                    axisSide: meta.axisSide,
+                    child: text,
+                  );
+                },
+                reservedSize: 28,
               ),
             ),
-          ],
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 40,
+                interval: maxY / 4,
+                getTitlesWidget: (value, meta) {
+                  const style = TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                  );
+                  return Text(
+                    value.toInt().toString(),
+                    style: style,
+                  );
+                },
+              ),
+            ),
+          ),
+          borderData: FlBorderData(show: false),
+          barGroups: _buildBarGroups(userValue, meanValue, minValue, maxValue),
         ),
       ),
     );
   }
 
-  List<BarChartGroupData> _buildBarGroups(double userValue, double meanValue,
-      double medianValue, double averageValue) {
+  List<BarChartGroupData> _buildBarGroups(
+      double userValue, double meanValue, double minValue, double maxValue) {
     return [
       _buildBarGroup(0, userValue, Colors.blue),
+      _buildBarGroup(2, minValue, Colors.red),
+      _buildBarGroup(3, maxValue, Colors.orange),
       _buildBarGroup(1, meanValue, Colors.green),
-      _buildBarGroup(2, medianValue, Colors.red),
-      _buildBarGroup(3, averageValue, Colors.orange),
     ];
   }
 
@@ -166,27 +168,187 @@ class FeatureComparisonGraph extends StatelessWidget {
     return sum / values.length;
   }
 
-  double _calculateMedian(List<double> values) {
+  double _calculateMin(List<double> values) {
     if (values.isEmpty) return 0;
-    values.sort();
-    int middle = values.length ~/ 2;
-    if (values.length.isOdd) {
-      return values[middle];
-    } else {
-      return (values[middle - 1] + values[middle]) / 2;
+    return values.reduce((a, b) => a < b ? a : b);
+  }
+
+  double _calculateMax(List<double> values) {
+    if (values.isEmpty) return 0;
+    return values.reduce((a, b) => a > b ? a : b);
+  }
+
+  Widget _buildBoxPlotForGender() {
+    List<double> maleAges = dummyData
+        .where((person) => person.gender == 'M')
+        .map((person) => person.age.toDouble())
+        .toList();
+    List<double> femaleAges = dummyData
+        .where((person) => person.gender == 'F')
+        .map((person) => person.age.toDouble())
+        .toList();
+
+    return Container(
+      height: 300,
+      child: BarChart(
+        BarChartData(
+          alignment: BarChartAlignment.spaceBetween,
+          maxY: [
+                maleAges.reduce((a, b) => a > b ? a : b),
+                femaleAges.reduce((a, b) => a > b ? a : b)
+              ].reduce((a, b) => a > b ? a : b) *
+              1.2,
+          barTouchData: BarTouchData(enabled: false),
+          titlesData: FlTitlesData(
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  const style = TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  );
+                  switch (value.toInt()) {
+                    case 0:
+                      return const Text('Male', style: style);
+                    case 1:
+                      return const Text('Female', style: style);
+                    default:
+                      return const Text('');
+                  }
+                },
+                reservedSize: 28,
+              ),
+            ),
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 40,
+                interval: 10,
+                getTitlesWidget: (value, meta) {
+                  const style = TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                  );
+                  return Text(
+                    value.toInt().toString(),
+                    style: style,
+                  );
+                },
+              ),
+            ),
+          ),
+          borderData: FlBorderData(show: false),
+          barGroups: [
+            _buildBoxPlotGroup(0, maleAges, Colors.blue),
+            _buildBoxPlotGroup(1, femaleAges, Colors.pink),
+          ],
+        ),
+      ),
+    );
+  }
+
+  BarChartGroupData _buildBoxPlotGroup(
+      int x, List<double> values, Color color) {
+    double minValue = values.reduce((a, b) => a < b ? a : b);
+    double maxValue = values.reduce((a, b) => a > b ? a : b);
+    double meanValue = values.reduce((a, b) => a + b) / values.length;
+
+    return BarChartGroupData(
+      x: x,
+      barRods: [
+        BarChartRodData(
+          toY: maxValue,
+          color: color,
+          width: 10,
+          borderRadius: BorderRadius.circular(2),
+          borderSide: BorderSide(color: Colors.black, width: 1),
+        ),
+        BarChartRodData(
+          toY: meanValue,
+          color: color.withOpacity(0.5),
+          width: 10,
+          borderRadius: BorderRadius.circular(2),
+          borderSide: BorderSide(color: Colors.black, width: 1),
+        ),
+        BarChartRodData(
+          toY: minValue,
+          color: color.withOpacity(0.2),
+          width: 10,
+          borderRadius: BorderRadius.circular(2),
+          borderSide: BorderSide(color: Colors.black, width: 1),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPieChartForCategories() {
+    List<MapEntry<String, double>> topCategories = _getTopCategoryData();
+
+    if (topCategories.isEmpty) {
+      return Center(child: Text("No categories available"));
     }
+
+    return Container(
+      height: 300,
+      child: PieChart(
+        PieChartData(
+          sections: topCategories.asMap().entries.map((entry) {
+            int index = entry.key;
+            MapEntry<String, double> categoryEntry = entry.value;
+            return PieChartSectionData(
+              value: categoryEntry.value,
+              title:
+                  '${categoryEntry.key}\n${categoryEntry.value.toStringAsFixed(2)}',
+              color: Colors.primaries[index % Colors.primaries.length],
+              radius: 100,
+              titleStyle: TextStyle(color: Colors.white),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  List<MapEntry<String, double>> _getTopCategoryData() {
+    Map<String, double> categoryData = {};
+    for (var person in dummyData) {
+      categoryData[person.category] =
+          (categoryData[person.category] ?? 0.0) + person.amount;
+    }
+
+    // Sort and take the top 5 categories
+    var sortedCategories = categoryData.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return sortedCategories.take(5).toList();
   }
 
   Widget _buildComparisonText() {
     String comparisonText = '';
+    List<MapEntry<String, double>> topCategories = _getTopCategoryData();
+
     switch (feature) {
       case 'age':
         comparisonText =
-            'Your age: ${userInput.age}, Mean age: ${_calculateMean(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Median age: ${_calculateMedian(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Average age: ${_calculateMean(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}';
+            'Your age: ${userInput.age}, Mean age: ${_calculateMean(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Min age: ${_calculateMin(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Max age: ${_calculateMax(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}';
         break;
       case 'amount':
         comparisonText =
-            'Your amount: \$${userInput.amount.toStringAsFixed(2)}, Mean amount: \$${_calculateMean(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}, Median amount: \$${_calculateMedian(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}, Average amount: \$${_calculateMean(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}';
+            'Your amount: \$${userInput.amount.toStringAsFixed(2)}, Mean amount: \$${_calculateMean(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}, Min amount: \$${_calculateMin(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}, Max amount: \$${_calculateMax(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}';
+        break;
+      case 'gender':
+        comparisonText = 'Gender Distribution:\n';
+        int maleCount = dummyData.where((p) => p.gender == 'M').length;
+        int femaleCount = dummyData.where((p) => p.gender == 'F').length;
+        comparisonText += 'Males: $maleCount, Females: $femaleCount';
+        break;
+      case 'category':
+        comparisonText = 'Top 5 Categories: ';
+        comparisonText += topCategories
+            .map((entry) => '${entry.key}: \$${entry.value.toStringAsFixed(2)}')
+            .join(', ');
         break;
       default:
         comparisonText = 'No data';
@@ -202,25 +364,11 @@ class FeatureComparisonGraph extends StatelessWidget {
   }
 
   Widget _buildFraudDetection() {
-    _isFraudDetected();
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      // children: [
-      //   // Icon(
-      //   //   isFraud ? Icons.thumb_down : Icons.thumb_up,
-      //   //   color: isFraud ? Colors.red : Colors.green,
-      //   //   size: 40,
-      //   // ),
-      //   SizedBox(width: 10),
-      //   // Text(
-      //   //   isFraud ? 'Fraud Detected' : 'No Fraud Detected',
-      //   //   style: TextStyle(
-      //   //     fontSize: 18,
-      //   //     color: isFraud ? Colors.red : Colors.green,
-      //   //   ),
-      //   // ),
-      // ],
+      children: [
+        SizedBox(width: 10),
+      ],
     );
   }
 

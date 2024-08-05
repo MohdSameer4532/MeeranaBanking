@@ -110,7 +110,7 @@ List<FraudPerson> getFraudPersons() {
         merchant: 'M840466850',
         zipMerchant: '28007',
         category: 'es_tech',
-        amount: 163.56,
+        amount: 16.56,
         fraudDetected: true,
         fraudStatus: 'Accepted'),
     FraudPerson(
@@ -154,7 +154,7 @@ List<FraudPerson> getFraudPersons() {
         merchant: 'M456789012',
         zipMerchant: '28020',
         category: 'es_tech',
-        amount: 350.45,
+        amount: 50.45,
         fraudDetected: true,
         fraudStatus: 'Accepted'),
     FraudPerson(
