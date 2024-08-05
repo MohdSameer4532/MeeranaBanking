@@ -37,20 +37,44 @@ class ResultScreen extends StatelessWidget {
                 feature: 'age',
               ),
             ),
-            _buildSectionTitle('Balance Comparison'),
+            _buildSectionTitle('Income Comparison'),
             _buildComparisonSection(
               child: FeatureComparisonGraph(
                 dummyData: dummyData,
                 userInput: userInput,
-                feature: 'balance',
+                feature: 'income',
               ),
             ),
-            _buildSectionTitle('Education Comparison'),
+            _buildSectionTitle('Experience Comparison'),
+            _buildComparisonSection(
+              child: FeatureComparisonGraph(
+                dummyData: dummyData,
+                userInput: userInput,
+                feature: 'experience',
+              ),
+            ),
+            _buildSectionTitle('CurrentJobYears Comparison'),
+            _buildComparisonSection(
+              child: FeatureComparisonGraph(
+                dummyData: dummyData,
+                userInput: userInput,
+                feature: 'currentJobYears',
+              ),
+            ),
+            _buildSectionTitle('CurrentHouseYears Comparison'),
+            _buildComparisonSection(
+              child: FeatureComparisonGraph(
+                dummyData: dummyData,
+                userInput: userInput,
+                feature: 'currentHouseYears',
+              ),
+            ),
+            _buildSectionTitle('Profession Comparison'),
             _buildComparisonSection(
               child: CategoricalComparisonGraph(
                 dummyData: dummyData,
                 userInput: userInput,
-                feature: 'education',
+                feature: 'profession',
               ),
             ),
             _buildSectionTitle('Marital Status Comparison'),

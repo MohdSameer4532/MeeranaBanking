@@ -57,30 +57,44 @@ class CategoricalComparisonGraph extends StatelessWidget {
                     },
                   ),
                 ),
-                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               borderData: FlBorderData(show: false),
-              barGroups: categoryCounts.entries.map((entry) {
-                return BarChartGroupData(
-                  x: categoryCounts.keys.toList().indexOf(entry.key),
+              barGroups: [
+                BarChartGroupData(
+                  x: 0,
                   barRods: [
                     BarChartRodData(
-                      toY: entry.value.toDouble(),
-                      color: entry.key == userCategory ? Colors.green : Colors.blue,
+                      toY: categoryCounts['yes']!.toDouble(),
+                      color: Colors.green,
                       width: 60,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ],
-                );
-              }).toList(),
+                ),
+                BarChartGroupData(
+                  x: 1,
+                  barRods: [
+                    BarChartRodData(
+                      toY: categoryCounts['no']!.toDouble(),
+                      color: Colors.red,
+                      width: 60,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                ),
+              ],
               barTouchData: BarTouchData(
                 touchTooltipData: BarTouchTooltipData(
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    final category = categoryCounts.keys.toList()[group.x];
-                    final count = categoryCounts[category]!;
+                    final isYes = group.x == 0;
+                    final count =
+                        isYes ? categoryCounts['yes']! : categoryCounts['no']!;
                     return BarTooltipItem(
-                      '$category: $count',
+                      '${isYes ? 'Yes' : 'No'}: $count',
                       TextStyle(color: Colors.white),
                     );
                   },
@@ -96,12 +110,18 @@ class CategoricalComparisonGraph extends StatelessWidget {
   }
 
   Map<String, int> _getCategoryCounts(String userCategory) {
-    final Map<String, int> counts = {};
+    int yesCount = 0;
+    int noCount = 0;
     for (final person in dummyData) {
-      final category = _getFeatureValue(person);
-      counts[category] = (counts[category] ?? 0) + 1;
+      if (_getFeatureValue(person) == userCategory) {
+        if (person.loanStatus) {
+          yesCount++;
+        } else {
+          noCount++;
+        }
+      }
     }
-    return counts;
+    return {'yes': yesCount, 'no': noCount};
   }
 
   Widget _buildLegend(String userCategory) {
@@ -115,9 +135,9 @@ class CategoricalComparisonGraph extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _legendItem(Colors.green, 'User Category'),
+            _legendItem(Colors.green, 'Yes'),
             SizedBox(width: 20),
-            _legendItem(Colors.blue, 'Other Categories'),
+            _legendItem(Colors.red, 'No'),
           ],
         ),
       ],

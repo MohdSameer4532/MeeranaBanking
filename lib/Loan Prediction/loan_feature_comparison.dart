@@ -11,7 +11,8 @@ class FeatureComparisonGraph extends StatefulWidget {
     required this.dummyData,
     required this.userInput,
     required this.feature,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   _FeatureComparisonGraphState createState() => _FeatureComparisonGraphState();
@@ -22,7 +23,6 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   double _maxX = 0;
   double _minY = 0;
   double _maxY = 0;
-  bool _isZoomed = false;
 
   @override
   void initState() {
@@ -31,137 +31,132 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   }
 
   void _updateBoundaries() {
-    final List<double> featureValues = widget.dummyData.map((person) => _getFeatureValue(person)).toList();
-    if (featureValues.isNotEmpty) {
+    final List<double> allValues = [
+      ...widget.dummyData.map((person) => _getFeatureValue(person)),
+      _getFeatureValue(widget.userInput)
+    ];
+    if (allValues.isNotEmpty) {
       _minX = 0;
-      _maxX = widget.dummyData.length.toDouble() - 1;
-      _minY = featureValues.reduce((a, b) => a < b ? a : b);
-      _maxY = featureValues.reduce((a, b) => a > b ? a : b);
-    } else {
-      _minX = 0;
-      _maxX = 0;
-      _minY = 0;
-      _maxY = 0;
+      _maxX = widget.dummyData.length.toDouble();
+      _minY = allValues.reduce((a, b) => a < b ? a : b);
+      _maxY = allValues.reduce((a, b) => a > b ? a : b);
+
+      // Add some padding to the Y-axis
+      double yPadding = (_maxY - _minY) * 0.1;
+      _minY -= yPadding;
+      _maxY += yPadding;
+
+      // Ensure minimum Y value is not negative
+      _minY = _minY < 0 ? 0 : _minY;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<double> featureValues = widget.dummyData.map((person) => _getFeatureValue(person)).toList();
-    final double userValue = _getFeatureValue(widget.userInput);
-    final double meanVal = featureValues.isNotEmpty ? featureValues.reduce((a, b) => a + b) / featureValues.length : 0;
-    final double medianVal = featureValues.isNotEmpty ? _calculateMedian(featureValues) : 0;
+    final List<double> featureValues =
+        widget.dummyData.map((person) => _getFeatureValue(person)).toList();
+    if (featureValues.isEmpty) {
+      return const Center(child: Text('No data available for this feature.'));
+    }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Container(
-          height: constraints.maxHeight,
-          width: constraints.maxWidth,
-          padding: EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Expanded(
-                child: LineChart(
-                  LineChartData(
-                    minX: _minX,
-                    maxX: _maxX,
-                    minY: _minY,
-                    maxY: _maxY,
-                    titlesData: FlTitlesData(
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            return Text(value.toStringAsFixed(0));
-                          },
-                        ),
-                      ),
+    final double userValue = _getFeatureValue(widget.userInput);
+    final double meanVal =
+        featureValues.reduce((a, b) => a + b) / featureValues.length;
+    final double medianVal = _calculateMedian(featureValues);
+
+    _updateBoundaries();
+
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        height: constraints.maxHeight,
+        width: constraints.maxWidth,
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Expanded(
+              child: LineChart(
+                LineChartData(
+                  minX: _minX,
+                  maxX: _maxX,
+                  minY: _minY,
+                  maxY: _maxY,
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
-                    borderData: FlBorderData(show: true),
-                    lineBarsData: featureValues.isNotEmpty ? [
-                      _createLineChartBarData(featureValues, Colors.blue),
-                      _createHorizontalLine(_maxY, Colors.orange, 'Maximum'),
-                      _createHorizontalLine(meanVal, Colors.purple, 'Mean'),
-                      _createHorizontalLine(medianVal, Colors.yellow, 'Median'),
-                      _createHorizontalLine(userValue, Colors.green, 'User Data'),
-                    ] : [],
-                    extraLinesData: ExtraLinesData(
-                      horizontalLines: [
-                        HorizontalLine(
-                          y: userValue,
-                          color: Colors.green,
-                          strokeWidth: 2,
-                          label: HorizontalLineLabel(
-                            show: true,
-                            alignment: Alignment.topRight,
-                            padding: EdgeInsets.only(right: 5, top: 5),
-                            style: TextStyle(color: Colors.black),
-                            labelResolver: (line) => 'User: ${userValue.toStringAsFixed(2)}',
-                          ),
-                        ),
-                      ],
-                    ),
-                    lineTouchData: LineTouchData(
-                      touchTooltipData: LineTouchTooltipData(
-                        getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
-                          return touchedBarSpots.map((barSpot) {
-                            final flSpot = barSpot;
-                            return LineTooltipItem(
-                              '${widget.feature}: ${flSpot.y.toStringAsFixed(2)}',
-                              TextStyle(color: Colors.white),
-                            );
-                          }).toList();
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          return Text(value.toStringAsFixed(0));
                         },
                       ),
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildLegend(),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          if (_isZoomed) {
-                            _updateBoundaries();
-                          } else {
-                            _minX = _maxX / 2;
-                            _minY = _maxY / 2;
-                          }
-                          _isZoomed = !_isZoomed;
-                        });
+                  borderData: FlBorderData(show: true),
+                  lineBarsData: featureValues.isNotEmpty
+                      ? [
+                          _createLineChartBarData(featureValues, Colors.blue),
+                          _createHorizontalLine(
+                              _maxY, Colors.orange, 'Maximum'),
+                          _createHorizontalLine(meanVal, Colors.purple, 'Mean'),
+                          _createHorizontalLine(
+                              medianVal, Colors.yellow, 'Median'),
+                          _createHorizontalLine(
+                              userValue, Colors.green, 'User Data'),
+                        ]
+                      : [],
+                  extraLinesData: ExtraLinesData(
+                    horizontalLines: [
+                      HorizontalLine(
+                        y: userValue,
+                        color: Colors.green,
+                        strokeWidth: 2,
+                        label: HorizontalLineLabel(
+                          show: true,
+                          alignment: Alignment.topRight,
+                          padding: EdgeInsets.only(right: 5, top: 5),
+                          style: TextStyle(color: Colors.black),
+                          labelResolver: (line) =>
+                              'User: ${userValue.toStringAsFixed(2)}',
+                        ),
+                      ),
+                    ],
+                  ),
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+                        return touchedBarSpots.map((barSpot) {
+                          final flSpot = barSpot;
+                          return LineTooltipItem(
+                            '${widget.feature}: ${flSpot.y.toStringAsFixed(2)}',
+                            TextStyle(color: Colors.white),
+                          );
+                        }).toList();
                       },
-                      child: Text(_isZoomed ? 'Reset Zoom' : 'Zoom In'),
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ],
-          ),
-        );
-      }
-    );
-  }
-
-  Widget _buildLegend() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _legendItem(Colors.blue, 'Data'),
-        _legendItem(Colors.orange, 'Max'),
-        _legendItem(Colors.purple, 'Mean'),
-        _legendItem(Colors.yellow, 'Median'),
-        _legendItem(Colors.green, 'User'),
-      ],
-    );
+            ),
+            SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _legendItem(Colors.blue, 'Data'),
+                  _legendItem(Colors.orange, 'Max'),
+                  _legendItem(Colors.purple, 'Mean'),
+                  _legendItem(Colors.yellow, 'Median'),
+                  _legendItem(Colors.green, 'User'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _legendItem(Color color, String label) {
