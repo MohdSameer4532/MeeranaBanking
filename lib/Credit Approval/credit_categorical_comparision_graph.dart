@@ -1,36 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'credit_person.dart';
+import 'credit_person.dart';  // Ensure this is the correct import for your CreditPerson class
 
 class CategoricalComparisonGraph extends StatefulWidget {
   final List<CreditPerson> dummyData;
   final CreditPerson userInput;
   final String feature;
 
-  const CategoricalComparisonGraph({
-    Key? key,
+  CategoricalComparisonGraph({
     required this.dummyData,
     required this.userInput,
     required this.feature,
-  }) : super(key: key);
+  });
 
   @override
   _CategoricalComparisonGraphState createState() => _CategoricalComparisonGraphState();
 }
 
 class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph> {
-  late String userCategory;
-  late Map<String, int> categoryCounts;
-
-  @override
-  void initState() {
-    super.initState();
-    userCategory = _getFeatureValue(widget.userInput);
-    categoryCounts = _getCategoryCounts();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final String userCategory = _getFeatureValue(widget.userInput);
+    final Map<String, int> categoryCounts = _getCategoryCounts(userCategory);
+
+    print('User Category: $userCategory');
+    print('Category Counts: $categoryCounts');
+
     return Column(
       children: [
         Expanded(
@@ -44,22 +39,21 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (value, meta) {
-                      final labels = categoryCounts.keys.toList();
+                      final labels = ['Yes', 'No'];
                       if (value.toInt() < labels.length) {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            _abbreviateLabel(labels[value.toInt()]),
-                            style: const TextStyle(
+                            labels[value.toInt()],
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                              fontSize: 14,
                             ),
                           ),
                         );
                       }
-                      return const Text('');
+                      return Text('');
                     },
-                    reservedSize: 40,
                   ),
                 ),
                 leftTitles: AxisTitles(
@@ -71,20 +65,42 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
                     },
                   ),
                 ),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               borderData: FlBorderData(show: false),
-              barGroups: _getBarGroups(categoryCounts),
+              barGroups: [
+                BarChartGroupData(
+                  x: 0,
+                  barRods: [
+                    BarChartRodData(
+                      toY: categoryCounts['yes']!.toDouble(),
+                      color: Colors.green,
+                      width: 60,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                ),
+                BarChartGroupData(
+                  x: 1,
+                  barRods: [
+                    BarChartRodData(
+                      toY: categoryCounts['no']!.toDouble(),
+                      color: Colors.red,
+                      width: 60,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                ),
+              ],
               barTouchData: BarTouchData(
                 touchTooltipData: BarTouchTooltipData(
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    final category = categoryCounts.keys.toList()[group.x];
-                    final count = categoryCounts[category]!;
-                    final percentage = (count / widget.dummyData.length * 100).toStringAsFixed(1);
+                    final isYes = group.x == 0;
+                    final count = isYes ? categoryCounts['yes']! : categoryCounts['no']!;
                     return BarTooltipItem(
-                      '$category\n$count ($percentage%)',
-                      const TextStyle(color: Colors.white),
+                      '${isYes ? 'Yes' : 'No'}: $count',
+                      TextStyle(color: Colors.white),
                     );
                   },
                 ),
@@ -92,78 +108,43 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         _buildLegend(userCategory),
       ],
     );
   }
 
-  Map<String, int> _getCategoryCounts() {
-    final counts = <String, int>{};
+  Map<String, int> _getCategoryCounts(String userCategory) {
+    int yesCount = 0;
+    int noCount = 0;
     for (final person in widget.dummyData) {
-      final category = _getFeatureValue(person);
-      counts[category] = (counts[category] ?? 0) + 1;
+      print('Checking person with ${widget.feature}: ${_getFeatureValue(person)}, result: ${person.result}');
+      if (_getFeatureValue(person) == userCategory) {
+        if (person.result) {
+          yesCount++;
+        } else {
+          noCount++;
+        }
+      }
     }
-    return counts;
-  }
-
-  List<BarChartGroupData> _getBarGroups(Map<String, int> categoryCounts) {
-    final List<Color> colors = [
-      Colors.green,
-      Colors.blue,
-      Colors.red,
-      Colors.yellow,
-      Colors.purple
-    ];
-    return categoryCounts.entries.map((entry) {
-      final index = categoryCounts.keys.toList().indexOf(entry.key);
-      final isUserCategory = entry.key == userCategory;
-      return BarChartGroupData(
-        x: index,
-        barRods: [
-          BarChartRodData(
-            toY: entry.value.toDouble(),
-            color: isUserCategory ? Colors.green : colors[index % colors.length],
-            width: 40,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ],
-      );
-    }).toList();
+    return {'yes': yesCount, 'no': noCount};
   }
 
   Widget _buildLegend(String userCategory) {
-    final userCount = categoryCounts[userCategory] ?? 0;
-    final totalCount = widget.dummyData.length;
-    final percentage = (userCount / totalCount * 100).toStringAsFixed(1);
-
     return Column(
       children: [
         Text(
           'Comparison for ${_getFeatureName()}: $userCategory',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        Text(
-          'Your input: $userCount out of $totalCount ($percentage%)',
-          style: const TextStyle(fontSize: 14),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          alignment: WrapAlignment.center,
-          children: categoryCounts.keys.map((category) {
-            final index = categoryCounts.keys.toList().indexOf(category);
-            final List<Color> colors = [
-              Colors.orange,
-              Colors.blue,
-              Colors.red,
-              Colors.yellow,
-              Colors.purple
-            ];
-            final color = category == userCategory ? Colors.green : colors[index % colors.length];
-            return _legendItem(color, category);
-          }).toList(),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _legendItem(Colors.green, 'Yes'),
+            SizedBox(width: 20),
+            _legendItem(Colors.red, 'No'),
+          ],
         ),
       ],
     );
@@ -178,7 +159,7 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
           height: 16,
           color: color,
         ),
-        const SizedBox(width: 4),
+        SizedBox(width: 4),
         Text(label),
       ],
     );
@@ -188,20 +169,20 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
     switch (widget.feature) {
       case 'gender':
         return person.gender;
+      case 'educationType':
+        return person.educationType;
+      case 'familyStatus':
+        return person.familyStatus;
       case 'ownCar':
         return person.ownCar ? 'Yes' : 'No';
       case 'ownProperty':
         return person.ownProperty ? 'Yes' : 'No';
       case 'incomeType':
         return person.incomeType;
-      case 'educationType':
-        return person.educationType;
-      case 'familyStatus':
-        return person.familyStatus;
-      case 'housingType':
-        return person.housingType;
       case 'occupationType':
         return person.occupationType;
+      case 'housingType':
+        return person.housingType;
       default:
         return '';
     }
@@ -210,21 +191,21 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
   String _getFeatureName() {
     switch (widget.feature) {
       case 'gender':
-        return 'Gender';
+        return 'gender'; 
+      case 'educationType':
+        return 'Education Type';
+      case 'familyStatus':
+        return 'Family Status';
       case 'ownCar':
         return 'Own Car';
       case 'ownProperty':
         return 'Own Property';
       case 'incomeType':
-        return 'Income Type';
-      case 'educationType':
-        return 'Education Type';
-      case 'familyStatus':
-        return 'Family Status';
-      case 'housingType':
-        return 'Housing Type';
+        return 'incomeType';
       case 'occupationType':
         return 'Occupation Type';
+      case 'housingType':
+        return 'housingType'; 
       default:
         return '';
     }
@@ -233,10 +214,5 @@ class _CategoricalComparisonGraphState extends State<CategoricalComparisonGraph>
   double _getMaxCount(Map<String, int> categoryCounts) {
     final max = categoryCounts.values.reduce((a, b) => a > b ? a : b);
     return (max * 1.2).toDouble();
-  }
-
-  String _abbreviateLabel(String label) {
-    if (label.length <= 5) return label;
-    return label.substring(0, 3) + '...';
   }
 }

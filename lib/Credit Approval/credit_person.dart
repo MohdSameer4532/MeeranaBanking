@@ -34,7 +34,7 @@ class CreditPerson {
 
 List<CreditPerson> dummyCreditData = [
   CreditPerson(
-    gender: 'M',
+    gender: 'Male',
     ownCar: true,
     ownProperty: false,
     noOfChildren: 2,
@@ -50,7 +50,7 @@ List<CreditPerson> dummyCreditData = [
     result: true,
   ),
   CreditPerson(
-    gender: 'F',
+    gender: 'Female',
     ownCar: false,
     ownProperty: true,
     noOfChildren: 1,
@@ -66,7 +66,7 @@ List<CreditPerson> dummyCreditData = [
     result: false,
   ),
   CreditPerson(
-    gender: 'M',
+    gender: 'Male',
     ownCar: true,
     ownProperty: true,
     noOfChildren: 3,
@@ -82,7 +82,7 @@ List<CreditPerson> dummyCreditData = [
     result: true,
   ),
   CreditPerson(
-    gender: 'F',
+    gender: 'Female',
     ownCar: false,
     ownProperty: false,
     noOfChildren: 0,
@@ -98,7 +98,7 @@ List<CreditPerson> dummyCreditData = [
     result: false,
   ),
   CreditPerson(
-    gender: 'M',
+    gender: 'Male',
     ownCar: true,
     ownProperty: true,
     noOfChildren: 2,
@@ -114,7 +114,7 @@ List<CreditPerson> dummyCreditData = [
     result: true,
   ),
   CreditPerson(
-    gender: 'F',
+    gender: 'Female',
     ownCar: false,
     ownProperty: false,
     noOfChildren: 0,
@@ -130,7 +130,7 @@ List<CreditPerson> dummyCreditData = [
     result: false,
   ),
   CreditPerson(
-    gender: 'M',
+    gender: 'Male',
     ownCar: true,
     ownProperty: true,
     noOfChildren: 1,
@@ -146,7 +146,7 @@ List<CreditPerson> dummyCreditData = [
     result: true,
   ),
   CreditPerson(
-    gender: 'F',
+    gender: 'Female',
     ownCar: false,
     ownProperty: true,
     noOfChildren: 2,
@@ -162,7 +162,7 @@ List<CreditPerson> dummyCreditData = [
     result: true,
   ),
   CreditPerson(
-    gender: 'M',
+    gender: 'Male',
     ownCar: true,
     ownProperty: true,
     noOfChildren: 3,
@@ -178,7 +178,7 @@ List<CreditPerson> dummyCreditData = [
     result: true,
   ),
   CreditPerson(
-    gender: 'F',
+    gender: 'Female',
     ownCar: false,
     ownProperty: false,
     noOfChildren: 0,
@@ -194,7 +194,7 @@ List<CreditPerson> dummyCreditData = [
     result: false,
   ),
   CreditPerson(
-    gender: 'M',
+    gender: 'Male',
     ownCar: false,
     ownProperty: true,
     noOfChildren: 1,
@@ -210,7 +210,7 @@ List<CreditPerson> dummyCreditData = [
     result: true,
   ),
   CreditPerson(
-    gender: 'F',
+    gender: 'Female',
     ownCar: true,
     ownProperty: false,
     noOfChildren: 2,
@@ -226,7 +226,7 @@ List<CreditPerson> dummyCreditData = [
     result: true,
   ),
   CreditPerson(
-    gender: 'M',
+    gender: 'Male',
     ownCar: true,
     ownProperty: true,
     noOfChildren: 0,
@@ -242,7 +242,7 @@ List<CreditPerson> dummyCreditData = [
     result: true,
   ),
   CreditPerson(
-    gender: 'F',
+    gender: 'Female',
     ownCar: false,
     ownProperty: false,
     noOfChildren: 1,
@@ -258,7 +258,7 @@ List<CreditPerson> dummyCreditData = [
     result: false,
   ),
   CreditPerson(
-    gender: 'M',
+    gender: 'Male',
     ownCar: true,
     ownProperty: false,
     noOfChildren: 3,
