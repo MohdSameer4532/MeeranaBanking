@@ -87,9 +87,9 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                   label: fieldLabels['incomeType']!,
                   items: [
                     'Working',
-                    'Commercial Associate',
+                    'Commercial associate',
                     'Pensioner',
-                    'State Servant',
+                    'State servant',
                     'Student'
                   ],
                   value: _selectedIncomeType,
@@ -100,11 +100,11 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                 CustomDropdown(
                   label: fieldLabels['educationType']!,
                   items: [
-                    'Secondary',
-                    'Higher Education',
-                    'Incomplete Higher',
-                    'Lower Secondary',
-                    'Academic Degree'
+                    'Secondary education',
+                    'Higher education',
+                    'Incomplete higher',
+                    'Lower secondary',
+                    'Academic degree'
                   ],
                   value: _selectedEducationType,
                   onChanged: (value) =>
@@ -116,7 +116,7 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                   items: [
                     'Married',
                     'Single',
-                    'Civil Marriage',
+                    'Civil marriage',
                     'Separated',
                     'Widow'
                   ],
@@ -128,11 +128,12 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                 CustomDropdown(
                   label: fieldLabels['housingType']!,
                   items: [
-                    'House/Apartment',
-                    'With Parents',
-                    'Municipal Apartment',
-                    'Rented Apartment',
-                    'Office Apartment'
+                    'House / apartment',
+                    'With parents',
+                    'Municipal apartment',
+                    'Co-op apartment',
+                    'Rented apartment',
+                    'Office apartment'
                   ],
                   value: _selectedHousingType,
                   onChanged: (value) =>
@@ -148,24 +149,20 @@ class _CreditUserInputPageState extends State<CreditUserInputPage> {
                 CustomDropdown(
                   label: fieldLabels['occupationType']!,
                   items: [
-                    'Laborers',
-                    'Core Staff',
-                    'Managers',
-                    'Drivers',
-                    'Sales Staff',
+                    'Manager',
+                    'Sales staff',
+                    'IT staff',
+                    'Doctor',
                     'Accountants',
-                    'High Skill Tech Staff',
-                    'Medicine Staff',
-                    'Security Staff',
-                    'Cooking Staff',
-                    'Cleaning Staff',
-                    'Private Service Staff',
+                    'Laborers',
+                    'Core staff',
+                    'Waiters/barmen staff',
+                    'High skill tech staff',
+                    'Medicine staff',
+                    'Security staff',
+                    'Drivers',
                     'Low-skill Laborers',
-                    'Waiters/Barmen Staff',
-                    'Secretaries',
-                    'Realty Agents',
-                    'HR Staff',
-                    'IT Staff'
+                     
                   ],
                   value: _selectedOccupationType,
                   onChanged: (value) =>

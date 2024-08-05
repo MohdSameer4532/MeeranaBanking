@@ -32,8 +32,6 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
           data.where((person) => person['loanStatus'] == 'Accepted').length;
       deniedClients =
           data.where((person) => person['loanStatus'] == 'Denied').length;
-      pendingClients =
-          data.where((person) => person['loanStatus'] == 'Pending').length;
 
       List<String> numericFields = [
         'income',
@@ -391,7 +389,8 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                   _buildCard('Total Clients', totalClients.toString()),
                   _buildCard('Accepted Clients', '$acceptedClients'),
                   _buildCard('Denied Clients', '$deniedClients'),
-                  _buildCard('Pending Clients', '$pendingClients'),
+                  _buildCard(
+                      'Average Age', _calculateAverageAge().toStringAsFixed(1)),
                 ],
               ),
             ),
@@ -488,6 +487,13 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
         ),
       ),
     );
+  }
+
+  double _calculateAverageAge() {
+    if (data.isEmpty) return 0;
+    int totalAge =
+        data.fold(0, (sum, person) => sum + (person['age'] as int? ?? 0));
+    return totalAge / data.length;
   }
 
   Widget _buildCard(String title, String value) {
