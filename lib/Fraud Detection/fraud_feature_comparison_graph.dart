@@ -241,45 +241,17 @@ class FeatureComparisonGraph extends StatelessWidget {
           ),
           borderData: FlBorderData(show: false),
           barGroups: [
-            _buildBoxPlotGroup(0, maleAges, Colors.blue),
-            _buildBoxPlotGroup(1, femaleAges, Colors.pink),
+            _buildBarGroup(0, maleAges.reduce((a, b) => a < b ? a : b),
+                Colors.blue.withOpacity(0.2)),
+            _buildBarGroup(
+                0, maleAges.reduce((a, b) => a > b ? a : b), Colors.blue),
+            _buildBarGroup(1, femaleAges.reduce((a, b) => a < b ? a : b),
+                Colors.pink.withOpacity(0.2)),
+            _buildBarGroup(
+                1, femaleAges.reduce((a, b) => a > b ? a : b), Colors.pink),
           ],
         ),
       ),
-    );
-  }
-
-  BarChartGroupData _buildBoxPlotGroup(
-      int x, List<double> values, Color color) {
-    double minValue = values.reduce((a, b) => a < b ? a : b);
-    double maxValue = values.reduce((a, b) => a > b ? a : b);
-    double meanValue = values.reduce((a, b) => a + b) / values.length;
-
-    return BarChartGroupData(
-      x: x,
-      barRods: [
-        BarChartRodData(
-          toY: maxValue,
-          color: color,
-          width: 10,
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: Colors.black, width: 1),
-        ),
-        BarChartRodData(
-          toY: meanValue,
-          color: color.withOpacity(0.5),
-          width: 10,
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: Colors.black, width: 1),
-        ),
-        BarChartRodData(
-          toY: minValue,
-          color: color.withOpacity(0.2),
-          width: 10,
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: Colors.black, width: 1),
-        ),
-      ],
     );
   }
 

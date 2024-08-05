@@ -43,11 +43,9 @@ class _FraudResultPageState extends State<FraudResultPage> {
               SizedBox(height: 20),
               _buildComparisonSection('Amount Comparison', 'amount'),
               SizedBox(height: 20),
-              _buildComparisonSection(
-                  'Gender Comparison', 'gender'), // Gender comparison
+              _buildComparisonSection('Gender Comparison', 'gender'),
               SizedBox(height: 20),
-              _buildComparisonSection(
-                  'Category Comparison', 'category'), // Category comparison
+              _buildComparisonSection('Category Comparison', 'category'),
               SizedBox(height: 20),
             ],
           ),
@@ -70,7 +68,7 @@ class _FraudResultPageState extends State<FraudResultPage> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue[900],
+                color: Colors.black,
               ),
             ),
             SizedBox(height: 16),
@@ -102,12 +100,12 @@ class _FraudResultPageState extends State<FraudResultPage> {
         children: [
           Icon(icon, size: 28, color: const Color.fromARGB(255, 146, 211, 205)),
           SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('$label: ', style: TextStyle(fontWeight: FontWeight.w500)),
-              Text(value),
-            ],
+          Text('$label: ', style: TextStyle(fontWeight: FontWeight.w500)),
+          Flexible(
+            child: Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -158,10 +156,13 @@ class _FraudResultPageState extends State<FraudResultPage> {
         SizedBox(height: 10),
         Card(
           elevation: 5,
-          child: FeatureComparisonGraph(
-            dummyData: widget.dummyData,
-            userInput: widget.userInput,
-            feature: feature,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: FeatureComparisonGraph(
+              dummyData: widget.dummyData,
+              userInput: widget.userInput,
+              feature: feature,
+            ),
           ),
         ),
       ],
@@ -188,7 +189,7 @@ class _FraudResultPageState extends State<FraudResultPage> {
       LineChartBarData(
         spots: _generateGenderComparisonSpots(),
         isCurved: true,
-        color: Colors.blue,
+        color: Colors.black,
         dotData: FlDotData(show: false),
         belowBarData: BarAreaData(show: false),
       ),
