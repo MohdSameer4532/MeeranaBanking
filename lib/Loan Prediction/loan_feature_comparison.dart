@@ -31,36 +31,26 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   }
 
   void _updateBoundaries() {
-    if (widget.dummyData.isEmpty) {
+    final List<double> featureValues = widget.dummyData.map((person) => _getFeatureValue(person)).toList();
+    if (featureValues.isNotEmpty) {
+      _minX = 0;
+      _maxX = widget.dummyData.length.toDouble() - 1;
+      _minY = featureValues.reduce((a, b) => a < b ? a : b);
+      _maxY = featureValues.reduce((a, b) => a > b ? a : b);
+    } else {
+      _minX = 0;
+      _maxX = 0;
       _minY = 0;
-      _maxY = 1;
-      return;
+      _maxY = 0;
     }
-
-    final List<double> featureValues =
-        widget.dummyData.map((person) => _getFeatureValue(person)).toList();
-
-    _minX = 0;
-    _maxX = widget.dummyData.length.toDouble() - 1;
-
-    _minY = featureValues.reduce((a, b) => a < b ? a : b);
-    _maxY = featureValues.reduce((a, b) => a > b ? a : b);
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Building graph for feature: ${widget.feature}");
-    print("User input value: ${_getFeatureValue(widget.userInput)}");
-    print("Number of data points: ${widget.dummyData.length}");
-
-    final List<double> featureValues =
-        widget.dummyData.map((person) => _getFeatureValue(person)).toList();
+    final List<double> featureValues = widget.dummyData.map((person) => _getFeatureValue(person)).toList();
     final double userValue = _getFeatureValue(widget.userInput);
-    final double meanVal = featureValues.isNotEmpty
-        ? featureValues.reduce((a, b) => a + b) / featureValues.length
-        : 0.0;
-    final double medianVal =
-        featureValues.isNotEmpty ? _calculateMedian(featureValues) : 0.0;
+    final double meanVal = featureValues.isNotEmpty ? featureValues.reduce((a, b) => a + b) / featureValues.length : 0;
+    final double medianVal = featureValues.isNotEmpty ? _calculateMedian(featureValues) : 0;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -78,8 +68,9 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
                     minY: _minY,
                     maxY: _maxY,
                     titlesData: FlTitlesData(
-                      bottomTitles:
-                          AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
@@ -90,14 +81,13 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
                       ),
                     ),
                     borderData: FlBorderData(show: true),
-                    lineBarsData: [
+                    lineBarsData: featureValues.isNotEmpty ? [
                       _createLineChartBarData(featureValues, Colors.blue),
                       _createHorizontalLine(_maxY, Colors.orange, 'Maximum'),
                       _createHorizontalLine(meanVal, Colors.purple, 'Mean'),
                       _createHorizontalLine(medianVal, Colors.yellow, 'Median'),
-                      _createHorizontalLine(
-                          userValue, Colors.green, 'User Data'),
-                    ],
+                      _createHorizontalLine(userValue, Colors.green, 'User Data'),
+                    ] : [],
                     extraLinesData: ExtraLinesData(
                       horizontalLines: [
                         HorizontalLine(
@@ -109,8 +99,7 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
                             alignment: Alignment.topRight,
                             padding: EdgeInsets.only(right: 5, top: 5),
                             style: TextStyle(color: Colors.black),
-                            labelResolver: (line) =>
-                                'User: ${userValue.toStringAsFixed(2)}',
+                            labelResolver: (line) => 'User: ${userValue.toStringAsFixed(2)}',
                           ),
                         ),
                       ],
@@ -132,31 +121,39 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
                 ),
               ),
               SizedBox(height: 10),
-              _buildLegend(),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    if (_isZoomed) {
-                      _updateBoundaries();
-                    } else {
-                      _minX = _maxX / 2;
-                      _minY = _maxY / 2;
-                    }
-                    _isZoomed = !_isZoomed;
-                  });
-                },
-                child: Text(_isZoomed ? 'Reset Zoom' : 'Zoom In'),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildLegend(),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          if (_isZoomed) {
+                            _updateBoundaries();
+                          } else {
+                            _minX = _maxX / 2;
+                            _minY = _maxY / 2;
+                          }
+                          _isZoomed = !_isZoomed;
+                        });
+                      },
+                      child: Text(_isZoomed ? 'Reset Zoom' : 'Zoom In'),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         );
-      },
+      }
     );
   }
 
   Widget _buildLegend() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _legendItem(Colors.blue, 'Data'),
         _legendItem(Colors.orange, 'Max'),
@@ -171,7 +168,11 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 16, height: 16, color: color),
+        Container(
+          width: 16,
+          height: 16,
+          color: color,
+        ),
         SizedBox(width: 4),
         Text(label),
         SizedBox(width: 8),

@@ -12,9 +12,6 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("User Input: $userInput"); // Debug print
-    print("Dummy Data Length: ${dummyData.length}"); // Debug print
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(

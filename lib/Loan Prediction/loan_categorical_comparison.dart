@@ -1,4 +1,3 @@
-// loan_categorical_comparison.dart
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'loanperson.dart';
@@ -16,13 +15,8 @@ class CategoricalComparisonGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Building categorical graph for feature: $feature");
-    print("User input value: ${_getFeatureValue(userInput)}");
-    print("Number of data points: ${dummyData.length}");
-
     final String userCategory = _getFeatureValue(userInput);
-    final Map<String, Map<String, int>> categoryCounts =
-        _getCategoryCounts(userCategory);
+    final Map<String, int> categoryCounts = _getCategoryCounts(userCategory);
 
     return Column(
       children: [
@@ -37,12 +31,12 @@ class CategoricalComparisonGraph extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (value, meta) {
-                      final categories = categoryCounts.keys.toList();
-                      if (value.toInt() < categories.length) {
+                      final labels = categoryCounts.keys.toList();
+                      if (value.toInt() < labels.length) {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            categories[value.toInt()],
+                            labels[value.toInt()],
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -63,21 +57,30 @@ class CategoricalComparisonGraph extends StatelessWidget {
                     },
                   ),
                 ),
-                topTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               borderData: FlBorderData(show: false),
-              barGroups: _createBarGroups(categoryCounts),
+              barGroups: categoryCounts.entries.map((entry) {
+                return BarChartGroupData(
+                  x: categoryCounts.keys.toList().indexOf(entry.key),
+                  barRods: [
+                    BarChartRodData(
+                      toY: entry.value.toDouble(),
+                      color: entry.key == userCategory ? Colors.green : Colors.blue,
+                      width: 60,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                );
+              }).toList(),
               barTouchData: BarTouchData(
                 touchTooltipData: BarTouchTooltipData(
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
                     final category = categoryCounts.keys.toList()[group.x];
-                    final count = rod.toY.toInt();
-                    final loanStatus = rodIndex == 0 ? 'Accepted' : 'Denied';
+                    final count = categoryCounts[category]!;
                     return BarTooltipItem(
-                      '$category - $loanStatus: $count',
+                      '$category: $count',
                       TextStyle(color: Colors.white),
                     );
                   },
@@ -92,41 +95,13 @@ class CategoricalComparisonGraph extends StatelessWidget {
     );
   }
 
-  Map<String, Map<String, int>> _getCategoryCounts(String userCategory) {
-    final Map<String, Map<String, int>> counts = {};
+  Map<String, int> _getCategoryCounts(String userCategory) {
+    final Map<String, int> counts = {};
     for (final person in dummyData) {
       final category = _getFeatureValue(person);
-      if (!counts.containsKey(category)) {
-        counts[category] = {'accepted': 0, 'denied': 0};
-      }
-      final key = person.loanStatus ? 'accepted' : 'denied';
-      counts[category]![key] = (counts[category]![key] ?? 0) + 1;
+      counts[category] = (counts[category] ?? 0) + 1;
     }
     return counts;
-  }
-
-  List<BarChartGroupData> _createBarGroups(
-      Map<String, Map<String, int>> categoryCounts) {
-    return categoryCounts.entries.mapIndexed((index, entry) {
-      final counts = entry.value;
-      return BarChartGroupData(
-        x: index,
-        barRods: [
-          BarChartRodData(
-            toY: counts['accepted']!.toDouble(),
-            color: Colors.green,
-            width: 22,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          BarChartRodData(
-            toY: counts['denied']!.toDouble(),
-            color: Colors.red,
-            width: 22,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ],
-      );
-    }).toList();
   }
 
   Widget _buildLegend(String userCategory) {
@@ -140,9 +115,9 @@ class CategoricalComparisonGraph extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _legendItem(Colors.green, 'Accepted'),
+            _legendItem(Colors.green, 'User Category'),
             SizedBox(width: 20),
-            _legendItem(Colors.red, 'Denied'),
+            _legendItem(Colors.blue, 'Other Categories'),
           ],
         ),
       ],
@@ -153,7 +128,11 @@ class CategoricalComparisonGraph extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 16, height: 16, color: color),
+        Container(
+          width: 16,
+          height: 16,
+          color: color,
+        ),
         SizedBox(width: 4),
         Text(label),
       ],
@@ -170,7 +149,6 @@ class CategoricalComparisonGraph extends StatelessWidget {
         return person.carOwnership;
       case 'profession':
         return person.profession;
-
       default:
         return '';
     }
@@ -186,26 +164,13 @@ class CategoricalComparisonGraph extends StatelessWidget {
         return 'Car Ownership';
       case 'profession':
         return 'Profession';
-      case 'education':
-        return 'Education';
       default:
         return '';
     }
   }
 
-  double _getMaxCount(Map<String, Map<String, int>> categoryCounts) {
-    int max = 0;
-    for (var counts in categoryCounts.values) {
-      final total = counts['accepted']! + counts['denied']!;
-      if (total > max) max = total;
-    }
+  double _getMaxCount(Map<String, int> categoryCounts) {
+    final max = categoryCounts.values.reduce((a, b) => a > b ? a : b);
     return (max * 1.2).toDouble();
-  }
-}
-
-extension IndexedIterable<E> on Iterable<E> {
-  Iterable<T> mapIndexed<T>(T Function(int index, E element) f) {
-    var index = 0;
-    return map((e) => f(index++, e));
   }
 }

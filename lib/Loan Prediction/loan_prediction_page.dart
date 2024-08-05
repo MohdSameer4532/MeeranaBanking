@@ -4,10 +4,6 @@ import 'loan_result_page.dart';
 import '../custom_dropdown.dart';
 import '../custom_app_bar.dart';
 
-// Make sure dummyData is available here or pass it as needed
-final List<Person> dummyData = [
-  // Your dummy data here
-];
 
 final Map<String, String> fieldLabels = {
   'income': 'Income',
