@@ -19,7 +19,6 @@ final Map<String, String> fieldLabels = {
   'houseOwnership': 'House Ownership',
   'carOwnership': 'Car Ownership',
   'profession': 'Profession',
-  'loanStatus': 'Loan Status',
 };
 
 class UserInputForm extends StatefulWidget {
@@ -131,17 +130,6 @@ class _UserInputFormState extends State<UserInputForm> {
                   onChanged: (value) {
                     setState(() {
                       _selectedProfession = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-                CustomDropdown(
-                  label: fieldLabels['loanStatus']!,
-                  items: ['Accepted', 'Denied'],
-                  value: _selectedLoanStatus,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedLoanStatus = value;
                     });
                   },
                 ),
