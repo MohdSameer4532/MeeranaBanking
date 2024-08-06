@@ -403,8 +403,8 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
               title,
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.bold, // Make the title bold
-                color: Colors.black54,
+                fontWeight: FontWeight.normal, // Make the title bold
+                color: Colors.black87,
               ),
             ),
             SizedBox(height: 8),
@@ -413,7 +413,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Colors.black,
               ),
             ),
           ],
