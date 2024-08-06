@@ -1,163 +1,145 @@
-import 'package:bankpredictionapp/Deposit/person.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-// Assume this file contains the Loan class
+import 'loanperson.dart';
 
-class LoanFeatureComparisonGraph extends StatefulWidget {
+class CategoricalComparisonGraph extends StatelessWidget {
   final List<Person> dummyData;
   final Person userInput;
   final String feature;
 
-  LoanFeatureComparisonGraph({
+  CategoricalComparisonGraph({
     required this.dummyData,
     required this.userInput,
     required this.feature,
   });
 
   @override
-  _LoanFeatureComparisonGraphState createState() =>
-      _LoanFeatureComparisonGraphState();
-}
-
-class _LoanFeatureComparisonGraphState
-    extends State<LoanFeatureComparisonGraph> {
-  double _minX = 0;
-  double _maxX = 0;
-  double _minY = 0;
-  double _maxY = 0;
-  bool _isZoomed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _updateBoundaries();
-  }
-
-  void _updateBoundaries() {
-    final List<double> featureValues =
-        widget.dummyData.map((loan) => _getFeatureValue(loan)).toList();
-    _minX = 0;
-    _maxX = widget.dummyData.length.toDouble() - 1;
-    _minY = featureValues.reduce((a, b) => a < b ? a : b);
-    _maxY = featureValues.reduce((a, b) => a > b ? a : b);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final List<double> featureValues =
-        widget.dummyData.map((loan) => _getFeatureValue(loan)).toList();
-    final double userValue = _getFeatureValue(widget.userInput);
-    final double meanVal =
-        featureValues.reduce((a, b) => a + b) / featureValues.length;
-    final double medianVal = _calculateMedian(featureValues);
+    final String userCategory = _getFeatureValue(userInput);
+    final Map<String, int> categoryCounts = _getCategoryCounts(userCategory);
 
-    return LayoutBuilder(builder: (context, constraints) {
-      return Container(
-        height: constraints.maxHeight,
-        width: constraints.maxWidth,
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Expanded(
-              child: LineChart(
-                LineChartData(
-                  minX: _minX,
-                  maxX: _maxX,
-                  minY: _minY,
-                  maxY: _maxY,
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          return Text(value.toStringAsFixed(0));
-                        },
-                      ),
-                    ),
+    return Column(
+      children: [
+        Expanded(
+          child: BarChart(
+            BarChartData(
+              alignment: BarChartAlignment.spaceAround,
+              maxY: _getMaxCount(categoryCounts),
+              titlesData: FlTitlesData(
+                show: true,
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      final labels = categoryCounts.keys.toList();
+                      if (value.toInt() < labels.length) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            labels[value.toInt()],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        );
+                      }
+                      return Text('');
+                    },
                   ),
-                  borderData: FlBorderData(show: true),
-                  lineBarsData: [
-                    _createLineChartBarData(featureValues, Colors.blue),
-                    _createHorizontalLine(_maxY, Colors.orange, 'Maximum'),
-                    _createHorizontalLine(meanVal, Colors.purple, 'Mean'),
-                    _createHorizontalLine(medianVal, Colors.yellow, 'Median'),
-                    _createHorizontalLine(userValue, Colors.green, 'User Data'),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    getTitlesWidget: (value, meta) {
+                      return Text(value.toInt().toString());
+                    },
+                  ),
+                ),
+                topTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              borderData: FlBorderData(show: false),
+              barGroups: [
+                BarChartGroupData(
+                  x: 0,
+                  barRods: [
+                    BarChartRodData(
+                      toY: categoryCounts['yes']!.toDouble(),
+                      color: Colors.green,
+                      width: 60,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ],
-                  extraLinesData: ExtraLinesData(
-                    horizontalLines: [
-                      HorizontalLine(
-                        y: userValue,
-                        color: Colors.green,
-                        strokeWidth: 2,
-                        label: HorizontalLineLabel(
-                          show: true,
-                          alignment: Alignment.topRight,
-                          padding: EdgeInsets.only(right: 5, top: 5),
-                          style: TextStyle(color: Colors.black),
-                          labelResolver: (line) =>
-                              'User: ${userValue.toStringAsFixed(2)}',
-                        ),
-                      ),
-                    ],
-                  ),
-                  lineTouchData: LineTouchData(
-                    touchTooltipData: LineTouchTooltipData(
-                      getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
-                        return touchedBarSpots.map((barSpot) {
-                          final flSpot = barSpot;
-                          return LineTooltipItem(
-                            '${widget.feature}: ${flSpot.y.toStringAsFixed(2)}',
-                            TextStyle(color: Colors.white),
-                          );
-                        }).toList();
-                      },
+                ),
+                BarChartGroupData(
+                  x: 1,
+                  barRods: [
+                    BarChartRodData(
+                      toY: categoryCounts['no']!.toDouble(),
+                      color: Colors.red,
+                      width: 60,
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                  ),
+                  ],
+                ),
+              ],
+              barTouchData: BarTouchData(
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    final isYes = group.x == 0;
+                    final count =
+                        isYes ? categoryCounts['yes']! : categoryCounts['no']!;
+                    return BarTooltipItem(
+                      '${isYes ? 'Yes' : 'No'}: $count',
+                      TextStyle(color: Colors.white),
+                    );
+                  },
                 ),
               ),
             ),
-            SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildLegend(),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        if (_isZoomed) {
-                          _updateBoundaries();
-                        } else {
-                          _minX = _maxX / 2;
-                          _minY = _maxY / 2;
-                        }
-                        _isZoomed = !_isZoomed;
-                      });
-                    },
-                    child: Text(_isZoomed ? 'Reset Zoom' : 'Zoom In'),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
-      );
-    });
+        SizedBox(height: 20),
+        _buildLegend(userCategory),
+      ],
+    );
   }
 
-  Widget _buildLegend() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+  Map<String, int> _getCategoryCounts(String userCategory) {
+    int yesCount = 0;
+    int noCount = 0;
+    for (final person in dummyData) {
+      if (_getFeatureValue(person) == userCategory) {
+        if (person.loanStatus) {
+          yesCount++;
+        } else {
+          noCount++;
+        }
+      }
+    }
+    return {'yes': yesCount, 'no': noCount};
+  }
+
+  Widget _buildLegend(String userCategory) {
+    return Column(
       children: [
-        _legendItem(Colors.blue, 'Data'),
-        _legendItem(Colors.orange, 'Max'),
-        _legendItem(Colors.purple, 'Mean'),
-        _legendItem(Colors.yellow, 'Median'),
-        _legendItem(Colors.green, 'User'),
+        Text(
+          'Comparison for ${_getFeatureName()}: $userCategory',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _legendItem(Colors.green, 'Yes'),
+            SizedBox(width: 20),
+            _legendItem(Colors.red, 'No'),
+          ],
+        ),
       ],
     );
   }
@@ -173,50 +155,42 @@ class _LoanFeatureComparisonGraphState
         ),
         SizedBox(width: 4),
         Text(label),
-        SizedBox(width: 8),
       ],
     );
   }
 
-  double _getFeatureValue(loan) {
-    switch (widget.feature) {
-      case 'amount':
-        return loan.amount.toDouble();
-      case 'term':
-        return loan.term.toDouble();
+  String _getFeatureValue(Person person) {
+    switch (feature) {
+      case 'maritalStatus':
+        return person.maritalStatus;
+      case 'houseOwnership':
+        return person.houseOwnership;
+      case 'carOwnership':
+        return person.carOwnership;
+      case 'profession':
+        return person.profession;
       default:
-        return 0;
+        return '';
     }
   }
 
-  double _calculateMedian(List<double> values) {
-    values.sort();
-    final middle = values.length ~/ 2;
-    if (values.length % 2 == 0) {
-      return (values[middle - 1] + values[middle]) / 2;
-    } else {
-      return values[middle];
+  String _getFeatureName() {
+    switch (feature) {
+      case 'maritalStatus':
+        return 'Marital Status';
+      case 'houseOwnership':
+        return 'House Ownership';
+      case 'carOwnership':
+        return 'Car Ownership';
+      case 'profession':
+        return 'Profession';
+      default:
+        return '';
     }
   }
 
-  LineChartBarData _createLineChartBarData(List<double> values, Color color) {
-    return LineChartBarData(
-      spots: values.asMap().entries.map((entry) {
-        return FlSpot(entry.key.toDouble(), entry.value);
-      }).toList(),
-      isCurved: true,
-      color: color,
-      dotData: FlDotData(show: false),
-      belowBarData: BarAreaData(show: false),
-    );
-  }
-
-  LineChartBarData _createHorizontalLine(double y, Color color, String label) {
-    return LineChartBarData(
-      spots: [FlSpot(_minX, y), FlSpot(_maxX, y)],
-      color: color,
-      dotData: FlDotData(show: false),
-      belowBarData: BarAreaData(show: false),
-    );
+  double _getMaxCount(Map<String, int> categoryCounts) {
+    final max = categoryCounts.values.reduce((a, b) => a > b ? a : b);
+    return (max * 1.2).toDouble();
   }
 }

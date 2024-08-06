@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../custom_app_bar.dart';
+import 'loanperson.dart'; // Ensure this file defines the Person class
 import 'loan_result_page.dart';
 import '../custom_dropdown.dart';
+import '../custom_app_bar.dart';
 
-final Map<String, String> loanFieldLabels = {
+final Map<String, String> fieldLabels = {
   'income': 'Income',
   'age': 'Age',
   'experience': 'Experience',
@@ -15,126 +16,35 @@ final Map<String, String> loanFieldLabels = {
   'profession': 'Profession',
 };
 
-class LoanPredictionPage extends StatefulWidget {
-  const LoanPredictionPage({Key? key}) : super(key: key);
-
+class UserInputForm extends StatefulWidget {
   @override
-  _LoanPredictionPageState createState() => _LoanPredictionPageState();
+  _UserInputFormState createState() => _UserInputFormState();
 }
 
-class _LoanPredictionPageState extends State<LoanPredictionPage> {
+class _UserInputFormState extends State<UserInputForm> {
   final _formKey = GlobalKey<FormState>();
-
-  final _incomeController = TextEditingController();
-  final _ageController = TextEditingController();
-  final _experienceController = TextEditingController();
-  final _currentJobYearsController = TextEditingController();
-  final _currentHouseYearsController = TextEditingController();
-  String? _maritalStatus;
-  String? _houseOwnership;
-  String? _carOwnership;
-  String? _profession;
-
-  @override
-  void dispose() {
-    _incomeController.dispose();
-    _ageController.dispose();
-    _experienceController.dispose();
-    _currentJobYearsController.dispose();
-    _currentHouseYearsController.dispose();
-    super.dispose();
-  }
-
-  void _predictLoanRisk() {
-    if (_formKey.currentState!.validate()) {
-      final double income = double.tryParse(_incomeController.text) ?? 0;
-      final int age = int.tryParse(_ageController.text) ?? 0;
-      final int experience = int.tryParse(_experienceController.text) ?? 0;
-      final int currentJobYears =
-          int.tryParse(_currentJobYearsController.text) ?? 0;
-      final int currentHouseYears =
-          int.tryParse(_currentHouseYearsController.text) ?? 0;
-
-      String predictionResult;
-      if (income > 50000 &&
-          age > 30 &&
-          experience > 5 &&
-          currentJobYears > 3 &&
-          currentHouseYears > 2) {
-        predictionResult = 'Loan Approved';
-      } else {
-        predictionResult = 'Loan Denied';
-      }
-
-      Map<String, dynamic> userInputData = {
-        'income': income,
-        'age': age,
-        'experience': experience,
-        'currentJobYears': currentJobYears,
-        'currentHouseYears': currentHouseYears,
-        'maritalStatus': _maritalStatus,
-        'houseOwnership': _houseOwnership,
-        'carOwnership': _carOwnership,
-        'profession': _profession,
-      };
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoanResultPage(
-            predictionResult: predictionResult,
-            userInputData: userInputData,
-          ),
-        ),
-      );
-    }
-  }
-
-  Widget _buildTextField(String fieldName, TextEditingController controller,
-      TextInputType inputType, String validationMessage) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          loanFieldLabels[fieldName]!,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 5),
-        TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: 'Enter ${loanFieldLabels[fieldName]}',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            filled: true,
-            fillColor: Colors.grey[100],
-          ),
-          keyboardType: inputType,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return validationMessage;
-            }
-            return null;
-          },
-        ),
-      ],
-    );
-  }
+  final TextEditingController _incomeController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _experienceController = TextEditingController();
+  final TextEditingController _currentJobYearsController =
+      TextEditingController();
+  final TextEditingController _currentHouseYearsController =
+      TextEditingController();
+  String? _selectedMaritalStatus;
+  String? _selectedHouseOwnership;
+  String? _selectedCarOwnership;
+  String? _selectedProfession;
+  String? _selectedLoanStatus;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
+        backButton: true,
         c: context,
         title: 'Loan Prediction',
-        backButton: true,
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -145,73 +55,86 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 20),
-                _buildTextField('income', _incomeController,
-                    TextInputType.number, 'Please enter income'),
+                _buildTextField(
+                    'income',
+                    _incomeController,
+                    TextInputType.number,
+                    'Please enter income',
+                    'Enter income'),
                 const SizedBox(height: 20),
                 _buildTextField('age', _ageController, TextInputType.number,
-                    'Please enter age'),
+                    'Please enter age', 'Enter age'),
                 const SizedBox(height: 20),
-                _buildTextField('experience', _experienceController,
-                    TextInputType.number, 'Please enter experience'),
+                _buildTextField(
+                    'experience',
+                    _experienceController,
+                    TextInputType.number,
+                    'Please enter experience',
+                    'Enter experience'),
                 const SizedBox(height: 20),
-                _buildTextField('currentJobYears', _currentJobYearsController,
-                    TextInputType.number, 'Please enter current job years'),
+                _buildTextField(
+                    'currentJobYears',
+                    _currentJobYearsController,
+                    TextInputType.number,
+                    'Please enter years at current job',
+                    'Enter Current Job Years'),
                 const SizedBox(height: 20),
                 _buildTextField(
                     'currentHouseYears',
                     _currentHouseYearsController,
                     TextInputType.number,
-                    'Please enter current house years'),
+                    'Please enter years at current house',
+                    'Enter Current House Years'),
                 const SizedBox(height: 20),
                 CustomDropdown(
-                  label: loanFieldLabels['maritalStatus']!,
+                  label: fieldLabels['maritalStatus']!,
                   items: ['Married', 'Single'],
-                  value: _maritalStatus,
+                  value: _selectedMaritalStatus,
                   onChanged: (value) {
                     setState(() {
-                      _maritalStatus = value;
+                      _selectedMaritalStatus = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
                 CustomDropdown(
-                  label: loanFieldLabels['houseOwnership']!,
+                  label: fieldLabels['houseOwnership']!,
                   items: ['Owned', 'Rented'],
-                  value: _houseOwnership,
+                  value: _selectedHouseOwnership,
                   onChanged: (value) {
                     setState(() {
-                      _houseOwnership = value;
+                      _selectedHouseOwnership = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
                 CustomDropdown(
-                  label: loanFieldLabels['carOwnership']!,
+                  label: fieldLabels['carOwnership']!,
                   items: ['Yes', 'No'],
-                  value: _carOwnership,
+                  value: _selectedCarOwnership,
                   onChanged: (value) {
                     setState(() {
-                      _carOwnership = value;
+                      _selectedCarOwnership = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
                 CustomDropdown(
-                  label: loanFieldLabels['profession']!,
+                  label: fieldLabels['profession']!,
                   items: ['Engineer', 'Teacher', 'Doctor', 'Chef'],
-                  value: _profession,
+                  value: _selectedProfession,
                   onChanged: (value) {
                     setState(() {
-                      _profession = value;
+                      _selectedProfession = value;
                     });
                   },
                 ),
                 const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
-                    onPressed: _predictLoanRisk,
+                    onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 34, 34, 34),
+                      backgroundColor: const Color.fromARGB(255, 34, 34, 34),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
@@ -232,5 +155,75 @@ class _LoanPredictionPageState extends State<LoanPredictionPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildTextField(String fieldName, TextEditingController controller,
+      TextInputType inputType, String validationMessage, String hintText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          fieldLabels[fieldName]!,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 5),
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          ),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+            color: Colors.grey[800],
+          ),
+          keyboardType: inputType,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return validationMessage;
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      final userInput = Person(
+        income: int.parse(_incomeController.text),
+        age: int.parse(_ageController.text),
+        experience: int.parse(_experienceController.text),
+        currentJobYears: int.parse(_currentJobYearsController.text),
+        currentHouseYears: int.parse(_currentHouseYearsController.text),
+        maritalStatus: _selectedMaritalStatus ?? '',
+        houseOwnership: _selectedHouseOwnership ?? '',
+        carOwnership: _selectedCarOwnership ?? '',
+        profession: _selectedProfession ?? '',
+        loanStatus: _selectedLoanStatus == 'Accepted',
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultScreen(
+            userInput: userInput,
+            dummyData: dummyData,
+          ),
+        ),
+      );
+    }
   }
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'loanperson.dart';
+import 'loanperson.dart' as loanPersonData; // Use a prefix for the import
+import 'loan_prediction_page.dart'
+    as loanPredictionPageData; // Use a prefix for the import
 import '../custom_app_bar.dart';
-import 'loan_prediction_page.dart';
 
 class LoanGeneralAnalyticsPage extends StatefulWidget {
   @override
@@ -11,13 +12,9 @@ class LoanGeneralAnalyticsPage extends StatefulWidget {
 }
 
 class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
-  final List<Map<String, dynamic>> data = dummyData;
-
   int totalClients = 0;
   int acceptedClients = 0;
-  int deniedClients = 0;
-  int pendingClients = 0;
-  Map<String, double> averages = {};
+  int rejectedClients = 0;
 
   @override
   void initState() {
@@ -27,29 +24,45 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
 
   void calculateAnalytics() {
     setState(() {
-      totalClients = data.length;
+      totalClients = loanPersonData.dummyData.length;
       acceptedClients =
-          data.where((person) => person['loanStatus'] == 'Accepted').length;
-      deniedClients =
-          data.where((person) => person['loanStatus'] == 'Denied').length;
-
-      List<String> numericFields = [
-        'income',
-        'age',
-        'experience',
-        'currentJobYears',
-        'currentHouseYears'
-      ];
-
-      for (var field in numericFields) {
-        averages[field] = data.isNotEmpty
-            ? data
-                    .map((person) => person[field] as int)
-                    .reduce((a, b) => a + b) /
-                totalClients
-            : 0;
-      }
+          loanPersonData.dummyData.where((person) => person.loanStatus).length;
+      rejectedClients =
+          loanPersonData.dummyData.where((person) => !person.loanStatus).length;
     });
+  }
+
+  Widget _buildCard(String title, String value) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.grey[200],
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
@@ -95,260 +108,6 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
     );
   }
 
-  Widget _buildTotalClientsChart() {
-    Map<String, int> totalClientsData = _calculateTotalClientsData(data);
-    return PieChart(
-      PieChartData(
-        sectionsSpace: 0,
-        centerSpaceRadius: 22,
-        sections: totalClientsData.keys.map((status) {
-          Color color = status == 'Accepted' ? Colors.green : Colors.red;
-          return PieChartSectionData(
-            color: color,
-            value: totalClientsData[status]!.toDouble(),
-            title: totalClientsData[status].toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildIncomeChart() {
-    Map<String, int> incomeData = _calculateIncomeData(data);
-    return PieChart(
-      PieChartData(
-        sectionsSpace: 0,
-        centerSpaceRadius: 22,
-        sections: incomeData.keys.map((range) {
-          Color color;
-          switch (range) {
-            case '0-45000':
-              color = Colors.blue;
-              break;
-            case '45000-55000':
-              color = Colors.green;
-              break;
-            case '55000-65000':
-              color = Colors.orange;
-              break;
-            case '65000+':
-              color = Colors.pink;
-              break;
-            default:
-              color = Colors.grey;
-              break;
-          }
-          return PieChartSectionData(
-            color: color,
-            value: incomeData[range]!.toDouble(),
-            title: incomeData[range].toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildExperienceChart() {
-    Map<String, int> experienceData = _calculateExperienceData(data);
-    return PieChart(
-      PieChartData(
-        sectionsSpace: 0,
-        centerSpaceRadius: 22,
-        sections: experienceData.keys.map((years) {
-          Color color;
-          switch (years) {
-            case '0-5':
-              color = Colors.blue;
-              break;
-            case '5-10':
-              color = Colors.green;
-              break;
-            case '10-15':
-              color = Colors.orange;
-              break;
-            case '15+':
-              color = Colors.pink;
-              break;
-            default:
-              color = Colors.grey;
-              break;
-          }
-          return PieChartSectionData(
-            color: color,
-            value: experienceData[years]!.toDouble(),
-            title: experienceData[years].toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildAgeGroupChart() {
-    Map<String, int> ageGroupData = _calculateAgeGroupData(data);
-    return PieChart(
-      PieChartData(
-        sectionsSpace: 0,
-        centerSpaceRadius: 22,
-        sections: ageGroupData.keys.map((group) {
-          Color color;
-          switch (group) {
-            case '20-29':
-              color = Colors.green;
-              break;
-            case '30-39':
-              color = Colors.blue;
-              break;
-            case '40-49':
-              color = Colors.orange;
-              break;
-            case '50+':
-              color = Colors.pink;
-              break;
-            default:
-              color = Colors.grey;
-              break;
-          }
-          return PieChartSectionData(
-            color: color,
-            value: ageGroupData[group]!.toDouble(),
-            title: ageGroupData[group].toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildCurrentJobYearsChart() {
-    Map<String, int> currentJobYearsData = _calculateCurrentJobYearsData(data);
-    return PieChart(
-      PieChartData(
-        sectionsSpace: 0,
-        centerSpaceRadius: 22,
-        sections: currentJobYearsData.keys.map((range) {
-          Color color;
-          switch (range) {
-            case '0-2':
-              color = Colors.green;
-              break;
-            case '2-4':
-              color = Colors.blue;
-              break;
-            case '4-6':
-              color = Colors.orange;
-              break;
-            case '6+':
-              color = Colors.pink;
-              break;
-            default:
-              color = Colors.grey;
-              break;
-          }
-          return PieChartSectionData(
-            color: color,
-            value: currentJobYearsData[range]!.toDouble(),
-            title: currentJobYearsData[range].toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildCurrentHouseYearsChart() {
-    Map<String, int> currentHouseYearsData =
-        _calculateCurrentHouseYearsData(data);
-    return PieChart(
-      PieChartData(
-        sectionsSpace: 0,
-        centerSpaceRadius: 22,
-        sections: currentHouseYearsData.keys.map((range) {
-          Color color;
-          switch (range) {
-            case '0-2':
-              color = Colors.green;
-              break;
-            case '2-4':
-              color = Colors.blue;
-              break;
-            case '4-6':
-              color = Colors.orange;
-              break;
-            case '6+':
-              color = Colors.pink;
-              break;
-            default:
-              color = Colors.grey;
-              break;
-          }
-          return PieChartSectionData(
-            color: color,
-            value: currentHouseYearsData[range]!.toDouble(),
-            title: currentHouseYearsData[range].toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildMaritalStatusChart() {
-    Map<String, int> maritalStatusData = _calculateMaritalStatusData(data);
-    return PieChart(
-      PieChartData(
-        sectionsSpace: 0,
-        centerSpaceRadius: 22,
-        sections: maritalStatusData.keys.map((status) {
-          Color color = status == 'Single' ? Colors.orange : Colors.pink;
-          return PieChartSectionData(
-            color: color,
-            value: maritalStatusData[status]!.toDouble(),
-            title: maritalStatusData[status].toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -357,7 +116,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
         c: context,
         title: 'Loan Prediction',
         backButton: true,
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -387,8 +146,8 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                 childAspectRatio: 1.5,
                 children: [
                   _buildCard('Total Clients', totalClients.toString()),
-                  _buildCard('Accepted Clients', '$acceptedClients'),
-                  _buildCard('Denied Clients', '$deniedClients'),
+                  _buildCard('Accepted Clients', acceptedClients.toString()),
+                  _buildCard('Rejected Clients', rejectedClients.toString()),
                   _buildCard(
                       'Average Age', _calculateAverageAge().toStringAsFixed(1)),
                 ],
@@ -417,46 +176,29 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
-                  _buildChartCard('Total Clients', _buildTotalClientsChart(), [
-                    _buildLegendItem(Colors.green, 'Accepted Client'),
-                    _buildLegendItem(Colors.red, 'Denied Client'),
-                  ]),
-                  _buildChartCard('Income Range', _buildIncomeChart(), [
-                    _buildLegendItem(Colors.blue, '0-45000'),
-                    _buildLegendItem(Colors.green, '45000-55000'),
-                    _buildLegendItem(Colors.orange, '55000-65000'),
-                    _buildLegendItem(Colors.pink, '65000+'),
-                  ]),
-                  _buildChartCard('Experience', _buildExperienceChart(), [
-                    _buildLegendItem(Colors.blue, '0-5'),
-                    _buildLegendItem(Colors.green, '5-10'),
-                    _buildLegendItem(Colors.orange, '10-15'),
-                    _buildLegendItem(Colors.pink, '15+'),
-                  ]),
-                  _buildChartCard('Age Group', _buildAgeGroupChart(), [
-                    _buildLegendItem(Colors.green, '20-29'),
-                    _buildLegendItem(Colors.blue, '30-39'),
-                    _buildLegendItem(Colors.orange, '40-49'),
-                    _buildLegendItem(Colors.pink, '50+'),
-                  ]),
-                  _buildChartCard(
-                      'Current Job Years', _buildCurrentJobYearsChart(), [
-                    _buildLegendItem(Colors.green, '0-2'),
-                    _buildLegendItem(Colors.blue, '2-4'),
-                    _buildLegendItem(Colors.orange, '4-6'),
-                    _buildLegendItem(Colors.pink, '6+'),
-                  ]),
-                  _buildChartCard(
-                      'Current House Years', _buildCurrentHouseYearsChart(), [
-                    _buildLegendItem(Colors.green, '0-2'),
-                    _buildLegendItem(Colors.blue, '2-4'),
-                    _buildLegendItem(Colors.orange, '4-6'),
-                    _buildLegendItem(Colors.pink, '6+'),
-                  ]),
                   _buildChartCard(
                       'Marital Status', _buildMaritalStatusChart(), [
-                    _buildLegendItem(Colors.orange, 'Single'),
-                    _buildLegendItem(Colors.pink, 'Married'),
+                    _buildLegendItem(Colors.green, 'Single'),
+                    _buildLegendItem(Colors.red, 'Married'),
+                  ]),
+                  _buildChartCard(
+                      'House Ownership', _buildHouseOwnershipChart(), [
+                    _buildLegendItem(Colors.blue, 'Owned'),
+                    _buildLegendItem(Colors.orange, 'Rented'),
+                  ]),
+                  _buildChartCard('Car Ownership', _buildCarOwnershipChart(), [
+                    _buildLegendItem(Colors.green, 'Yes'),
+                    _buildLegendItem(Colors.red, 'No'),
+                  ]),
+                  _buildChartCard('Profession', _buildProfessionChart(), [
+                    _buildLegendItem(Colors.blue, 'Engineer'),
+                    _buildLegendItem(Colors.green, 'Teacher'),
+                    _buildLegendItem(Colors.red, 'Doctor'),
+                    _buildLegendItem(Colors.orange, 'Chef'),
+                  ]),
+                  _buildChartCard('Loan Status', _buildLoanStatusChart(), [
+                    _buildLegendItem(Colors.green, 'Accepted'),
+                    _buildLegendItem(Colors.red, 'Denied'),
                   ]),
                 ],
               ),
@@ -473,7 +215,9 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoanPredictionPage()),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        loanPredictionPageData.UserInputForm()),
               );
             },
             label:
@@ -490,197 +234,203 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   }
 
   double _calculateAverageAge() {
-    if (data.isEmpty) return 0;
+    if (loanPersonData.dummyData.isEmpty) return 0;
     int totalAge =
-        data.fold(0, (sum, person) => sum + (person['age'] as int? ?? 0));
-    return totalAge / data.length;
+        loanPersonData.dummyData.fold(0, (sum, person) => sum + person.age);
+    return totalAge / loanPersonData.dummyData.length;
   }
 
-  Widget _buildCard(String title, String value) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.grey[200],
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
+  Widget _buildMaritalStatusChart() {
+    Map<String, int> maritalStatusData =
+        _calculateMaritalStatusData(loanPersonData.dummyData);
+    print('Marital Status Data: $maritalStatusData'); // Debugging
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: maritalStatusData.entries.map((entry) {
+          return PieChartSectionData(
+            color: entry.key == 'Single' ? Colors.green : Colors.red,
+            value: entry.value.toDouble(),
+            title: '${entry.value}',
+            radius: 30,
+          );
+        }).toList(),
       ),
     );
   }
 
-  Map<String, int> _calculateTotalClientsData(List<Map<String, dynamic>> data) {
-    int acceptedCount = data.where((person) {
-      var loanStatus = person['loanStatus'];
-      return loanStatus != null && loanStatus.toLowerCase() == 'accepted';
-    }).length;
-    int deniedCount = data.length - acceptedCount;
-    return {'Accepted': acceptedCount, 'Denied': deniedCount};
+  Widget _buildHouseOwnershipChart() {
+    Map<String, int> houseOwnershipData =
+        _calculateHouseOwnershipData(loanPersonData.dummyData);
+    print('House Ownership Data: $houseOwnershipData'); // Debugging
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: houseOwnershipData.entries.map((entry) {
+          return PieChartSectionData(
+            color: entry.key == 'Owned' ? Colors.blue : Colors.orange,
+            value: entry.value.toDouble(),
+            title: '${entry.value}',
+            radius: 30,
+          );
+        }).toList(),
+      ),
+    );
   }
 
-  Map<String, int> _calculateIncomeData(List<Map<String, dynamic>> data) {
-    Map<String, int> incomeMap = {
-      '0-45000': 0,
-      '45000-55000': 0,
-      '55000-65000': 0,
-      '65000+': 0,
-    };
-    data.forEach((person) {
-      if (person['income'] != null) {
-        if (person['income'] >= 0 && person['income'] < 45000) {
-          incomeMap['0-45000'] = (incomeMap['0-45000'] ?? 0) + 1;
-        } else if (person['income'] >= 45000 && person['income'] < 55000) {
-          incomeMap['45000-55000'] = (incomeMap['45000-55000'] ?? 0) + 1;
-        } else if (person['income'] >= 55000 && person['income'] < 65000) {
-          incomeMap['55000-65000'] = (incomeMap['55000-65000'] ?? 0) + 1;
-        } else {
-          incomeMap['65000+'] = (incomeMap['65000+'] ?? 0) + 1;
-        }
-      }
-    });
-    return incomeMap;
+  Widget _buildCarOwnershipChart() {
+    Map<String, int> carOwnershipData =
+        _calculateCarOwnershipData(loanPersonData.dummyData);
+    print('Car Ownership Data: $carOwnershipData'); // Debugging
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: carOwnershipData.entries.map((entry) {
+          return PieChartSectionData(
+            color: entry.key == 'Yes' ? Colors.green : Colors.red,
+            value: entry.value.toDouble(),
+            title: '${entry.value}',
+            radius: 30,
+          );
+        }).toList(),
+      ),
+    );
   }
 
-  Map<String, int> _calculateExperienceData(List<Map<String, dynamic>> data) {
-    Map<String, int> experienceMap = {
-      '0-5': 0,
-      '5-10': 0,
-      '10-15': 0,
-      '15+': 0,
-    };
-    data.forEach((person) {
-      if (person['experience'] != null) {
-        if (person['experience'] >= 0 && person['experience'] < 5) {
-          experienceMap['0-5'] = (experienceMap['0-5'] ?? 0) + 1;
-        } else if (person['experience'] >= 5 && person['experience'] < 10) {
-          experienceMap['5-10'] = (experienceMap['5-10'] ?? 0) + 1;
-        } else if (person['experience'] >= 10 && person['experience'] < 15) {
-          experienceMap['10-15'] = (experienceMap['10-15'] ?? 0) + 1;
-        } else {
-          experienceMap['15+'] = (experienceMap['15+'] ?? 0) + 1;
-        }
-      }
-    });
-    return experienceMap;
+  Widget _buildProfessionChart() {
+    Map<String, int> professionData =
+        _calculateProfessionData(loanPersonData.dummyData);
+    print('Profession Data: $professionData'); // Debugging
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: professionData.entries.map((entry) {
+          return PieChartSectionData(
+            color: _getProfessionColor(entry.key),
+            value: entry.value.toDouble(),
+            title: '${entry.value}',
+            radius: 30,
+          );
+        }).toList(),
+      ),
+    );
   }
 
-  Map<String, int> _calculateAgeGroupData(List<Map<String, dynamic>> data) {
-    Map<String, int> ageGroupMap = {
-      '20-29': 0,
-      '30-39': 0,
-      '40-49': 0,
-      '50+': 0,
-    };
-    data.forEach((person) {
-      if (person['age'] != null) {
-        if (person['age'] >= 20 && person['age'] < 30) {
-          ageGroupMap['20-29'] = (ageGroupMap['20-29'] ?? 0) + 1;
-        } else if (person['age'] >= 30 && person['age'] < 40) {
-          ageGroupMap['30-39'] = (ageGroupMap['30-39'] ?? 0) + 1;
-        } else if (person['age'] >= 40 && person['age'] < 50) {
-          ageGroupMap['40-49'] = (ageGroupMap['40-49'] ?? 0) + 1;
-        } else {
-          ageGroupMap['50+'] = (ageGroupMap['50+'] ?? 0) + 1;
-        }
-      }
-    });
-    return ageGroupMap;
+  Widget _buildLoanStatusChart() {
+    Map<String, int> loanStatusData =
+        _calculateLoanStatusData(loanPersonData.dummyData);
+    print('Loan Status Data: $loanStatusData'); // Debugging
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 0,
+        centerSpaceRadius: 22,
+        sections: loanStatusData.entries.map((entry) {
+          return PieChartSectionData(
+            color: entry.key == 'Accepted' ? Colors.green : Colors.red,
+            value: entry.value.toDouble(),
+            title: '${entry.value}',
+            radius: 30,
+          );
+        }).toList(),
+      ),
+    );
   }
 
-  Map<String, int> _calculateCurrentJobYearsData(
-      List<Map<String, dynamic>> data) {
-    Map<String, int> jobYearsMap = {
-      '0-2': 0,
-      '2-4': 0,
-      '4-6': 0,
-      '6+': 0,
-    };
-    data.forEach((person) {
-      if (person['currentJobYears'] != null) {
-        if (person['currentJobYears'] >= 0 && person['currentJobYears'] < 2) {
-          jobYearsMap['0-2'] = (jobYearsMap['0-2'] ?? 0) + 1;
-        } else if (person['currentJobYears'] >= 2 &&
-            person['currentJobYears'] < 4) {
-          jobYearsMap['2-4'] = (jobYearsMap['2-4'] ?? 0) + 1;
-        } else if (person['currentJobYears'] >= 4 &&
-            person['currentJobYears'] < 6) {
-          jobYearsMap['4-6'] = (jobYearsMap['4-6'] ?? 0) + 1;
-        } else {
-          jobYearsMap['6+'] = (jobYearsMap['6+'] ?? 0) + 1;
-        }
-      }
-    });
-    return jobYearsMap;
-  }
-
-  Map<String, int> _calculateCurrentHouseYearsData(
-      List<Map<String, dynamic>> data) {
-    Map<String, int> houseYearsMap = {
-      '0-2': 0,
-      '2-4': 0,
-      '4-6': 0,
-      '6+': 0,
-    };
-    data.forEach((person) {
-      if (person['currentHouseYears'] != null) {
-        if (person['currentHouseYears'] >= 0 &&
-            person['currentHouseYears'] < 2) {
-          houseYearsMap['0-2'] = (houseYearsMap['0-2'] ?? 0) + 1;
-        } else if (person['currentHouseYears'] >= 2 &&
-            person['currentHouseYears'] < 4) {
-          houseYearsMap['2-4'] = (houseYearsMap['2-4'] ?? 0) + 1;
-        } else if (person['currentHouseYears'] >= 4 &&
-            person['currentHouseYears'] < 6) {
-          houseYearsMap['4-6'] = (houseYearsMap['4-6'] ?? 0) + 1;
-        } else {
-          houseYearsMap['6+'] = (houseYearsMap['6+'] ?? 0) + 1;
-        }
-      }
-    });
-    return houseYearsMap;
+  Color _getProfessionColor(String profession) {
+    switch (profession) {
+      case 'Engineer':
+        return Colors.blue;
+      case 'Teacher':
+        return Colors.green;
+      case 'Doctor':
+        return Colors.red;
+      case 'Chef':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
   }
 
   Map<String, int> _calculateMaritalStatusData(
-      List<Map<String, dynamic>> data) {
-    Map<String, int> maritalStatusMap = {
+      List<loanPersonData.Person> data) {
+    Map<String, int> maritalStatusData = {
       'Single': 0,
       'Married': 0,
     };
-    data.forEach((person) {
-      if (person['maritalStatus'] != null) {
-        if (person['maritalStatus'].toLowerCase() == 'single') {
-          maritalStatusMap['Single'] = (maritalStatusMap['Single'] ?? 0) + 1;
-        } else if (person['maritalStatus'].toLowerCase() == 'married') {
-          maritalStatusMap['Married'] = (maritalStatusMap['Married'] ?? 0) + 1;
-        }
+    for (var person in data) {
+      if (person.maritalStatus == 'Single') {
+        maritalStatusData['Single'] = (maritalStatusData['Single'] ?? 0) + 1;
+      } else if (person.maritalStatus == 'Married') {
+        maritalStatusData['Married'] = (maritalStatusData['Married'] ?? 0) + 1;
       }
-    });
-    return maritalStatusMap;
+    }
+    return maritalStatusData;
   }
-}
 
-void main() {
-  runApp(MaterialApp(
-    home: LoanGeneralAnalyticsPage(),
-  ));
+  Map<String, int> _calculateHouseOwnershipData(
+      List<loanPersonData.Person> data) {
+    Map<String, int> houseOwnershipData = {
+      'Owned': 0,
+      'Rented': 0,
+    };
+    for (var person in data) {
+      if (person.houseOwnership == 'Owned') {
+        houseOwnershipData['Owned'] = (houseOwnershipData['Owned'] ?? 0) + 1;
+      } else if (person.houseOwnership == 'Rented') {
+        houseOwnershipData['Rented'] = (houseOwnershipData['Rented'] ?? 0) + 1;
+      }
+    }
+    return houseOwnershipData;
+  }
+
+  Map<String, int> _calculateCarOwnershipData(
+      List<loanPersonData.Person> data) {
+    Map<String, int> carOwnershipData = {
+      'Yes': 0,
+      'No': 0,
+    };
+    for (var person in data) {
+      if (person.carOwnership == 'Yes') {
+        carOwnershipData['Yes'] = (carOwnershipData['Yes'] ?? 0) + 1;
+      } else if (person.carOwnership == 'No') {
+        carOwnershipData['No'] = (carOwnershipData['No'] ?? 0) + 1;
+      }
+    }
+    return carOwnershipData;
+  }
+
+  Map<String, int> _calculateProfessionData(List<loanPersonData.Person> data) {
+    Map<String, int> professionData = {
+      'Engineer': 0,
+      'Teacher': 0,
+      'Doctor': 0,
+      'Chef': 0,
+    };
+    for (var person in data) {
+      if (professionData.containsKey(person.profession)) {
+        professionData[person.profession] =
+            (professionData[person.profession] ?? 0) + 1;
+      }
+    }
+    return professionData;
+  }
+
+  Map<String, int> _calculateLoanStatusData(List<loanPersonData.Person> data) {
+    Map<String, int> loanStatusData = {
+      'Accepted': 0,
+      'Denied': 0,
+    };
+    for (var person in data) {
+      if (person.loanStatus) {
+        loanStatusData['Accepted'] = (loanStatusData['Accepted'] ?? 0) + 1;
+      } else {
+        loanStatusData['Denied'] = (loanStatusData['Denied'] ?? 0) + 1;
+      }
+    }
+    return loanStatusData;
+  }
 }

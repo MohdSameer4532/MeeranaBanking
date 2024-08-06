@@ -41,6 +41,7 @@ class _UserInputFormState extends State<UserInputForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         backButton: true,
         c: context,

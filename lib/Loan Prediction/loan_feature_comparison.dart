@@ -1,157 +1,224 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'loanperson.dart';
 
-class FeatureComparisonLineChart extends StatelessWidget {
-  final String title;
-  final double userValue;
-  final double datasetValue;
-  final Color color;
+class FeatureComparisonGraph extends StatefulWidget {
+  final List<Person> dummyData;
+  final Person userInput;
+  final String feature;
 
-  FeatureComparisonLineChart({
-    required this.title,
-    required this.userValue,
-    required this.datasetValue,
-    required this.color,
-  });
+  FeatureComparisonGraph({
+    required this.dummyData,
+    required this.userInput,
+    required this.feature,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _FeatureComparisonGraphState createState() => _FeatureComparisonGraphState();
+}
+
+class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
+  double _minX = 0;
+  double _maxX = 0;
+  double _minY = 0;
+  double _maxY = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateBoundaries();
+  }
+
+  void _updateBoundaries() {
+    final List<double> allValues = [
+      ...widget.dummyData.map((person) => _getFeatureValue(person)),
+      _getFeatureValue(widget.userInput)
+    ];
+    if (allValues.isNotEmpty) {
+      _minX = 0;
+      _maxX = widget.dummyData.length.toDouble();
+      _minY = allValues.reduce((a, b) => a < b ? a : b);
+      _maxY = allValues.reduce((a, b) => a > b ? a : b);
+
+      // Add some padding to the Y-axis
+      double yPadding = (_maxY - _minY) * 0.1;
+      _minY -= yPadding;
+      _maxY += yPadding;
+
+      // Ensure minimum Y value is not negative
+      _minY = _minY < 0 ? 0 : _minY;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-          child: Text(
-            title,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ),
-        SizedBox(height: 10),
-        Container(
-          height: 300,
-          child: LineChart(
-            LineChartData(
-              minX: 0,
-              maxX: 1,
-              minY: 0,
-              maxY: _getMaxY(),
-              titlesData: FlTitlesData(
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 40,
-                    getTitlesWidget: (value, meta) {
-                      String text = '';
-                      switch (value.toInt()) {
-                        case 0:
-                          text = 'Your Value';
-                          break;
-                        case 1:
-                          text = 'Dataset Avg';
-                          break;
-                      }
-                      return Text(text);
-                    },
-                  ),
-                ),
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 40,
-                    getTitlesWidget: (value, meta) {
-                      return Text(value.toInt().toString());
-                    },
-                  ),
-                ),
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                rightTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-              ),
-              borderData: FlBorderData(show: false),
-              lineBarsData: [
-                _createLineChartBarData([userValue], color, 'User'),
-                _createLineChartBarData(
-                    [datasetValue], Colors.grey, 'Dataset Avg'),
-              ],
-              extraLinesData: ExtraLinesData(
-                horizontalLines: [
-                  HorizontalLine(
-                    y: userValue,
-                    color: color,
-                    strokeWidth: 2,
-                    label: HorizontalLineLabel(
-                      show: true,
-                      alignment: Alignment.topRight,
-                      padding: const EdgeInsets.only(right: 5, top: 5),
-                      style: const TextStyle(color: Colors.black),
-                      labelResolver: (line) =>
-                          'User: ${userValue.toStringAsFixed(2)}',
+    final List<double> featureValues =
+        widget.dummyData.map((person) => _getFeatureValue(person)).toList();
+    if (featureValues.isEmpty) {
+      return const Center(child: Text('No data available for this feature.'));
+    }
+
+    final double userValue = _getFeatureValue(widget.userInput);
+    final double meanVal =
+        featureValues.reduce((a, b) => a + b) / featureValues.length;
+    final double medianVal = _calculateMedian(featureValues);
+
+    _updateBoundaries();
+
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        height: constraints.maxHeight,
+        width: constraints.maxWidth,
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Expanded(
+              child: LineChart(
+                LineChartData(
+                  minX: _minX,
+                  maxX: _maxX,
+                  minY: _minY,
+                  maxY: _maxY,
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          return Text(value.toStringAsFixed(0));
+                        },
+                      ),
                     ),
                   ),
-                  HorizontalLine(
-                    y: datasetValue,
-                    color: Colors.grey,
-                    strokeWidth: 2,
-                    label: HorizontalLineLabel(
-                      show: true,
-                      alignment: Alignment.topRight,
-                      padding: const EdgeInsets.only(right: 5, top: 5),
-                      style: const TextStyle(color: Colors.black),
-                      labelResolver: (line) =>
-                          'Dataset Avg: ${datasetValue.toStringAsFixed(2)}',
+                  borderData: FlBorderData(show: true),
+                  lineBarsData: featureValues.isNotEmpty
+                      ? [
+                          _createLineChartBarData(featureValues, Colors.blue),
+                          _createHorizontalLine(
+                              _maxY, Colors.orange, 'Maximum'),
+                          _createHorizontalLine(meanVal, Colors.purple, 'Mean'),
+                          _createHorizontalLine(
+                              medianVal, Colors.yellow, 'Median'),
+                          _createHorizontalLine(
+                              userValue, Colors.green, 'User Data'),
+                        ]
+                      : [],
+                  extraLinesData: ExtraLinesData(
+                    horizontalLines: [
+                      HorizontalLine(
+                        y: userValue,
+                        color: Colors.green,
+                        strokeWidth: 2,
+                        label: HorizontalLineLabel(
+                          show: true,
+                          alignment: Alignment.topRight,
+                          padding: EdgeInsets.only(right: 5, top: 5),
+                          style: TextStyle(color: Colors.black),
+                          labelResolver: (line) =>
+                              'User: ${userValue.toStringAsFixed(2)}',
+                        ),
+                      ),
+                    ],
+                  ),
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+                        return touchedBarSpots.map((barSpot) {
+                          final flSpot = barSpot;
+                          return LineTooltipItem(
+                            '${widget.feature}: ${flSpot.y.toStringAsFixed(2)}',
+                            TextStyle(color: Colors.white),
+                          );
+                        }).toList();
+                      },
                     ),
                   ),
-                ],
-              ),
-              lineTouchData: LineTouchData(
-                touchTooltipData: LineTouchTooltipData(
-                  getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
-                    return touchedBarSpots.map((barSpot) {
-                      final flSpot = barSpot;
-                      return LineTooltipItem(
-                        '${flSpot.y}',
-                        const TextStyle(color: Colors.white),
-                      );
-                    }).toList();
-                  },
                 ),
               ),
             ),
-          ),
+            SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _legendItem(Colors.blue, 'Data'),
+                  _legendItem(Colors.orange, 'Max'),
+                  _legendItem(Colors.purple, 'Mean'),
+                  _legendItem(Colors.yellow, 'Median'),
+                  _legendItem(Colors.green, 'User'),
+                ],
+              ),
+            ),
+          ],
         ),
-        SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Your Value: ${userValue.toStringAsFixed(2)}'),
-              Text('Dataset Average: ${datasetValue.toStringAsFixed(2)}'),
-            ],
-          ),
+      );
+    });
+  }
+
+  Widget _legendItem(Color color, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          color: color,
         ),
-        SizedBox(height: 20), // Adjust spacing as needed
+        SizedBox(width: 4),
+        Text(label),
+        SizedBox(width: 8),
       ],
     );
   }
 
-  double _getMaxY() {
-    return (userValue > datasetValue ? userValue : datasetValue) * 1.2;
+  double _getFeatureValue(Person person) {
+    switch (widget.feature) {
+      case 'income':
+        return person.income.toDouble();
+      case 'age':
+        return person.age.toDouble();
+      case 'experience':
+        return person.experience.toDouble();
+      case 'currentJobYears':
+        return person.currentJobYears.toDouble();
+      case 'currentHouseYears':
+        return person.currentHouseYears.toDouble();
+      default:
+        return 0;
+    }
   }
 
-  LineChartBarData _createLineChartBarData(
-      List<double> values, Color color, String label) {
+  double _calculateMedian(List<double> values) {
+    values.sort();
+    final middle = values.length ~/ 2;
+    if (values.length % 2 == 0) {
+      return (values[middle - 1] + values[middle]) / 2;
+    } else {
+      return values[middle];
+    }
+  }
+
+  LineChartBarData _createLineChartBarData(List<double> values, Color color) {
     return LineChartBarData(
       spots: values.asMap().entries.map((entry) {
-        double y = entry.value;
-        return FlSpot(entry.key.toDouble(), y);
+        return FlSpot(entry.key.toDouble(), entry.value);
       }).toList(),
       isCurved: true,
       color: color,
-      dotData: FlDotData(show: true),
+      dotData: FlDotData(show: false),
+      belowBarData: BarAreaData(show: false),
+    );
+  }
+
+  LineChartBarData _createHorizontalLine(double y, Color color, String label) {
+    return LineChartBarData(
+      spots: [FlSpot(_minX, y), FlSpot(_maxX, y)],
+      color: color,
+      dotData: FlDotData(show: false),
       belowBarData: BarAreaData(show: false),
     );
   }
