@@ -41,3 +41,4 @@ flutter_icons:
   ios: true
   image_path: "assets/logo.png"
   min_sdk_android: 21
+  
