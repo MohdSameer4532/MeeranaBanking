@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'loanperson.dart' as loanPersonData; // Use a prefix for the import
-import 'loan_prediction_page.dart'
-    as loanPredictionPageData; // Use a prefix for the import
+import 'loanperson.dart' as loanPersonData;
+import 'loan_prediction_page.dart' as loanPredictionPageData;
 import '../custom_app_bar.dart';
 
 class LoanGeneralAnalyticsPage extends StatefulWidget {
@@ -171,12 +170,12 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
-                childAspectRatio: 0.68,
+                childAspectRatio: 0.8,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
                   _buildChartCard(
-                      'Marital Status', _buildMaritalStatusChart(), [
+                      'Marital Status', _buildMaritalStatusPieChart(), [
                     _buildLegendItem(Colors.green, 'Single'),
                     _buildLegendItem(Colors.red, 'Married'),
                   ]),
@@ -200,6 +199,46 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                     _buildLegendItem(Colors.red, 'Denied'),
                   ]),
                 ],
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Top 3 Professions',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                height: 300,
+                child: _buildTop3ProfessionsChart(),
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Marital Status',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                height: 300,
+                child: _buildMaritalStatusBarChart(),
               ),
             ),
             SizedBox(height: 16),
@@ -239,10 +278,9 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
     return totalAge / loanPersonData.dummyData.length;
   }
 
-  Widget _buildMaritalStatusChart() {
+  Widget _buildMaritalStatusPieChart() {
     Map<String, int> maritalStatusData =
         _calculateMaritalStatusData(loanPersonData.dummyData);
-    print('Marital Status Data: $maritalStatusData'); // Debugging
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -262,7 +300,6 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   Widget _buildHouseOwnershipChart() {
     Map<String, int> houseOwnershipData =
         _calculateHouseOwnershipData(loanPersonData.dummyData);
-    print('House Ownership Data: $houseOwnershipData'); // Debugging
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -282,7 +319,6 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   Widget _buildCarOwnershipChart() {
     Map<String, int> carOwnershipData =
         _calculateCarOwnershipData(loanPersonData.dummyData);
-    print('Car Ownership Data: $carOwnershipData'); // Debugging
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -302,14 +338,30 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   Widget _buildProfessionChart() {
     Map<String, int> professionData =
         _calculateProfessionData(loanPersonData.dummyData);
-    print('Profession Data: $professionData'); // Debugging
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
         centerSpaceRadius: 22,
         sections: professionData.entries.map((entry) {
+          Color color;
+          switch (entry.key) {
+            case 'Engineer':
+              color = Colors.blue;
+              break;
+            case 'Teacher':
+              color = Colors.green;
+              break;
+            case 'Doctor':
+              color = Colors.red;
+              break;
+            case 'Chef':
+              color = Colors.orange;
+              break;
+            default:
+              color = Colors.grey;
+          }
           return PieChartSectionData(
-            color: _getProfessionColor(entry.key),
+            color: color,
             value: entry.value.toDouble(),
             title: '${entry.value}',
             radius: 30,
@@ -322,7 +374,6 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   Widget _buildLoanStatusChart() {
     Map<String, int> loanStatusData =
         _calculateLoanStatusData(loanPersonData.dummyData);
-    print('Loan Status Data: $loanStatusData'); // Debugging
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
@@ -339,97 +390,250 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
     );
   }
 
-  Color _getProfessionColor(String profession) {
-    switch (profession) {
-      case 'Engineer':
-        return Colors.blue;
-      case 'Teacher':
-        return Colors.green;
-      case 'Doctor':
-        return Colors.red;
-      case 'Chef':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
+  Widget _buildTop3ProfessionsChart() {
+    Map<String, int> professionData =
+        _calculateTop3ProfessionsData(loanPersonData.dummyData);
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        maxY: professionData.values.reduce((a, b) => a > b ? a : b).toDouble(),
+        barTouchData: BarTouchData(enabled: false),
+        titlesData: FlTitlesData(
+          show: true,
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                List<String> titles = professionData.keys.toList();
+                return Text(
+                  titles[value.toInt()],
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                );
+              },
+              reservedSize: 30,
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                return Text(
+                  value.toInt().toString(),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                );
+              },
+              reservedSize: 30,
+            ),
+          ),
+        ),
+        borderData: FlBorderData(show: false),
+        barGroups: professionData.entries
+            .map((entry) => BarChartGroupData(
+                  x: professionData.keys.toList().indexOf(entry.key),
+                  barRods: [
+                    BarChartRodData(
+                      toY: entry.value.toDouble(),
+                      color: Colors.blue,
+                      width: 22,
+                    )
+                  ],
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildMaritalStatusBarChart() {
+    Map<String, int> maritalStatusData =
+        _calculateMaritalStatusData(loanPersonData.dummyData);
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        maxY:
+            maritalStatusData.values.reduce((a, b) => a > b ? a : b).toDouble(),
+        barTouchData: BarTouchData(enabled: false),
+        titlesData: FlTitlesData(
+          show: true,
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                List<String> titles = maritalStatusData.keys.toList();
+                return Text(
+                  titles[value.toInt()],
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                );
+              },
+              reservedSize: 30,
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                return Text(
+                  value.toInt().toString(),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                );
+              },
+              reservedSize: 30,
+            ),
+          ),
+        ),
+        borderData: FlBorderData(show: false),
+        barGroups: maritalStatusData.entries
+            .map((entry) => BarChartGroupData(
+                  x: maritalStatusData.keys.toList().indexOf(entry.key),
+                  barRods: [
+                    BarChartRodData(
+                      toY: entry.value.toDouble(),
+                      color: entry.key == 'Single' ? Colors.green : Colors.red,
+                      width: 22,
+                    )
+                  ],
+                ))
+            .toList(),
+      ),
+    );
   }
 
   Map<String, int> _calculateMaritalStatusData(
       List<loanPersonData.Person> data) {
-    Map<String, int> maritalStatusData = {
+    final Map<String, int> maritalStatusData = {
       'Single': 0,
       'Married': 0,
     };
+
     for (var person in data) {
       if (person.maritalStatus == 'Single') {
-        maritalStatusData['Single'] = (maritalStatusData['Single'] ?? 0) + 1;
+        maritalStatusData['Single'] = maritalStatusData['Single']! + 1;
       } else if (person.maritalStatus == 'Married') {
-        maritalStatusData['Married'] = (maritalStatusData['Married'] ?? 0) + 1;
+        maritalStatusData['Married'] = maritalStatusData['Married']! + 1;
       }
     }
+
     return maritalStatusData;
   }
 
   Map<String, int> _calculateHouseOwnershipData(
       List<loanPersonData.Person> data) {
-    Map<String, int> houseOwnershipData = {
+    final Map<String, int> houseOwnershipData = {
       'Owned': 0,
       'Rented': 0,
     };
+
     for (var person in data) {
       if (person.houseOwnership == 'Owned') {
-        houseOwnershipData['Owned'] = (houseOwnershipData['Owned'] ?? 0) + 1;
+        houseOwnershipData['Owned'] = houseOwnershipData['Owned']! + 1;
       } else if (person.houseOwnership == 'Rented') {
-        houseOwnershipData['Rented'] = (houseOwnershipData['Rented'] ?? 0) + 1;
+        houseOwnershipData['Rented'] = houseOwnershipData['Rented']! + 1;
       }
     }
+
     return houseOwnershipData;
   }
 
   Map<String, int> _calculateCarOwnershipData(
       List<loanPersonData.Person> data) {
-    Map<String, int> carOwnershipData = {
+    final Map<String, int> carOwnershipData = {
       'Yes': 0,
       'No': 0,
     };
+
     for (var person in data) {
       if (person.carOwnership == 'Yes') {
-        carOwnershipData['Yes'] = (carOwnershipData['Yes'] ?? 0) + 1;
+        carOwnershipData['Yes'] = carOwnershipData['Yes']! + 1;
       } else if (person.carOwnership == 'No') {
-        carOwnershipData['No'] = (carOwnershipData['No'] ?? 0) + 1;
+        carOwnershipData['No'] = carOwnershipData['No']! + 1;
       }
     }
+
     return carOwnershipData;
   }
 
   Map<String, int> _calculateProfessionData(List<loanPersonData.Person> data) {
-    Map<String, int> professionData = {
+    final Map<String, int> professionData = {
       'Engineer': 0,
       'Teacher': 0,
       'Doctor': 0,
       'Chef': 0,
     };
+
     for (var person in data) {
-      if (professionData.containsKey(person.profession)) {
-        professionData[person.profession] =
-            (professionData[person.profession] ?? 0) + 1;
+      if (person.profession == 'Engineer') {
+        professionData['Engineer'] = professionData['Engineer']! + 1;
+      } else if (person.profession == 'Teacher') {
+        professionData['Teacher'] = professionData['Teacher']! + 1;
+      } else if (person.profession == 'Doctor') {
+        professionData['Doctor'] = professionData['Doctor']! + 1;
+      } else if (person.profession == 'Chef') {
+        professionData['Chef'] = professionData['Chef']! + 1;
       }
     }
+
     return professionData;
   }
 
   Map<String, int> _calculateLoanStatusData(List<loanPersonData.Person> data) {
-    Map<String, int> loanStatusData = {
+    final Map<String, int> loanStatusData = {
       'Accepted': 0,
       'Denied': 0,
     };
+
     for (var person in data) {
       if (person.loanStatus) {
-        loanStatusData['Accepted'] = (loanStatusData['Accepted'] ?? 0) + 1;
+        loanStatusData['Accepted'] = loanStatusData['Accepted']! + 1;
       } else {
-        loanStatusData['Denied'] = (loanStatusData['Denied'] ?? 0) + 1;
+        loanStatusData['Denied'] = loanStatusData['Denied']! + 1;
       }
     }
+
     return loanStatusData;
+  }
+
+  Map<String, int> _calculateTop3ProfessionsData(
+      List<loanPersonData.Person> data) {
+    final Map<String, int> professionData = {
+      'Engineer': 0,
+      'Teacher': 0,
+      'Doctor': 0,
+      'Chef': 0,
+    };
+
+    for (var person in data) {
+      if (person.profession == 'Engineer') {
+        professionData['Engineer'] = professionData['Engineer']! + 1;
+      } else if (person.profession == 'Teacher') {
+        professionData['Teacher'] = professionData['Teacher']! + 1;
+      } else if (person.profession == 'Doctor') {
+        professionData['Doctor'] = professionData['Doctor']! + 1;
+      } else if (person.profession == 'Chef') {
+        professionData['Chef'] = professionData['Chef']! + 1;
+      }
+    }
+
+    final sortedProfessions = professionData.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return {
+      for (var i = 0; i < sortedProfessions.length && i < 3; i++)
+        sortedProfessions[i].key: sortedProfessions[i].value
+    };
   }
 }
