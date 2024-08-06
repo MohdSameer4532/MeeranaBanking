@@ -307,6 +307,18 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
             ),
             SizedBox(height: 16),
             Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Graphical View',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
                 shrinkWrap: true,
