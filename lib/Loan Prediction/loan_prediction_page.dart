@@ -4,7 +4,6 @@ import 'loan_result_page.dart';
 import '../custom_dropdown.dart';
 import '../custom_app_bar.dart';
 
-
 final Map<String, String> fieldLabels = {
   'income': 'Income',
   'age': 'Age',
@@ -40,6 +39,7 @@ class _UserInputFormState extends State<UserInputForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         backButton: true,
         c: context,
