@@ -194,9 +194,11 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                     _buildLegendItem(Colors.red, 'Doctor'),
                     _buildLegendItem(Colors.orange, 'Chef'),
                   ]),
-                  _buildChartCard('Loan Status', _buildLoanStatusChart(), [
-                    _buildLegendItem(Colors.green, 'Accepted'),
-                    _buildLegendItem(Colors.red, 'Denied'),
+                  _buildChartCard('Age Group', _buildAgeGroupChart(), [
+                    _buildLegendItem(Colors.green, '20-29'),
+                    _buildLegendItem(Colors.blue, '30-39'),
+                    _buildLegendItem(Colors.orange, '40-49'),
+                    _buildLegendItem(Colors.pink, '50-59'),
                   ]),
                 ],
               ),
@@ -371,19 +373,42 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
     );
   }
 
-  Widget _buildLoanStatusChart() {
-    Map<String, int> loanStatusData =
-        _calculateLoanStatusData(loanPersonData.dummyData);
+  Widget _buildAgeGroupChart() {
+    Map<String, int> ageGroupData =
+        _calculateAgeGroupData(loanPersonData.dummyData);
     return PieChart(
       PieChartData(
         sectionsSpace: 0,
         centerSpaceRadius: 22,
-        sections: loanStatusData.entries.map((entry) {
+        sections: ageGroupData.keys.map((group) {
+          Color color;
+          switch (group) {
+            case '20-29':
+              color = Colors.green;
+              break;
+            case '30-39':
+              color = Colors.blue;
+              break;
+            case '40-49':
+              color = Colors.orange;
+              break;
+            case '50-59':
+              color = Colors.pink;
+              break;
+            default:
+              color = Colors.grey;
+              break;
+          }
           return PieChartSectionData(
-            color: entry.key == 'Accepted' ? Colors.green : Colors.red,
-            value: entry.value.toDouble(),
-            title: '${entry.value}',
+            color: color,
+            value: ageGroupData[group]!.toDouble(),
+            title: ageGroupData[group].toString(),
             radius: 30,
+            titleStyle: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           );
         }).toList(),
       ),
@@ -590,21 +615,29 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
     return professionData;
   }
 
-  Map<String, int> _calculateLoanStatusData(List<loanPersonData.Person> data) {
-    final Map<String, int> loanStatusData = {
-      'Accepted': 0,
-      'Denied': 0,
+  Map<String, int> _calculateAgeGroupData(
+      List<loanPersonData.Person> dummyData) {
+    Map<String, int> ageGroupData = {
+      '20-29': 0,
+      '30-39': 0,
+      '40-49': 0,
+      '50-59': 0
     };
 
-    for (var person in data) {
-      if (person.loanStatus) {
-        loanStatusData['Accepted'] = loanStatusData['Accepted']! + 1;
-      } else {
-        loanStatusData['Denied'] = loanStatusData['Denied']! + 1;
+    for (var person in dummyData) {
+      int age = person.age; // Use the age directly from the Person object
+      if (age >= 20 && age <= 29) {
+        ageGroupData['20-29'] = ageGroupData['20-29']! + 1;
+      } else if (age >= 30 && age <= 39) {
+        ageGroupData['30-39'] = ageGroupData['30-39']! + 1;
+      } else if (age >= 40 && age <= 49) {
+        ageGroupData['40-49'] = ageGroupData['40-49']! + 1;
+      } else if (age >= 50 && age <= 59) {
+        ageGroupData['50-59'] = ageGroupData['50-59']! + 1;
       }
     }
 
-    return loanStatusData;
+    return ageGroupData;
   }
 
   Map<String, int> _calculateTop3ProfessionsData(
