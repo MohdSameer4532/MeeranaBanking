@@ -170,7 +170,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
-                childAspectRatio: 0.8,
+                childAspectRatio: 0.68,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
