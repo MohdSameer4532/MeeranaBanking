@@ -36,7 +36,7 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+           
           children: [
             Text(
               title,

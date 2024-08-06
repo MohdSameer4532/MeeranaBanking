@@ -92,9 +92,9 @@ class _CreditHomePageState extends State<CreditHomePage> {
                   _buildStatisticCard('Total Clients', '$totalClients'),
                   _buildStatisticCard('Accepted Clients', '$goodCustomers'),
                   _buildStatisticCard('Denied Clients', '$badCustomers'),
-                  _buildStatisticCard('Average Age', '${averageAge?.toStringAsFixed(1) ?? 'N/A'} years'),
                   _buildStatisticCard('Average Income', '\$${averageIncome?.toStringAsFixed(2) ?? 'N/A'}'),
-                  _buildStatisticCard('Most Housing Type', mostCommonHousingType ?? 'N/A'),
+                 // _buildStatisticCard('Average Age', '${averageAge?.toStringAsFixed(1) ?? 'N/A'} years'),
+                 // _buildStatisticCard('Most Housing Type', mostCommonHousingType ?? 'N/A'),
                 ],
               ),
             ),
@@ -180,13 +180,13 @@ class _CreditHomePageState extends State<CreditHomePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+           
           children: [
             Text(
               title,
               style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                fontWeight: FontWeight.normal,
                 color: Colors.black87,
               ),
             ),
@@ -194,9 +194,9 @@ class _CreditHomePageState extends State<CreditHomePage> {
             Text(
               value,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Colors.black,
               ),
             ),
           ],
