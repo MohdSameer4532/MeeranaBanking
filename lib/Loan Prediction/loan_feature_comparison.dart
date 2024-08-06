@@ -48,6 +48,10 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
 
       // Ensure minimum Y value is not negative
       _minY = _minY < 0 ? 0 : _minY;
+
+      // Round _minY down and _maxY up to nearest multiple of 10 for cleaner ticks
+      _minY = (_minY / 10).floor() * 10;
+      _maxY = (_maxY / 10).ceil() * 10;
     }
   }
 
@@ -87,11 +91,35 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
+                        reservedSize: 40,
+                        interval: (_maxY - _minY) / 5,
                         getTitlesWidget: (value, meta) {
-                          return Text(value.toStringAsFixed(0));
+                          return Text(
+                            value.toStringAsFixed(0),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          );
                         },
                       ),
                     ),
+                    topTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  ),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: (_maxY - _minY) / 5,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: Colors.black12,
+                        strokeWidth: 1,
+                      );
+                    },
                   ),
                   borderData: FlBorderData(show: true),
                   lineBarsData: featureValues.isNotEmpty

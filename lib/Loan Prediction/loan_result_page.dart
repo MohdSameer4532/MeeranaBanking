@@ -8,7 +8,10 @@ class ResultScreen extends StatelessWidget {
   final Person userInput;
   final List<Person> dummyData;
 
-  ResultScreen({required this.userInput, required this.dummyData});
+  ResultScreen({
+    required this.userInput,
+    required this.dummyData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -144,10 +147,6 @@ class ResultScreen extends StatelessWidget {
             _buildSummaryItem(
                 'Car Ownership', userInput.carOwnership, Icons.directions_car),
             _buildSummaryItem('Profession', userInput.profession, Icons.work),
-            _buildSummaryItem(
-                'Loan Status',
-                userInput.loanStatus ? 'Accepted' : 'Denied',
-                Icons.credit_card),
           ],
         ),
       ),
@@ -199,6 +198,43 @@ class ResultScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildResultDisplay() {
+    bool isApproved = userInput.loanStatus;
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      color: isApproved ? Colors.green[100] : Colors.red[100],
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 10),
+            Center(
+              child: Icon(
+                isApproved ? Icons.thumb_up : Icons.thumb_down,
+                size: 50,
+                color: isApproved ? Colors.green : Colors.red,
+              ),
+            ),
+            SizedBox(height: 10),
+            Center(
+              child: Text(
+                userInput.getLoanStatusString(),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildComparisonSection({required Widget child}) {
     return Card(
       elevation: 2,
@@ -210,39 +246,6 @@ class ResultScreen extends StatelessWidget {
         child: Container(
           height: 300,
           child: child,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildResultDisplay() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      color: userInput.loanStatus ? Colors.green[100] : Colors.red[100],
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: 10),
-            Center(
-              child: Icon(
-                userInput.loanStatus ? Icons.thumb_up : Icons.thumb_down,
-                size: 50,
-                color: userInput.loanStatus ? Colors.green : Colors.red,
-              ),
-            ),
-            SizedBox(height: 10),
-            Center(
-              child: Text(
-                userInput.loanStatus ? 'Loan Accepted' : 'Loan Denied',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
         ),
       ),
     );

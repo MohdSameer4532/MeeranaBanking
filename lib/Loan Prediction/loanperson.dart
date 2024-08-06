@@ -22,6 +22,9 @@ class Person {
     required this.profession,
     required this.loanStatus,
   });
+  String getLoanStatusString() {
+    return loanStatus ? 'Loan Accepted' : 'Loan Denied';
+  }
 }
 
 List<Person> dummyData = [
