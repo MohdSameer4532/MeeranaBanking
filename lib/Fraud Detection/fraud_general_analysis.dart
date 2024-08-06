@@ -16,7 +16,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
   int totalClients = 0;
   int acceptedClients = 0;
   int deniedClients = 0;
-  int pendingClients = 0;
+  double averageAge = 0;
 
   Map<String, double> ageRangeData = {};
   Map<String, double> genderData = {};
@@ -39,8 +39,12 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
       deniedClients = data
           .where((person) => person.fraudDetected)
           .length; // Assuming detected as denied
-      pendingClients =
-          0; // Adjust based on your data logic if you have a pending status
+
+      // Calculate average age
+      if (data.isNotEmpty) {
+        averageAge =
+            data.map((e) => e.age).reduce((a, b) => a + b) / data.length;
+      }
 
       // Calculate other analytics
       ageRangeData = _calculateAgeRangeData();
@@ -297,7 +301,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                   _buildCard('Total Clients', totalClients.toString()),
                   _buildCard('Accepted Clients', '$acceptedClients'),
                   _buildCard('Denied Clients', '$deniedClients'),
-                  _buildCard('Pending Clients', '$pendingClients'),
+                  _buildCard('Average Age', averageAge.toStringAsFixed(1)),
                 ],
               ),
             ),
