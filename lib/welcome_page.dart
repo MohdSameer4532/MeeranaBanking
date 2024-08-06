@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Deposit/deposit_general_analytics.dart';
 import 'Loan Prediction/loan_general_analytics.dart';
-import 'Credit Approval/credit_home_page.dart';
+import 'Credit Approval/credit_general_analytics.dart';
 import 'Fraud Detection/fraud_general_analysis.dart';
 
 class WelcomePage extends StatelessWidget {
