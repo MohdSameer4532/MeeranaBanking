@@ -168,6 +168,28 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
     return sections;
   }
 
+  List<BarChartGroupData> _generateBarChartData(Map<String, double> data) {
+    List<BarChartGroupData> barGroups = [];
+    int index = 0;
+    data.forEach((key, value) {
+      barGroups.add(
+        BarChartGroupData(
+          x: index,
+          barRods: [
+            BarChartRodData(
+              borderRadius: BorderRadius.circular(3),
+              toY: value,
+              color: _getColorForKey(key),
+              width: 20,
+            ),
+          ],
+        ),
+      );
+      index++;
+    });
+    return barGroups;
+  }
+
   Color _getColorForKey(String key) {
     switch (key) {
       case '18-30':
@@ -211,6 +233,56 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
           sections: _generatePieChartSections(data),
           centerSpaceRadius: 22,
           sectionsSpace: 0,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBarChart(Map<String, double> data) {
+    return BarChart(
+      BarChartData(
+        barGroups: _generateBarChartData(data),
+        borderData: FlBorderData(show: true),
+        maxY: 10,
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: true),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                const style = TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                );
+                String text;
+                switch (value.toInt()) {
+                  case 0:
+                    text = 'Travel';
+                    break;
+                  case 1:
+                    text = 'Tech';
+                    break;
+                  case 2:
+                    text = 'Health';
+                    break;
+                  case 3:
+                    text = 'Food';
+                    break;
+                  default:
+                    text = '';
+                    break;
+                }
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 4,
+                  child: Text(text, style: style),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
@@ -351,12 +423,6 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
-                  _buildChartCard('Category', _buildPieChart(categoriesData), [
-                    _buildLegendItem(Colors.blue, 'Travel'),
-                    _buildLegendItem(Colors.orange, 'Tech'),
-                    _buildLegendItem(Colors.green, 'Health'),
-                    _buildLegendItem(Colors.red, 'Food'),
-                  ]),
                   _buildChartCard('Amount Range', _buildPieChart(amountData), [
                     _buildLegendItem(Colors.blue, '1-50'),
                     _buildLegendItem(Colors.orange, '50-100'),
@@ -370,6 +436,35 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                 ],
               ),
             ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Top Visuals',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 1,
+                childAspectRatio: 0.90,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                children: [
+                  _buildChartCard(
+                      'Categories', _buildBarChart(categoriesData), []),
+                ],
+              ),
+            ),
+            SizedBox(height: 50),
           ],
         ),
       ),

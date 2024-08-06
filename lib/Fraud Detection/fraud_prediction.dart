@@ -176,21 +176,13 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
               items: [
                 'es_transportation',
                 'es_health',
-                'es_otherservices',
                 'es_food',
-                'es_barsandrestaurants',
-                'es_sportsandtoys',
                 'es_hotelservices',
                 'es_bills',
                 'es_automotive',
-                'es_leisure',
                 'es_travel',
-                'es_hometools',
-                'es_wellnessandbeauty',
                 'es_tech',
-                'es_contents',
-                'es_fashion',
-                'es_hyper'
+                'es_otherservices',
               ],
               value: selectedCategory,
               onChanged: (value) {
@@ -267,7 +259,7 @@ class _FraudPredictionPageState extends State<FraudPredictionPage> {
         zipMerchant: zipMerchantController.text,
         category: selectedCategory ?? '',
         amount: double.tryParse(amountController.text) ?? 0.0,
-        fraudStatus: 'Accepted', 
+        fraudStatus: 'Accepted',
       );
     });
   }
