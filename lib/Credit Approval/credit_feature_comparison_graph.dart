@@ -40,12 +40,12 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
       _maxX = widget.dummyData.length.toDouble();
       _minY = allValues.reduce((a, b) => a < b ? a : b);
       _maxY = allValues.reduce((a, b) => a > b ? a : b);
-      
+
       // Add some padding to the Y-axis
       double yPadding = (_maxY - _minY) * 0.1;
       _minY -= yPadding;
       _maxY += yPadding;
-      
+
       // Ensure minimum Y value is not negative
       _minY = _minY < 0 ? 0 : _minY;
     }
@@ -60,7 +60,8 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
     }
 
     final double userValue = _getFeatureValue(widget.userInput);
-    final double meanVal = featureValues.reduce((a, b) => a + b) / featureValues.length;
+    final double meanVal =
+        featureValues.reduce((a, b) => a + b) / featureValues.length;
     final double medianVal = _calculateMedian(featureValues);
 
     _updateBoundaries();
@@ -188,9 +189,13 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
       case 'annualIncome':
         return person.annualIncome;
       case 'daysBirth':
-        return person.yearsBirth.abs().toDouble(); // Convert negative to positive
+        return person.yearsBirth
+            .abs()
+            .toDouble(); // Convert negative to positive
       case 'daysEmployed':
-        return person.yearsEmployed.abs().toDouble(); // Convert negative to positive
+        return person.yearsEmployed
+            .abs()
+            .toDouble(); // Convert negative to positive
       case 'noOfChildren':
         return person.noOfChildren.toDouble();
       case 'totalFamilyMembers':
@@ -237,7 +242,8 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   String _formatYAxisLabel(double value) {
     if (widget.feature == 'annualIncome') {
       return '\$${(value / 1000).toStringAsFixed(0)}K';
-    } else if (widget.feature == 'yearsBirth' || widget.feature == 'yearsEmployed') {
+    } else if (widget.feature == 'yearsBirth' ||
+        widget.feature == 'yearsEmployed') {
       return '${value.toStringAsFixed(0)} years'; // Display in years
     } else {
       return value.toStringAsFixed(1);
@@ -247,11 +253,11 @@ class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
   String _formatValue(double value) {
     if (widget.feature == 'annualIncome') {
       return '\$${value.toStringAsFixed(0)}';
-    } else if (widget.feature == 'yearsBirth' || widget.feature == 'yearsEmployed') {
+    } else if (widget.feature == 'yearsBirth' ||
+        widget.feature == 'yearsEmployed') {
       return '${value.toStringAsFixed(0)} years'; // Display in years
     } else {
       return value.toStringAsFixed(1);
     }
   }
 }
-

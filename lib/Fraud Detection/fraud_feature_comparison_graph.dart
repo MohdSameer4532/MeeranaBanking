@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'fraud_data.dart';
 
+// Main widget for feature comparison graph
 class FeatureComparisonGraph extends StatelessWidget {
   final FraudPerson userInput;
   final List<FraudPerson> dummyData;
@@ -16,15 +17,12 @@ class FeatureComparisonGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          const EdgeInsets.all(16.0), // Add padding around the entire widget
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         children: <Widget>[
           _buildComparisonChart(),
           SizedBox(height: 20),
           _buildComparisonText(),
-          SizedBox(height: 20),
-          _buildFraudDetection(),
         ],
       ),
     );
@@ -33,22 +31,93 @@ class FeatureComparisonGraph extends StatelessWidget {
   Widget _buildComparisonChart() {
     switch (feature) {
       case 'age':
-        return _buildBarChartForFeature(
-            'Age', dummyData.map((e) => e.age.toDouble()).toList());
+        return AgeBarChart(
+          userValue: userInput.age.toDouble(),
+          values: dummyData.map((e) => e.age.toDouble()).toList(),
+        );
       case 'amount':
-        return _buildBarChartForFeature(
-            'Amount', dummyData.map((e) => e.amount).toList());
+        return AmountLineChart(
+          userValue: userInput.amount,
+          values: dummyData.map((e) => e.amount).toList(),
+        );
       case 'gender':
-        return _buildBoxPlotForGender();
+        return GenderBoxPlot(
+          dummyData: dummyData,
+        );
       case 'category':
-        return _buildPieChartForCategories();
+        return CategoryPieChart(
+          dummyData: dummyData,
+        );
       default:
         return Container();
     }
   }
 
-  Widget _buildBarChartForFeature(String title, List<double> values) {
-    double userValue = _getUserValue();
+  Widget _buildComparisonText() {
+    String comparisonText = '';
+    _getTopCategoryData();
+
+    switch (feature) {
+      case 'age':
+        comparisonText =
+            'Your age: ${userInput.age}, Mean age: ${_calculateMean(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Min age: ${_calculateMin(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Max age: ${_calculateMax(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}';
+        break;
+      // default:
+      //   comparisonText = 'No data';
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Text(
+        comparisonText,
+        style: TextStyle(fontSize: 16),
+      ),
+    );
+  }
+
+  bool _isFraudDetected() {
+    return userInput.amount > 1000;
+  }
+
+  List<MapEntry<String, double>> _getTopCategoryData() {
+    Map<String, double> categoryData = {};
+    for (var person in dummyData) {
+      categoryData[person.category] =
+          (categoryData[person.category] ?? 0.0) + person.amount;
+    }
+
+    var sortedCategories = categoryData.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return sortedCategories.take(5).toList();
+  }
+
+  double _calculateMean(List<double> values) {
+    if (values.isEmpty) return 0;
+    double sum = values.reduce((value, element) => value + element);
+    return sum / values.length;
+  }
+
+  double _calculateMin(List<double> values) {
+    if (values.isEmpty) return 0;
+    return values.reduce((a, b) => a < b ? a : b);
+  }
+
+  double _calculateMax(List<double> values) {
+    if (values.isEmpty) return 0;
+    return values.reduce((a, b) => a > b ? a : b);
+  }
+}
+
+// Widget for Bar Chart based on Age
+class AgeBarChart extends StatelessWidget {
+  final double userValue;
+  final List<double> values;
+
+  AgeBarChart({required this.userValue, required this.values});
+
+  @override
+  Widget build(BuildContext context) {
     double meanValue = _calculateMean(values);
     double minValue = _calculateMin(values);
     double maxValue = _calculateMax(values);
@@ -129,9 +198,9 @@ class FeatureComparisonGraph extends StatelessWidget {
       double userValue, double meanValue, double minValue, double maxValue) {
     return [
       _buildBarGroup(0, userValue, Colors.blue),
+      _buildBarGroup(1, meanValue, Colors.green),
       _buildBarGroup(2, minValue, Colors.red),
       _buildBarGroup(3, maxValue, Colors.orange),
-      _buildBarGroup(1, meanValue, Colors.green),
     ];
   }
 
@@ -151,15 +220,187 @@ class FeatureComparisonGraph extends StatelessWidget {
     );
   }
 
-  double _getUserValue() {
-    switch (feature) {
-      case 'age':
-        return userInput.age.toDouble();
-      case 'amount':
-        return userInput.amount;
-      default:
-        return 0;
-    }
+  double _calculateMean(List<double> values) {
+    if (values.isEmpty) return 0;
+    double sum = values.reduce((value, element) => value + element);
+    return sum / values.length;
+  }
+
+  double _calculateMin(List<double> values) {
+    if (values.isEmpty) return 0;
+    return values.reduce((a, b) => a < b ? a : b);
+  }
+
+  double _calculateMax(List<double> values) {
+    if (values.isEmpty) return 0;
+    return values.reduce((a, b) => a > b ? a : b);
+  }
+}
+
+// Widget for Line Chart based on Amount
+
+class AmountLineChart extends StatelessWidget {
+  final double userValue;
+  final List<double> values;
+
+  AmountLineChart({required this.userValue, required this.values});
+
+  @override
+  Widget build(BuildContext context) {
+    double meanValue = _calculateMean(values);
+    double minValue = _calculateMin(values);
+    double maxValue = _calculateMax(values);
+
+    double maxY = [userValue, meanValue, minValue, maxValue]
+            .reduce((a, b) => a > b ? a : b) *
+        1.2;
+
+    return Column(
+      children: [
+        Container(
+          height: 300,
+          child: LineChart(
+            LineChartData(
+              lineBarsData: [
+                // Line for the User Input
+                LineChartBarData(
+                  spots: [
+                    FlSpot(0, userValue),
+                    FlSpot(1, userValue),
+                    FlSpot(2, userValue),
+                    FlSpot(3, userValue),
+                  ],
+                  isCurved: false,
+                  color: Colors.yellow,
+                  dotData: FlDotData(
+                    show: false,
+                    getDotPainter: (spot, percent, barData, index) =>
+                        FlDotCirclePainter(
+                      radius: 4,
+                      color: Colors.yellow,
+                      strokeColor: Colors.black,
+                      strokeWidth: 1,
+                    ),
+                  ),
+                  belowBarData: BarAreaData(show: false),
+                  isStrokeCapRound: true,
+                  aboveBarData: BarAreaData(show: false),
+                  barWidth: 2,
+                  showingIndicators: [0],
+                ),
+                // Line for Mean, Min, and Max Values
+                LineChartBarData(
+                  spots: [
+                    FlSpot(0, userValue),
+                    FlSpot(1, meanValue),
+                    FlSpot(2, minValue),
+                    FlSpot(3, maxValue),
+                  ],
+                  isCurved: true,
+                  color: Colors.blue,
+                  dotData: FlDotData(
+                    show: true,
+                    getDotPainter: (spot, percent, barData, index) {
+                      Color dotColor;
+                      switch (index) {
+                        case 0:
+                          dotColor = Colors.yellow; // User Value
+                          break;
+                        case 1:
+                          dotColor = Colors.green; // Mean Value
+                          break;
+                        case 2:
+                          dotColor = Colors.red; // Min Value
+                          break;
+                        case 3:
+                          dotColor = Colors.orange; // Max Value
+                          break;
+                        default:
+                          dotColor = Colors.blue; // Default
+                      }
+                      return FlDotCirclePainter(
+                        radius: 4,
+                        color: dotColor,
+                        strokeColor: Colors.black,
+                        strokeWidth: 1,
+                      );
+                    },
+                  ),
+                  belowBarData: BarAreaData(show: false),
+                  isStrokeCapRound: true,
+                  aboveBarData: BarAreaData(show: false),
+                  barWidth: 2,
+                ),
+              ],
+              minY: 0,
+              maxY: maxY,
+              titlesData: FlTitlesData(
+                bottomTitles: AxisTitles(
+                  sideTitles:
+                      SideTitles(showTitles: false), // Hide bottom titles
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    interval: (maxY / 5).toDouble(),
+                    getTitlesWidget: (value, meta) {
+                      const style = TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                      );
+                      return Text(
+                        value.toStringAsFixed(0),
+                        style: style,
+                      );
+                    },
+                  ),
+                ),
+              ),
+              borderData: FlBorderData(
+                show: true,
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 1,
+                ),
+              ),
+              gridData: FlGridData(show: false),
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        _buildLegend(),
+      ],
+    );
+  }
+
+  Widget _buildLegend() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildLegendItem(Colors.yellow, 'User Input'),
+        SizedBox(width: 10),
+        _buildLegendItem(Colors.green, 'Mean'),
+        SizedBox(width: 10),
+        _buildLegendItem(Colors.red, 'Min'),
+        SizedBox(width: 10),
+        _buildLegendItem(Colors.orange, 'Max'),
+      ],
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String label) {
+    return Row(
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          color: color,
+          margin: EdgeInsets.only(right: 4),
+        ),
+        Text(label),
+      ],
+    );
   }
 
   double _calculateMean(List<double> values) {
@@ -177,8 +418,16 @@ class FeatureComparisonGraph extends StatelessWidget {
     if (values.isEmpty) return 0;
     return values.reduce((a, b) => a > b ? a : b);
   }
+}
 
-  Widget _buildBoxPlotForGender() {
+// Widget for Box Plot based on Gender
+class GenderBoxPlot extends StatelessWidget {
+  final List<FraudPerson> dummyData;
+
+  GenderBoxPlot({required this.dummyData});
+
+  @override
+  Widget build(BuildContext context) {
     List<double> maleAges = dummyData
         .where((person) => person.gender == 'M')
         .map((person) => person.age.toDouble())
@@ -255,7 +504,31 @@ class FeatureComparisonGraph extends StatelessWidget {
     );
   }
 
-  Widget _buildPieChartForCategories() {
+  BarChartGroupData _buildBarGroup(int x, double value, Color color) {
+    return BarChartGroupData(
+      barsSpace: 4,
+      x: x,
+      barRods: [
+        BarChartRodData(
+          toY: value,
+          color: color,
+          width: 10,
+          borderRadius: BorderRadius.circular(2),
+          borderSide: BorderSide(color: Colors.black, width: 1),
+        ),
+      ],
+    );
+  }
+}
+
+// Widget for Pie Chart based on Category
+class CategoryPieChart extends StatelessWidget {
+  final List<FraudPerson> dummyData;
+
+  CategoryPieChart({required this.dummyData});
+
+  @override
+  Widget build(BuildContext context) {
     List<MapEntry<String, double>> topCategories = _getTopCategoryData();
 
     if (topCategories.isEmpty) {
@@ -290,64 +563,9 @@ class FeatureComparisonGraph extends StatelessWidget {
           (categoryData[person.category] ?? 0.0) + person.amount;
     }
 
-    // Sort and take the top 5 categories
     var sortedCategories = categoryData.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return sortedCategories.take(5).toList();
-  }
-
-  Widget _buildComparisonText() {
-    String comparisonText = '';
-    List<MapEntry<String, double>> topCategories = _getTopCategoryData();
-
-    switch (feature) {
-      case 'age':
-        comparisonText =
-            'Your age: ${userInput.age}, Mean age: ${_calculateMean(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Min age: ${_calculateMin(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Max age: ${_calculateMax(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}';
-        break;
-      case 'amount':
-        comparisonText =
-            'Your amount: \$${userInput.amount.toStringAsFixed(2)}, Mean amount: \$${_calculateMean(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}, Min amount: \$${_calculateMin(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}, Max amount: \$${_calculateMax(dummyData.map((e) => e.amount).toList()).toStringAsFixed(2)}';
-        break;
-      case 'gender':
-        comparisonText = 'Gender Distribution:\n';
-        int maleCount = dummyData.where((p) => p.gender == 'M').length;
-        int femaleCount = dummyData.where((p) => p.gender == 'F').length;
-        comparisonText += 'Males: $maleCount, Females: $femaleCount';
-        break;
-      case 'category':
-        comparisonText = 'Top 5 Categories: ';
-        comparisonText += topCategories
-            .map((entry) => '${entry.key}: \$${entry.value.toStringAsFixed(2)}')
-            .join(', ');
-        break;
-      default:
-        comparisonText = 'No data';
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Text(
-        comparisonText,
-        style: TextStyle(fontSize: 16),
-      ),
-    );
-  }
-
-  Widget _buildFraudDetection() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(width: 10),
-      ],
-    );
-  }
-
-  bool _isFraudDetected() {
-    if (userInput.amount > 1000) {
-      return true;
-    }
-    return false;
   }
 }
