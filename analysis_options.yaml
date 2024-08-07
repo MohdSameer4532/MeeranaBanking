@@ -21,4 +21,5 @@ flutter:
   uses-material-design: true
 analyzer:
   errors:
+    unused_element: ignore
     unused_field: ignore
