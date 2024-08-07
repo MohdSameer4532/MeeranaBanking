@@ -12,6 +12,7 @@ class FraudGeneralAnalyticsPage extends StatefulWidget {
 
 class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
   final List<FraudPerson> data = getFraudPersons();
+  ScatterSpot? _selectedScatterSpot;
 
   int totalClients = 0;
   int acceptedClients = 0;
@@ -51,7 +52,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
       // Calculate other analytics
       ageRangeData = _calculateAgeRangeData();
       genderData = _calculateGenderData();
-      categoriesData = _calculateCategoriesData();
+      // categoriesData = _calculateCategoriesData();
       amountData = _calculateAmountData();
       fraudStatusData = _calculateFraudStatusData();
       ageGroupsFraudCounts = _calculateFraudsByAgeGroup();
@@ -158,23 +159,23 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
     return genderCounts;
   }
 
-  Map<String, double> _calculateCategoriesData() {
-    Map<String, double> categoriesCounts = {
-      'es_travel': 0,
-      'es_tech': 0,
-      'es_health': 0,
-      'es_food': 0,
-    };
+  // Map<String, double> _calculateCategoriesData() {
+  //   Map<String, double> categoriesCounts = {
+  //     'es_travel': 0,
+  //     'es_tech': 0,
+  //     'es_health': 0,
+  //     'es_food': 0,
+  //   };
 
-    for (var person in data) {
-      String category = person.category;
-      if (categoriesCounts.containsKey(category)) {
-        categoriesCounts[category] = categoriesCounts[category]! + 1;
-      }
-    }
+  //   for (var person in data) {
+  //     String category = person.category;
+  //     if (categoriesCounts.containsKey(category)) {
+  //       categoriesCounts[category] = categoriesCounts[category]! + 1;
+  //     }
+  //   }
 
-    return categoriesCounts;
-  }
+  //   return categoriesCounts;
+  // }
 
   Map<String, double> _calculateFraudStatusData() {
     Map<String, double> fraudCounts = {
@@ -260,15 +261,23 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
     return barGroups;
   }
 
-  List<ScatterSpot> _generateCategoriesScatterData(Map<String, double> data) {
+  // List<ScatterSpot> _generateCategoriesScatterData(Map<String, double> data) {
+  //   List<ScatterSpot> scatterSpots = [];
+  //   int index = 0;
+
+  //   data.forEach((key, value) {
+  //     scatterSpots.add(ScatterSpot(index.toDouble(), value));
+  //     index++;
+  //   });
+
+  //   return scatterSpots;
+  // }
+
+  List<ScatterSpot> _generateAgeVsAmountScatterData() {
     List<ScatterSpot> scatterSpots = [];
-    int index = 0;
-
-    data.forEach((key, value) {
-      scatterSpots.add(ScatterSpot(index.toDouble(), value));
-      index++;
-    });
-
+    for (var person in data) {
+      scatterSpots.add(ScatterSpot(person.age.toDouble(), person.amount));
+    }
     return scatterSpots;
   }
 
@@ -320,49 +329,49 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
     );
   }
 
-  Widget _buildCategoriesScatterChart(Map<String, double> data) {
-    return ScatterChart(
-      ScatterChartData(
-        scatterSpots: _generateCategoriesScatterData(data),
-        borderData: FlBorderData(show: true),
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (double value, TitleMeta meta) {
-                String text;
-                switch (value.toInt()) {
-                  case 0:
-                    text = 'Travel';
-                    break;
-                  case 1:
-                    text = 'Tech';
-                    break;
-                  case 2:
-                    text = 'Health';
-                    break;
-                  case 3:
-                    text = 'Food';
-                    break;
-                  default:
-                    text = '';
-                    break;
-                }
-                return SideTitleWidget(
-                  axisSide: meta.axisSide,
-                  space: 2,
-                  child: Text(text, style: TextStyle(color: Colors.black)),
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildCategoriesScatterChart(Map<String, double> data) {
+  //   return ScatterChart(
+  //     ScatterChartData(
+  //       scatterSpots: _generateCategoriesScatterData(data),
+  //       borderData: FlBorderData(show: true),
+  //       titlesData: FlTitlesData(
+  //         leftTitles: AxisTitles(
+  //           sideTitles: SideTitles(showTitles: true),
+  //         ),
+  //         bottomTitles: AxisTitles(
+  //           sideTitles: SideTitles(
+  //             showTitles: true,
+  //             getTitlesWidget: (double value, TitleMeta meta) {
+  //               String text;
+  //               switch (value.toInt()) {
+  //                 case 0:
+  //                   text = 'Travel';
+  //                   break;
+  //                 case 1:
+  //                   text = 'Tech';
+  //                   break;
+  //                 case 2:
+  //                   text = 'Health';
+  //                   break;
+  //                 case 3:
+  //                   text = 'Food';
+  //                   break;
+  //                 default:
+  //                   text = '';
+  //                   break;
+  //               }
+  //               return SideTitleWidget(
+  //                 axisSide: meta.axisSide,
+  //                 space: 2,
+  //                 child: Text(text, style: TextStyle(color: Colors.black)),
+  //               );
+  //             },
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildFraudByCategoriesBarChart() {
     return BarChart(
@@ -416,6 +425,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
     );
   }
 
+// Method to build the fraud by age group chart
   Widget _buildFraudByAgeGroupChart() {
     return BarChart(
       BarChartData(
@@ -425,12 +435,26 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
             1, // Set maxY dynamically based on data
         titlesData: FlTitlesData(
           leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true),
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40, // Space for the left titles
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 8,
+                  child: Text(
+                    value.toInt().toString(),
+                    style: TextStyle(color: Colors.black),
+                  ),
+                );
+              },
+            ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              getTitlesWidget: (double value, TitleMeta meta) {
+              reservedSize: 40, // Space for the bottom titles
+              getTitlesWidget: (value, meta) {
                 const style = TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -459,53 +483,18 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
               },
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoriesBarChart(Map<String, double> data) {
-    return BarChart(
-      BarChartData(
-        barGroups: _generateBarChartData(data),
-        borderData: FlBorderData(show: true),
-        maxY: data.values.reduce((a, b) => a > b ? a : b) +
-            1, // Set maxY dynamically based on data
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true),
-          ),
-          bottomTitles: AxisTitles(
+          rightTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              getTitlesWidget: (double value, TitleMeta meta) {
-                const style = TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                );
-                String text;
-                switch (value.toInt()) {
-                  case 0:
-                    text = 'Travel';
-                    break;
-                  case 1:
-                    text = 'Tech';
-                    break;
-                  case 2:
-                    text = 'Health';
-                    break;
-                  case 3:
-                    text = 'Food';
-                    break;
-                  default:
-                    text = '';
-                    break;
-                }
+              reservedSize: 40, // Space for the right titles
+              getTitlesWidget: (value, meta) {
                 return SideTitleWidget(
                   axisSide: meta.axisSide,
-                  space: 4,
-                  child: Text(text, style: style),
+                  space: 8,
+                  child: Text(
+                    value.toInt().toString(),
+                    style: TextStyle(color: Colors.black),
+                  ),
                 );
               },
             ),
@@ -515,36 +504,153 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
     );
   }
 
-  Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
-  return Card(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    color: Colors.white,
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+// Method to build the age vs amount scatter chart
+  Widget _buildAgeVsAmountScatterChart() {
+    return ScatterChart(
+      ScatterChartData(
+        scatterSpots: _generateAgeVsAmountScatterData(),
+        borderData: FlBorderData(
+          show: true,
+          border: Border.all(
+            color: Colors.black,
+            width: 1,
+          ),
+        ),
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40, // Space for the left titles
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 5,
+                  child: Text(
+                    '\$${value.toInt().toString()}',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                );
+              },
             ),
           ),
-          SizedBox(height: 8),
-          SizedBox(
-            height: 200, // Adjust this value as needed
-            child: chart,
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 20, // Space for the bottom titles
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 5,
+                  child: Text(
+                    value.toInt().toString(),
+                    style: TextStyle(color: Colors.black),
+                  ),
+                );
+              },
+            ),
           ),
-          SizedBox(height: 8),
-          ...legendItems,
-        ],
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40, // Space for the right titles
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 5,
+                  child: Text(
+                    '\$${value.toInt().toString()}',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
+
+  // Widget _buildCategoriesBarChart(Map<String, double> data) {
+  //   return BarChart(
+  //     BarChartData(
+  //       barGroups: _generateBarChartData(data),
+  //       borderData: FlBorderData(show: true),
+  //       maxY: data.values.reduce((a, b) => a > b ? a : b) +
+  //           1, // Set maxY dynamically based on data
+  //       titlesData: FlTitlesData(
+  //         leftTitles: AxisTitles(
+  //           sideTitles: SideTitles(showTitles: true),
+  //         ),
+  //         bottomTitles: AxisTitles(
+  //           sideTitles: SideTitles(
+  //             showTitles: true,
+  //             getTitlesWidget: (double value, TitleMeta meta) {
+  //               const style = TextStyle(
+  //                 color: Colors.black,
+  //                 fontWeight: FontWeight.bold,
+  //                 fontSize: 14,
+  //               );
+  //               String text;
+  //               switch (value.toInt()) {
+  //                 case 0:
+  //                   text = 'Travel';
+  //                   break;
+  //                 case 1:
+  //                   text = 'Tech';
+  //                   break;
+  //                 case 2:
+  //                   text = 'Health';
+  //                   break;
+  //                 case 3:
+  //                   text = 'Food';
+  //                   break;
+  //                 default:
+  //                   text = '';
+  //                   break;
+  //               }
+  //               return SideTitleWidget(
+  //                 axisSide: meta.axisSide,
+  //                 space: 4,
+  //                 child: Text(text, style: style),
+  //               );
+  //             },
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 8),
+            SizedBox(
+              height: 200, // Adjust this value as needed
+              child: chart,
+            ),
+            SizedBox(height: 8),
+            ...legendItems,
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildLegendItem(Color color, String label) {
     return Padding(
@@ -567,139 +673,143 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-    appBar: CustomAppBar(
-      c: context,
-      title: 'Fraud Detection',
-      backButton: true,
+  Widget build(BuildContext context) {
+    return Scaffold(
       backgroundColor: Colors.white,
-    ),
-    body: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'General Analytics',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+      appBar: CustomAppBar(
+        c: context,
+        title: 'Fraud Detection',
+        backButton: true,
+        backgroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'General Analytics',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: GridView.count(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.5,
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildCard('Total Clients', totalClients.toString()),
+                  _buildCard('Fraud Not Detected', '$acceptedClients'),
+                  _buildCard('Fraud Detected', '$deniedClients'),
+                  _buildCard('Average Age', averageAge.toStringAsFixed(1)),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Graphical View',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            // 1. Previous Clients and 2. Gender (in one row)
+            Row(
               children: [
-                _buildCard('Total Clients', totalClients.toString()),
-                _buildCard('Fraud Not Detected', '$acceptedClients'),
-                _buildCard('Fraud Detected', '$deniedClients'),
-                _buildCard('Average Age', averageAge.toStringAsFixed(1)),
+                Expanded(
+                  child: _buildChartCard(
+                    'Previous Clients',
+                    _buildPieChart(fraudStatusData),
+                    [
+                      _buildLegendItem(Colors.red, 'Fraud Detected'),
+                      _buildLegendItem(Colors.green, 'Fraud Not Detected'),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: _buildChartCard(
+                    'Gender',
+                    _buildPieChart(genderData),
+                    [
+                      _buildLegendItem(Colors.blue, 'Male'),
+                      _buildLegendItem(Colors.pink, 'Female'),
+                    ],
+                  ),
+                ),
               ],
             ),
-          ),
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Graphical View',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+            // 3. Fraud by Age Group (in a separate row)
+            _buildChartCard(
+                'Fraud by Age Group', _buildFraudByAgeGroupChart(), []),
+            // 4. Amount Range and 5. Age Range (in one row)
+            Row(
+              children: [
+                Expanded(
+                  child: _buildChartCard(
+                    'Amount Range',
+                    _buildPieChart(amountData),
+                    [
+                      _buildLegendItem(Colors.blue, '1-50'),
+                      _buildLegendItem(Colors.orange, '50-100'),
+                      _buildLegendItem(Colors.red, '100+'),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: _buildChartCard(
+                    'Age Range',
+                    _buildPieChart(ageRangeData),
+                    [
+                      _buildLegendItem(Colors.blue, '18-30'),
+                      _buildLegendItem(Colors.green, '30-50'),
+                      _buildLegendItem(Colors.red, '50+'),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ),
-          SizedBox(height: 16),
-          // 1. Previous Clients and 2. Gender (in one row)
-          Row(
-            children: [
-              Expanded(
-                child: _buildChartCard(
-                  'Previous Clients',
-                  _buildPieChart(fraudStatusData),
-                  [
-                    _buildLegendItem(Colors.red, 'Fraud Detected'),
-                    _buildLegendItem(Colors.green, 'Fraud Not Detected'),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: _buildChartCard(
-                  'Gender',
-                  _buildPieChart(genderData),
-                  [
-                    _buildLegendItem(Colors.blue, 'Male'),
-                    _buildLegendItem(Colors.pink, 'Female'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          // 3. Fraud by Age Group (in a separate row)
-          _buildChartCard('Fraud by Age Group', _buildFraudByAgeGroupChart(), []),
-          // 4. Amount Range and 5. Age Range (in one row)
-          Row(
-            children: [
-              Expanded(
-                child: _buildChartCard(
-                  'Amount Range',
-                  _buildPieChart(amountData),
-                  [
-                    _buildLegendItem(Colors.blue, '1-50'),
-                    _buildLegendItem(Colors.orange, '50-100'),
-                    _buildLegendItem(Colors.red, '100+'),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: _buildChartCard(
-                  'Age Range',
-                  _buildPieChart(ageRangeData),
-                  [
-                    _buildLegendItem(Colors.blue, '18-30'),
-                    _buildLegendItem(Colors.green, '30-50'),
-                    _buildLegendItem(Colors.red, '50+'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          // 6. Fraud by Categories (in a separate row)
-          _buildChartCard('Fraud by Categories', _buildFraudByCategoriesBarChart(), []),
-          // 7. Categories (Scatter plot) (in a separate row)
-          _buildChartCard('Categories', _buildCategoriesScatterChart(categoriesData), []),
-          SizedBox(height: 50),
-        ],
+            _buildChartCard(
+                'Fraud by Categories', _buildFraudByCategoriesBarChart(), []),
+            _buildChartCard(
+              'Age vs. Amount',
+              _buildAgeVsAmountScatterChart(),
+              [],
+            ),
+            SizedBox(height: 80),
+          ],
+        ),
       ),
-    ),
-    floatingActionButton: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => FraudPredictionPage()),
-          );
-        },
-        label: Text('Detect Fraud', style: TextStyle(color: Colors.white)),
-        icon: Icon(Icons.add, color: Colors.white),
-        backgroundColor: Color.fromARGB(255, 34, 34, 34),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FraudPredictionPage()),
+            );
+          },
+          label: Text('Detect Fraud', style: TextStyle(color: Colors.white)),
+          icon: Icon(Icons.add, color: Colors.white),
+          backgroundColor: Color.fromARGB(255, 34, 34, 34),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildCard(String title, String value) {
     return Card(
