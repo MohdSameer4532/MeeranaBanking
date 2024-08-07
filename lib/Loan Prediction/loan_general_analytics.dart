@@ -146,6 +146,22 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                 _buildLegendItem(Colors.red, 'No'),
               ],
             ),
+            _buildChartSection(
+              'House Ownership Distribution',
+              _buildHouseOwnershipBarChart(),
+              [
+                _buildLegendItem(Colors.blue, 'Owned'),
+                _buildLegendItem(Colors.green, 'Rented'),
+              ],
+            ),
+            _buildChartSection(
+              'Car Ownership Distribution',
+              _buildCarOwnershipBarChart(),
+              [
+                _buildLegendItem(Colors.green, 'Yes'),
+                _buildLegendItem(Colors.red, 'No'),
+              ],
+            ),
           ],
         ),
       ),
@@ -499,11 +515,26 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   Widget _buildMaritalStatusBarChart() {
     Map<String, int> maritalStatusData =
         _calculateCategoryData(people.map((p) => p.maritalStatus).toList());
+    return _buildBarChart(maritalStatusData, Colors.blue, Colors.orange);
+  }
+
+  Widget _buildHouseOwnershipBarChart() {
+    Map<String, int> houseOwnershipData =
+        _calculateCategoryData(people.map((p) => p.houseOwnership).toList());
+    return _buildBarChart(houseOwnershipData, Colors.blue, Colors.green);
+  }
+
+  Widget _buildCarOwnershipBarChart() {
+    Map<String, int> carOwnershipData =
+        _calculateCategoryData(people.map((p) => p.carOwnership).toList());
+    return _buildBarChart(carOwnershipData, Colors.green, Colors.red);
+  }
+
+  Widget _buildBarChart(Map<String, int> data, Color color1, Color color2) {
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        maxY:
-            maritalStatusData.values.reduce((a, b) => a > b ? a : b).toDouble(),
+        maxY: data.values.reduce((a, b) => a > b ? a : b).toDouble(),
         barTouchData: BarTouchData(enabled: false),
         titlesData: FlTitlesData(
           show: true,
@@ -511,7 +542,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (double value, TitleMeta meta) {
-                List<String> titles = maritalStatusData.keys.toList();
+                List<String> titles = data.keys.toList();
                 return Text(
                   value.toInt() < titles.length ? titles[value.toInt()] : '',
                   style: TextStyle(color: Colors.black, fontSize: 10),
@@ -525,13 +556,13 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
           ),
         ),
         borderData: FlBorderData(show: false),
-        barGroups: maritalStatusData.entries.map((entry) {
+        barGroups: data.entries.map((entry) {
           return BarChartGroupData(
-            x: maritalStatusData.keys.toList().indexOf(entry.key),
+            x: data.keys.toList().indexOf(entry.key),
             barRods: [
               BarChartRodData(
                 toY: entry.value.toDouble(),
-                color: entry.key == 'Single' ? Colors.blue : Colors.orange,
+                color: entry.key == data.keys.first ? color1 : color2,
                 width: 22,
               ),
             ],
