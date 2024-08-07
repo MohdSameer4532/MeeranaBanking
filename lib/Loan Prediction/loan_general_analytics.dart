@@ -533,29 +533,6 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   Widget _buildBarChart(Map<String, int> data, Color color1, Color color2) {
     return BarChart(
       BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        maxY: data.values.reduce((a, b) => a > b ? a : b).toDouble(),
-        barTouchData: BarTouchData(enabled: false),
-        titlesData: FlTitlesData(
-          show: true,
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (double value, TitleMeta meta) {
-                List<String> titles = data.keys.toList();
-                return Text(
-                  value.toInt() < titles.length ? titles[value.toInt()] : '',
-                  style: TextStyle(color: Colors.black, fontSize: 10),
-                );
-              },
-              reservedSize: 30,
-            ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-        ),
-        borderData: FlBorderData(show: false),
         barGroups: data.entries.map((entry) {
           return BarChartGroupData(
             x: data.keys.toList().indexOf(entry.key),
@@ -563,11 +540,39 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
               BarChartRodData(
                 toY: entry.value.toDouble(),
                 color: entry.key == data.keys.first ? color1 : color2,
-                width: 22,
+                width: 20,
+                borderRadius: BorderRadius.circular(3),
               ),
             ],
           );
         }).toList(),
+        borderData: FlBorderData(show: true),
+        maxY: data.values.reduce((a, b) => a > b ? a : b).toDouble() + 1,
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: true),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                const style = TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14,
+                );
+                List<String> titles = data.keys.toList();
+                String text =
+                    value.toInt() < titles.length ? titles[value.toInt()] : '';
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 4,
+                  child: Text(text, style: style),
+                );
+              },
+            ),
+          ),
+        ),
       ),
     );
   }

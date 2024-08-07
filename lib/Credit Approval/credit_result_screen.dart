@@ -155,18 +155,29 @@ class ResultScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             _buildProfileItem('Gender', userInput.gender, Icons.person),
-            _buildProfileItem('Own Car', userInput.ownCar ? 'Yes' : 'No', Icons.directions_car),
-            _buildProfileItem('Own Property', userInput.ownProperty ? 'Yes' : 'No', Icons.home),
-            _buildProfileItem('Number of Children', '${userInput.noOfChildren}', Icons.child_care),
-            _buildProfileItem('Annual Income', '${userInput.annualIncome}', Icons.attach_money),
+            _buildProfileItem('Own Car', userInput.ownCar ? 'Yes' : 'No',
+                Icons.directions_car),
+            _buildProfileItem('Own Property',
+                userInput.ownProperty ? 'Yes' : 'No', Icons.home),
+            _buildProfileItem('Number of Children', '${userInput.noOfChildren}',
+                Icons.child_care),
+            _buildProfileItem('Annual Income', '${userInput.annualIncome}',
+                Icons.attach_money),
             _buildProfileItem('Income Type', userInput.incomeType, Icons.work),
-            _buildProfileItem('Education Type', userInput.educationType, Icons.school),
-            _buildProfileItem('Family Status', userInput.familyStatus, Icons.family_restroom),
-            _buildProfileItem('Housing Type', userInput.housingType, Icons.house),
-            _buildProfileItem('Years Birth', '${userInput.yearsBirth}', Icons.cake),
-            _buildProfileItem('Years Employed', '${userInput.yearsEmployed}', Icons.business_center),
-            _buildProfileItem('Occupation Type', userInput.occupationType, Icons.work_outline),
-            _buildProfileItem('Total Family Members', '${userInput.totalFamilyMembers}', Icons.groups),
+            _buildProfileItem(
+                'Education Type', userInput.educationType, Icons.school),
+            _buildProfileItem(
+                'Family Status', userInput.familyStatus, Icons.family_restroom),
+            _buildProfileItem(
+                'Housing Type', userInput.housingType, Icons.house),
+            _buildProfileItem(
+                'Years Birth', '${userInput.yearsBirth}', Icons.cake),
+            _buildProfileItem('Years Employed', '${userInput.yearsEmployed}',
+                Icons.business_center),
+            _buildProfileItem('Occupation Type', userInput.occupationType,
+                Icons.work_outline),
+            _buildProfileItem('Total Family Members',
+                '${userInput.totalFamilyMembers}', Icons.groups),
           ],
         ),
       ),
@@ -245,13 +256,6 @@ class ResultScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Prediction Result',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
             SizedBox(height: 10),
             Icon(
               userInput.result ? Icons.thumb_up : Icons.thumb_down,
@@ -259,12 +263,13 @@ class ResultScreen extends StatelessWidget {
               color: userInput.result ? Colors.green : Colors.red,
             ),
             SizedBox(height: 10),
-            Text(
+            Center(
+                child: Text(
               userInput.result
                   ? 'Eligible for Credit'
                   : 'Not Eligible for Credit',
-              style: TextStyle(fontSize: 18),
-            ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            )),
           ],
         ),
       ),
