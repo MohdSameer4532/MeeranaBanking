@@ -36,12 +36,16 @@ class _CreditHomePageState extends State<CreditHomePage> {
 
   void _calculateAverages() {
     if (people.isNotEmpty) {
-      averageAge = people.map((p) => p.yearsBirth).reduce((a, b) => a + b) / people.length;
-      averageIncome = people.map((p) => p.annualIncome).reduce((a, b) => a + b) / people.length;
-      
+      averageAge = people.map((p) => p.yearsBirth).reduce((a, b) => a + b) /
+          people.length;
+      averageIncome =
+          people.map((p) => p.annualIncome).reduce((a, b) => a + b) /
+              people.length;
+
       Map<String, int> housingTypeCounts = {};
       for (var person in people) {
-        housingTypeCounts[person.housingType] = (housingTypeCounts[person.housingType] ?? 0) + 1;
+        housingTypeCounts[person.housingType] =
+            (housingTypeCounts[person.housingType] ?? 0) + 1;
       }
       mostCommonHousingType = housingTypeCounts.entries
           .reduce((a, b) => a.value > b.value ? a : b)
@@ -52,188 +56,194 @@ class _CreditHomePageState extends State<CreditHomePage> {
     }
   }
 
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-    appBar: CustomAppBar(
-      c: context,
-      title: 'Credit Approval',
-      backButton: true,
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
-    ),
-    body: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'General Analytics',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: CustomAppBar(
+        c: context,
+        title: 'Credit Approval',
+        backButton: true,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'General Analytics',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: GridView.count(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.5,
-              children: [
-                _buildStatisticCard('Total Clients', '$totalClients'),
-                _buildStatisticCard('Accepted Clients', '$goodCustomers'),
-                _buildStatisticCard('Denied Clients', '$badCustomers'),
-                _buildStatisticCard('Average Income', '\$${averageIncome?.toStringAsFixed(2) ?? 'N/A'}'),
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildStatisticCard('Total Clients', '$totalClients'),
+                  _buildStatisticCard('Accepted Clients', '$goodCustomers'),
+                  _buildStatisticCard('Denied Clients', '$badCustomers'),
+                  _buildStatisticCard('Average Income',
+                      '\$${averageIncome?.toStringAsFixed(2) ?? 'N/A'}'),
+                ],
+              ),
+            ),
+            _buildTwoChartRow(
+              'Credit Result',
+              _buildCreditResultChart(),
+              [
+                _buildLegendItem(Colors.green, 'Accepted Credit'),
+                _buildLegendItem(Colors.red, 'Denied Credit'),
+              ],
+              'Education',
+              _buildEducationChart(),
+              [
+                _buildLegendItem(Colors.blue, 'Higher education'),
+                _buildLegendItem(Colors.orange, 'Secondary education'),
+                _buildLegendItem(Colors.green, 'Incomplete higher'),
               ],
             ),
-          ),
-          _buildTwoChartRow(
-            'Credit Result',
-            _buildCreditResultChart(),
-            [
-              _buildLegendItem(Colors.green, 'Accepted Credit'),
-              _buildLegendItem(Colors.red, 'Denied Credit'),
-            ],
-            'Education',
-            _buildEducationChart(),
-            [
+            _buildChartSection(
+                'Education Distribution', _buildEducationBarChart(), [
               _buildLegendItem(Colors.blue, 'Higher education'),
               _buildLegendItem(Colors.orange, 'Secondary education'),
               _buildLegendItem(Colors.green, 'Incomplete higher'),
-            ],
-          ),
-          _buildChartSection('Education Distribution', _buildEducationBarChart(), [
-            _buildLegendItem(Colors.blue, 'Higher education'),
-            _buildLegendItem(Colors.orange, 'Secondary education'),
-            _buildLegendItem(Colors.green, 'Incomplete higher'),
-          ]),
-          _buildTwoChartRow(
-            'Age Groups',
-            _buildAgeGroupChart(),
-            [
-              _buildLegendItem(Colors.purple, '20-29'),
-              _buildLegendItem(Colors.blue, '30-39'),
-              _buildLegendItem(Colors.green, '40-49'),
-              _buildLegendItem(Colors.orange, '50+'),
-            ],
-            'Income Range',
-            _buildIncomeRangeChart(),
-            [
-              _buildLegendItem(Colors.blue, 'Low'),
-              _buildLegendItem(Colors.green, 'Medium'),
-              _buildLegendItem(Colors.orange, 'High'),
-            ],
-          ),
-          _buildChartSection('Age vs Income', _buildAgeIncomeScatterPlot(), []),
-          _buildTwoChartRow(
-            'Family Status',
-            _buildFamilyStatusChart(),
-            [
+            ]),
+            _buildTwoChartRow(
+              'Age Groups',
+              _buildAgeGroupChart(),
+              [
+                _buildLegendItem(Colors.purple, '20-29'),
+                _buildLegendItem(Colors.blue, '30-39'),
+                _buildLegendItem(Colors.green, '40-49'),
+                _buildLegendItem(Colors.orange, '50+'),
+              ],
+              'Income Range',
+              _buildIncomeRangeChart(),
+              [
+                _buildLegendItem(Colors.blue, 'Low'),
+                _buildLegendItem(Colors.green, 'Medium'),
+                _buildLegendItem(Colors.orange, 'High'),
+              ],
+            ),
+            _buildChartSection(
+                'Age vs Income', _buildAgeIncomeScatterPlot(), []),
+            _buildTwoChartRow(
+              'Family Status',
+              _buildFamilyStatusChart(),
+              [
+                _buildLegendItem(Colors.blue, 'Married'),
+                _buildLegendItem(Colors.green, 'Single'),
+                _buildLegendItem(Colors.orange, 'Civil marriage'),
+                _buildLegendItem(Colors.red, 'Widow'),
+              ],
+              'Housing Type',
+              _buildHousingTypeChart(),
+              [
+                _buildLegendItem(Colors.blue, 'House / apartment'),
+                _buildLegendItem(Colors.green, 'With parents'),
+                _buildLegendItem(Colors.orange, 'Co-op apartment'),
+                _buildLegendItem(Colors.red, 'Rented apartment'),
+                _buildLegendItem(Colors.purple, 'Office apartment'),
+              ],
+            ),
+            _buildChartSection(
+                'Family Status Distribution', _buildFamilyStatusBarChart(), [
               _buildLegendItem(Colors.blue, 'Married'),
               _buildLegendItem(Colors.green, 'Single'),
               _buildLegendItem(Colors.orange, 'Civil marriage'),
               _buildLegendItem(Colors.red, 'Widow'),
-            ],
-            'Housing Type',
-            _buildHousingTypeChart(),
-            [
+            ]),
+            _buildChartSection(
+                'Housing Type Distribution', _buildHousingTypeBarChart(), [
               _buildLegendItem(Colors.blue, 'House / apartment'),
               _buildLegendItem(Colors.green, 'With parents'),
               _buildLegendItem(Colors.orange, 'Co-op apartment'),
               _buildLegendItem(Colors.red, 'Rented apartment'),
               _buildLegendItem(Colors.purple, 'Office apartment'),
-            ],
-          ),
-          _buildChartSection('Family Status Distribution', _buildFamilyStatusBarChart(), [
-            _buildLegendItem(Colors.blue, 'Married'),
-            _buildLegendItem(Colors.green, 'Single'),
-            _buildLegendItem(Colors.orange, 'Civil marriage'),
-            _buildLegendItem(Colors.red, 'Widow'),
-          ]),
-          _buildChartSection('Housing Type Distribution', _buildHousingTypeBarChart(), [
-            _buildLegendItem(Colors.blue, 'House / apartment'),
-            _buildLegendItem(Colors.green, 'With parents'),
-            _buildLegendItem(Colors.orange, 'Co-op apartment'),
-            _buildLegendItem(Colors.red, 'Rented apartment'),
-            _buildLegendItem(Colors.purple, 'Office apartment'),
-          ]),
-        ],
-      ),
-    ),
-    floatingActionButton: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreditUserInputPage()),
-          );
-        },
-        label: Text('Get Approval', style: TextStyle(color: Colors.white)),
-        icon: Icon(Icons.add, color: Colors.white),
-        backgroundColor: Color.fromARGB(255, 34, 34, 34),
-      ),
-    ),
-  );
-}
-
-Widget _buildTwoChartRow(String title1, Widget chart1, List<Widget> legend1, String title2, Widget chart2, List<Widget> legend2) {
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: _buildChartCard(title1, chart1, legend1),
+            ]),
+          ],
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: _buildChartCard(title2, chart2, legend2),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CreditUserInputPage()),
+            );
+          },
+          label: Text('Get Approval', style: TextStyle(color: Colors.white)),
+          icon: Icon(Icons.add, color: Colors.white),
+          backgroundColor: Color.fromARGB(255, 34, 34, 34),
         ),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
-Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
-  return Card(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    color: Colors.white,
-    child: Padding(
+  Widget _buildTwoChartRow(String title1, Widget chart1, List<Widget> legend1,
+      String title2, Widget chart2, List<Widget> legend2) {
+    return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+          Expanded(
+            child: _buildChartCard(title1, chart1, legend1),
           ),
-          SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: chart,
+          SizedBox(width: 16),
+          Expanded(
+            child: _buildChartCard(title2, chart2, legend2),
           ),
-          SizedBox(height: 8),
-          ...legendItems,
         ],
       ),
-    ),
-  );
-}
+    );
+  }
+
+  Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 16),
+            SizedBox(
+              height: 200,
+              child: chart,
+            ),
+            SizedBox(height: 8),
+            ...legendItems,
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildStatisticCard(String title, String value) {
     return Card(
@@ -267,9 +277,8 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
     );
   }
 
-   
-
-  Widget _buildChartSection(String title, Widget chart, List<Widget> legendItems) {
+  Widget _buildChartSection(
+      String title, Widget chart, List<Widget> legendItems) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Card(
@@ -418,8 +427,7 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
     for (var person in people) {
       if (person.annualIncome < 50000) {
         incomeRanges['Low'] = incomeRanges['Low']! + 1;
-      } else if (person.annualIncome >= 50000 &&
-          person.annualIncome < 100000) {
+      } else if (person.annualIncome >= 50000 && person.annualIncome < 100000) {
         incomeRanges['Medium'] = incomeRanges['Medium']! + 1;
       } else {
         incomeRanges['High'] = incomeRanges['High']! + 1;
@@ -492,7 +500,8 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
   }
 
   Widget _buildEducationBarChart() {
-    Map<String, int> educationData = _calculateCategoryData(people.map((p) => p.educationType).toList());
+    Map<String, int> educationData =
+        _calculateCategoryData(people.map((p) => p.educationType).toList());
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -506,7 +515,9 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
               getTitlesWidget: (double value, TitleMeta meta) {
                 List<String> titles = educationData.keys.toList();
                 return Text(
-                  value.toInt() < titles.length ? titles[value.toInt()].substring(0, 3) : '',
+                  value.toInt() < titles.length
+                      ? titles[value.toInt()].substring(0, 3)
+                      : '',
                   style: TextStyle(color: Colors.black, fontSize: 10),
                 );
               },
@@ -525,7 +536,7 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
               BarChartRodData(
                 toY: entry.value.toDouble(),
                 color: _getCategoryColor(entry.key),
-                width: 15,
+                width: 22,
               ),
             ],
           );
@@ -571,7 +582,8 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
             ),
           ),
         ),
-        gridData: FlGridData(show: true, drawHorizontalLine: true, drawVerticalLine: true),
+        gridData: FlGridData(
+            show: true, drawHorizontalLine: true, drawVerticalLine: true),
         borderData: FlBorderData(show: true),
         scatterTouchData: ScatterTouchData(
           touchTooltipData: ScatterTouchTooltipData(
@@ -589,11 +601,13 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
   }
 
   Widget _buildFamilyStatusBarChart() {
-    Map<String, int> familyStatusData = _calculateCategoryData(people.map((p) => p.familyStatus).toList());
+    Map<String, int> familyStatusData =
+        _calculateCategoryData(people.map((p) => p.familyStatus).toList());
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        maxY: familyStatusData.values.reduce((a, b) => a > b ? a : b).toDouble(),
+        maxY:
+            familyStatusData.values.reduce((a, b) => a > b ? a : b).toDouble(),
         barTouchData: BarTouchData(enabled: false),
         titlesData: FlTitlesData(
           show: true,
@@ -603,7 +617,9 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
               getTitlesWidget: (double value, TitleMeta meta) {
                 List<String> titles = familyStatusData.keys.toList();
                 return Text(
-                  value.toInt() < titles.length ? titles[value.toInt()].substring(0, 3) : '',
+                  value.toInt() < titles.length
+                      ? titles[value.toInt()].substring(0, 3)
+                      : '',
                   style: TextStyle(color: Colors.black, fontSize: 10),
                 );
               },
@@ -632,7 +648,8 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
   }
 
   Widget _buildHousingTypeBarChart() {
-    Map<String, int> housingTypeData = _calculateCategoryData(people.map((p) => p.housingType).toList());
+    Map<String, int> housingTypeData =
+        _calculateCategoryData(people.map((p) => p.housingType).toList());
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -646,7 +663,9 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
               getTitlesWidget: (double value, TitleMeta meta) {
                 List<String> titles = housingTypeData.keys.toList();
                 return Text(
-                  value.toInt() < titles.length ? titles[value.toInt()].substring(0, 3) : '',
+                  value.toInt() < titles.length
+                      ? titles[value.toInt()].substring(0, 3)
+                      : '',
                   style: TextStyle(color: Colors.black, fontSize: 10),
                 );
               },
@@ -755,4 +774,3 @@ Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
     }
   }
 }
-                
