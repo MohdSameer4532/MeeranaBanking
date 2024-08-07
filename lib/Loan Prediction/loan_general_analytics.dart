@@ -83,8 +83,8 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                   _buildStatisticCard('Total Clients', '$totalClients'),
                   _buildStatisticCard('Accepted Clients', '$acceptedClients'),
                   _buildStatisticCard('Rejected Clients', '$rejectedClients'),
-                  _buildStatisticCard('Average Age',
-                      '${averageAge?.toStringAsFixed(1) ?? 'N/A'}'),
+                  _buildStatisticCard('Average Income',
+                      '${averageIncome?.toStringAsFixed(1) ?? 'N/A'}'),
                 ],
               ),
             ),
@@ -576,7 +576,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
     List<ScatterSpot> spots = people.map((person) {
       return ScatterSpot(
         person.age.toDouble(),
-        person.income / 1000,
+        person.income.toDouble(),
       );
     }).toList();
 
@@ -586,7 +586,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
         minX: 20,
         maxX: 60,
         minY: 0,
-        maxY: 300,
+        maxY: 300000, // Adjusted to accommodate full income values
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
@@ -602,10 +602,11 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) => Text(
-                '${value.toInt()}k',
+                '\$${(value / 1000).toInt()}k',
                 style: TextStyle(color: Colors.black, fontSize: 12),
               ),
-              interval: 50,
+              interval: 50000, // Adjusted interval
+              reservedSize: 40, // Increased reserved size for labels
             ),
           ),
         ),
@@ -613,13 +614,14 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
           show: true,
           drawHorizontalLine: true,
           drawVerticalLine: true,
+          horizontalInterval: 50000, // Adjusted to match Y-axis interval
         ),
         borderData: FlBorderData(show: true),
         scatterTouchData: ScatterTouchData(
           touchTooltipData: ScatterTouchTooltipData(
             getTooltipItems: (ScatterSpot touchedBarSpot) {
               return ScatterTooltipItem(
-                'Age: ${touchedBarSpot.x.toInt()}\nIncome: \$${(touchedBarSpot.y * 1000).toInt()}',
+                'Age: ${touchedBarSpot.x.toInt()}\nIncome: \$${touchedBarSpot.y.toInt()}',
                 textStyle: TextStyle(color: Colors.white),
                 bottomMargin: 10,
               );

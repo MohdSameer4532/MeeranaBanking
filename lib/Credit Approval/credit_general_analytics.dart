@@ -561,7 +561,7 @@ class _CreditHomePageState extends State<CreditHomePage> {
     List<ScatterSpot> spots = people.map((person) {
       return ScatterSpot(
         person.yearsBirth.toDouble(),
-        person.annualIncome / 1000,
+        person.annualIncome.toDouble(),
       );
     }).toList();
 
@@ -571,7 +571,7 @@ class _CreditHomePageState extends State<CreditHomePage> {
         minX: 20,
         maxX: 60,
         minY: 0,
-        maxY: 300,
+        maxY: 300000, // Adjusted to accommodate full income values
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
@@ -587,21 +587,26 @@ class _CreditHomePageState extends State<CreditHomePage> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) => Text(
-                '${value.toInt()}k',
+                '\$${(value / 1000).toInt()}k',
                 style: TextStyle(color: Colors.black, fontSize: 12),
               ),
-              interval: 50,
+              interval: 50000, // Adjusted interval
+              reservedSize: 40, // Increased reserved size for labels
             ),
           ),
         ),
         gridData: FlGridData(
-            show: true, drawHorizontalLine: true, drawVerticalLine: true),
+          show: true,
+          drawHorizontalLine: true,
+          drawVerticalLine: true,
+          horizontalInterval: 50000, // Adjusted to match Y-axis interval
+        ),
         borderData: FlBorderData(show: true),
         scatterTouchData: ScatterTouchData(
           touchTooltipData: ScatterTouchTooltipData(
             getTooltipItems: (ScatterSpot touchedBarSpot) {
               return ScatterTooltipItem(
-                'Age: ${touchedBarSpot.x.toInt()}\nIncome: \$${(touchedBarSpot.y * 1000).toInt()}',
+                'Age: ${touchedBarSpot.x.toInt()}\nIncome: \$${touchedBarSpot.y.toInt()}',
                 textStyle: TextStyle(color: Colors.white),
                 bottomMargin: 10,
               );
