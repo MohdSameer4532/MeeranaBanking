@@ -18,6 +18,9 @@ class FraudResultPage extends StatefulWidget {
 }
 
 class _FraudResultPageState extends State<FraudResultPage> {
+  // Example boolean for fraud detection status
+  bool isFraudDetected = false; // Adjust logic to set this value
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,8 +39,10 @@ class _FraudResultPageState extends State<FraudResultPage> {
             children: <Widget>[
               SizedBox(height: 20),
               _buildUserInputSummary(),
+              _buildSectionTitle('Prediction Result'),
+              _buildFraudDetectionInfo(isFraudDetected),
               SizedBox(height: 20),
-              _buildFraudDetectionInfo(),
+              // Pass the argument here
               SizedBox(height: 20),
               _buildComparisonSection('Age Comparison', 'age'),
               SizedBox(height: 20),
@@ -68,7 +73,6 @@ class _FraudResultPageState extends State<FraudResultPage> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
               ),
             ),
             SizedBox(height: 16),
@@ -93,12 +97,29 @@ class _FraudResultPageState extends State<FraudResultPage> {
     );
   }
 
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      child: Align(
+        alignment: Alignment.centerLeft, // Aligns the text to the left
+        child: Text(
+          title,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.blue[900],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildProfileItem(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, size: 28, color: const Color.fromARGB(255, 146, 211, 205)),
+          Icon(icon, size: 28, color: Colors.blue[900]),
           SizedBox(width: 16),
           Text('$label: ', style: TextStyle(fontWeight: FontWeight.w500)),
           Flexible(
@@ -112,25 +133,46 @@ class _FraudResultPageState extends State<FraudResultPage> {
     );
   }
 
-  Widget _buildFraudDetectionInfo() {
+  Widget _buildFraudDetectionInfo(bool isFraudDetected) {
     return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: isFraudDetected ? Colors.red[100] : Colors.green[100],
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Prediction Result',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            // Icon
+            Icon(
+              isFraudDetected ? Icons.thumb_down : Icons.thumb_up,
+              color: isFraudDetected ? Colors.red : Colors.green,
+              size: 50,
+            ),
+            SizedBox(width: 16), // Space between icon and text
+            // Text Column
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Icon(Icons.thumb_up, color: Colors.green, size: 70),
-                SizedBox(width: 10, height: 100),
+                // Prediction Result title
+
+                SizedBox(height: 8), // Space between title and result
+                // Fraud detection result
                 Text(
-                  'No Fraud Detected',
+                  isFraudDetected ? 'Fraud Detected' : 'No Fraud Detected',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
                   ),
                 ),
               ],
@@ -148,10 +190,9 @@ class _FraudResultPageState extends State<FraudResultPage> {
         Text(
           title,
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.teal,
-          ),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue[900]),
         ),
         SizedBox(height: 10),
         Card(

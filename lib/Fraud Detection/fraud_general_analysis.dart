@@ -785,6 +785,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
             ),
             _buildChartCard(
                 'Fraud by Categories', _buildFraudByCategoriesBarChart(), []),
+            SizedBox(height: 8),
             _buildChartCard(
               'Age vs. Amount',
               _buildAgeVsAmountScatterChart(),
