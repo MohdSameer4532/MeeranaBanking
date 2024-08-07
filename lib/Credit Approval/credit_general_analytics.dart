@@ -57,193 +57,220 @@ class _CreditHomePageState extends State<CreditHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        c: context,
-        title: 'Credit Approval',
-        backButton: true,
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'General Analytics',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    appBar: CustomAppBar(
+      c: context,
+      title: 'Credit Approval',
+      backButton: true,
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+    ),
+    body: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'General Analytics',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
-            SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 1.5,
-                children: [
-                  _buildStatisticCard('Total Clients', '$totalClients'),
-                  _buildStatisticCard('Accepted Clients', '$goodCustomers'),
-                  _buildStatisticCard('Denied Clients', '$badCustomers'),
-                  _buildStatisticCard('Average Income',
-                      '\$${averageIncome?.toStringAsFixed(2) ?? 'N/A'}'),
-                ],
-              ),
-            ),
-            _buildTwoChartRow(
-              'Credit Result',
-              _buildCreditResultChart(),
-              [
-                _buildLegendItem(Colors.green, 'Accepted Credit'),
-                _buildLegendItem(Colors.red, 'Denied Credit'),
-              ],
-              'Education',
-              _buildEducationChart(),
-              [
-                _buildLegendItem(Colors.blue, 'Higher education'),
-                _buildLegendItem(Colors.orange, 'Secondary education'),
-                _buildLegendItem(Colors.green, 'Incomplete higher'),
+          ),
+          SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GridView.count(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 1.5,
+              children: [
+                _buildStatisticCard('Total Clients', '$totalClients'),
+                _buildStatisticCard('Accepted Clients', '$goodCustomers'),
+                _buildStatisticCard('Denied Clients', '$badCustomers'),
+                _buildStatisticCard('Average Income',
+                    '\$${averageIncome?.toStringAsFixed(2) ?? 'N/A'}'),
               ],
             ),
-            _buildChartSection(
-                'Education Distribution', _buildEducationBarChart(), [
+          ),
+          _buildTwoChartRow(
+            'Credit Result',
+            _buildCreditResultChart(),
+            [
+              _buildLegendItem(Colors.green, 'Accepted Credit'),
+              _buildLegendItem(Colors.red, 'Denied Credit'),
+            ],
+            'Education',
+            _buildEducationChart(),
+            [
               _buildLegendItem(Colors.blue, 'Higher education'),
               _buildLegendItem(Colors.orange, 'Secondary education'),
               _buildLegendItem(Colors.green, 'Incomplete higher'),
-            ]),
-            _buildTwoChartRow(
-              'Age Groups',
-              _buildAgeGroupChart(),
-              [
-                _buildLegendItem(Colors.purple, '20-29'),
-                _buildLegendItem(Colors.blue, '30-39'),
-                _buildLegendItem(Colors.green, '40-49'),
-                _buildLegendItem(Colors.orange, '50+'),
-              ],
-              'Income Range',
-              _buildIncomeRangeChart(),
-              [
-                _buildLegendItem(Colors.blue, 'Low'),
-                _buildLegendItem(Colors.green, 'Medium'),
-                _buildLegendItem(Colors.orange, 'High'),
-              ],
-            ),
-            _buildChartSection(
-                'Age vs Income', _buildAgeIncomeScatterPlot(), []),
-            _buildTwoChartRow(
-              'Family Status',
-              _buildFamilyStatusChart(),
-              [
-                _buildLegendItem(Colors.blue, 'Married'),
-                _buildLegendItem(Colors.green, 'Single'),
-                _buildLegendItem(Colors.orange, 'Civil marriage'),
-                _buildLegendItem(Colors.red, 'Widow'),
-              ],
-              'Housing Type',
-              _buildHousingTypeChart(),
-              [
-                _buildLegendItem(Colors.blue, 'House / apartment'),
-                _buildLegendItem(Colors.green, 'With parents'),
-                _buildLegendItem(Colors.orange, 'Co-op apartment'),
-                _buildLegendItem(Colors.red, 'Rented apartment'),
-                _buildLegendItem(Colors.purple, 'Office apartment'),
-              ],
-            ),
-            _buildChartSection(
-                'Family Status Distribution', _buildFamilyStatusBarChart(), [
+            ],
+          ),
+          _buildChartSection(
+            'Education Distribution',
+            _buildEducationBarChart(),
+            [
+              _buildLegendItem(Colors.blue, 'Higher education'),
+              _buildLegendItem(Colors.orange, 'Secondary education'),
+              _buildLegendItem(Colors.green, 'Incomplete higher'),
+            ],
+          ),
+          _buildTwoChartRow(
+            'Age Groups',
+            _buildAgeGroupChart(),
+            [
+              _buildLegendItem(Colors.purple, '20-29'),
+              _buildLegendItem(Colors.blue, '30-39'),
+              _buildLegendItem(Colors.green, '40-49'),
+              _buildLegendItem(Colors.orange, '50+'),
+            ],
+            'Income Range',
+            _buildIncomeRangeChart(),
+            [
+              _buildLegendItem(Colors.blue, 'Low'),
+              _buildLegendItem(Colors.green, 'Medium'),
+              _buildLegendItem(Colors.orange, 'High'),
+            ],
+          ),
+          _buildChartSection(
+            'Age vs Income',
+            _buildAgeIncomeScatterPlot(),
+            [],
+          ),
+          _buildTwoChartRow(
+            'Family Status',
+            _buildFamilyStatusChart(),
+            [
               _buildLegendItem(Colors.blue, 'Married'),
               _buildLegendItem(Colors.green, 'Single'),
               _buildLegendItem(Colors.orange, 'Civil marriage'),
               _buildLegendItem(Colors.red, 'Widow'),
-            ]),
-            _buildChartSection(
-                'Housing Type Distribution', _buildHousingTypeBarChart(), [
+            ],
+            'Housing Type',
+            _buildHousingTypeChart(),
+            [
               _buildLegendItem(Colors.blue, 'House / apartment'),
               _buildLegendItem(Colors.green, 'With parents'),
               _buildLegendItem(Colors.orange, 'Co-op apartment'),
               _buildLegendItem(Colors.red, 'Rented apartment'),
               _buildLegendItem(Colors.purple, 'Office apartment'),
-            ]),
-          ],
-        ),
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CreditUserInputPage()),
-            );
-          },
-          label: Text('Get Approval', style: TextStyle(color: Colors.white)),
-          icon: Icon(Icons.add, color: Colors.white),
-          backgroundColor: Color.fromARGB(255, 34, 34, 34),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTwoChartRow(String title1, Widget chart1, List<Widget> legend1,
-      String title2, Widget chart2, List<Widget> legend2) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: _buildChartCard(title1, chart1, legend1),
+            ],
           ),
-          SizedBox(width: 16),
-          Expanded(
-            child: _buildChartCard(title2, chart2, legend2),
+          _buildChartSection(
+            'Family Status Distribution',
+            _buildFamilyStatusBarChart(),
+            [
+              _buildLegendItem(Colors.blue, 'Married'),
+              _buildLegendItem(Colors.green, 'Single'),
+              _buildLegendItem(Colors.orange, 'Civil marriage'),
+              _buildLegendItem(Colors.red, 'Widow'),
+            ],
+          ),
+          _buildChartSection(
+            'Housing Type Distribution',
+            _buildHousingTypeBarChart(),
+            [
+              _buildLegendItem(Colors.blue, 'House / apartment'),
+              _buildLegendItem(Colors.green, 'With parents'),
+              _buildLegendItem(Colors.orange, 'Co-op apartment'),
+              _buildLegendItem(Colors.red, 'Rented apartment'),
+              _buildLegendItem(Colors.purple, 'Office apartment'),
+            ],
           ),
         ],
       ),
-    );
-  }
+    ),
+    floatingActionButton: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreditUserInputPage()),
+          );
+        },
+        label: Text('Get Approval', style: TextStyle(color: Colors.white)),
+        icon: Icon(Icons.add, color: Colors.white),
+        backgroundColor: Color.fromARGB(255, 34, 34, 34),
+      ),
+    ),
+  );
+}
+
+  Widget _buildTwoChartRow(String title1, Widget chart1, List<Widget> legend1,
+    String title2, Widget chart2, List<Widget> legend2) {
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: SizedBox(
+            width: double.infinity,
+            child: _buildChartCard(title1, chart1, legend1),
+          ),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: SizedBox(
+            width: double.infinity,
+            child: _buildChartCard(title2, chart2, legend2),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    color: Colors.white,
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
             ),
-            SizedBox(height: 16),
-            SizedBox(
+          ),
+          SizedBox(height: 16),
+          AspectRatio(
+            aspectRatio: 1,
+            child: SizedBox(
               height: 200,
               child: chart,
             ),
-            SizedBox(height: 8),
-            ...legendItems,
-          ],
-        ),
+          ),
+          SizedBox(height: 8),
+          SizedBox(
+            height: 90, // Set a fixed height for legend items
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: legendItems,
+            ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildStatisticCard(String title, String value) {
     return Card(
