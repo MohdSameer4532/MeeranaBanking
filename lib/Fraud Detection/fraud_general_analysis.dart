@@ -516,30 +516,35 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
   }
 
   Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    color: Colors.white,
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
             ),
-            Expanded(child: chart),
-            SizedBox(height: 8),
-            ...legendItems,
-          ],
-        ),
+          ),
+          SizedBox(height: 8),
+          SizedBox(
+            height: 200, // Adjust this value as needed
+            child: chart,
+          ),
+          SizedBox(height: 8),
+          ...legendItems,
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildLegendItem(Color color, String label) {
     return Padding(
@@ -562,191 +567,139 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    appBar: CustomAppBar(
+      c: context,
+      title: 'Fraud Detection',
+      backButton: true,
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        c: context,
-        title: 'Fraud Detection',
-        backButton: true,
-        backgroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'General Analytics',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+    ),
+    body: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'General Analytics',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
-            SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 1.5,
-                children: [
-                  _buildCard('Total Clients', totalClients.toString()),
-                  _buildCard('Fraud Not Detected', '$acceptedClients'),
-                  _buildCard('Fraud Detected', '$deniedClients'),
-                  _buildCard('Average Age', averageAge.toStringAsFixed(1)),
-                ],
+          ),
+          SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GridView.count(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 1.5,
+              children: [
+                _buildCard('Total Clients', totalClients.toString()),
+                _buildCard('Fraud Not Detected', '$acceptedClients'),
+                _buildCard('Fraud Detected', '$deniedClients'),
+                _buildCard('Average Age', averageAge.toStringAsFixed(1)),
+              ],
+            ),
+          ),
+          SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'Graphical View',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Graphical View',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                childAspectRatio: 0.68,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                children: [
-                  _buildChartCard(
-                      'Previous Clients', _buildPieChart(fraudStatusData), [
+          ),
+          SizedBox(height: 16),
+          // 1. Previous Clients and 2. Gender (in one row)
+          Row(
+            children: [
+              Expanded(
+                child: _buildChartCard(
+                  'Previous Clients',
+                  _buildPieChart(fraudStatusData),
+                  [
                     _buildLegendItem(Colors.red, 'Fraud Detected'),
                     _buildLegendItem(Colors.green, 'Fraud Not Detected'),
-                  ]),
-                  _buildChartCard('Gender', _buildPieChart(genderData), [
+                  ],
+                ),
+              ),
+              Expanded(
+                child: _buildChartCard(
+                  'Gender',
+                  _buildPieChart(genderData),
+                  [
                     _buildLegendItem(Colors.blue, 'Male'),
                     _buildLegendItem(Colors.pink, 'Female'),
-                  ]),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                childAspectRatio: 0.68,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                children: [
-                  _buildChartCard('Amount Range', _buildPieChart(amountData), [
+            ],
+          ),
+          // 3. Fraud by Age Group (in a separate row)
+          _buildChartCard('Fraud by Age Group', _buildFraudByAgeGroupChart(), []),
+          // 4. Amount Range and 5. Age Range (in one row)
+          Row(
+            children: [
+              Expanded(
+                child: _buildChartCard(
+                  'Amount Range',
+                  _buildPieChart(amountData),
+                  [
                     _buildLegendItem(Colors.blue, '1-50'),
                     _buildLegendItem(Colors.orange, '50-100'),
                     _buildLegendItem(Colors.red, '100+'),
-                  ]),
-                  _buildChartCard('Age Range', _buildPieChart(ageRangeData), [
+                  ],
+                ),
+              ),
+              Expanded(
+                child: _buildChartCard(
+                  'Age Range',
+                  _buildPieChart(ageRangeData),
+                  [
                     _buildLegendItem(Colors.blue, '18-30'),
                     _buildLegendItem(Colors.green, '30-50'),
                     _buildLegendItem(Colors.red, '50+'),
-                  ]),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Top Visuals',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  ],
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 1,
-                childAspectRatio: 0.90,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                children: [
-                  _buildChartCard(
-                      'Categories',
-                      _buildCategoriesScatterChart(categoriesData),
-                      []), // Update this line
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 1,
-                childAspectRatio: 0.68,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                children: [
-                  _buildChartCard('Fraud by Age Group',
-                      _buildFraudByAgeGroupChart(), []), // New chart
-                ],
-              ),
-            ),
-            SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 1,
-                childAspectRatio: 0.68,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                children: [
-                  _buildChartCard(
-                      'Fraud by Categories',
-                      _buildFraudByCategoriesBarChart(),
-                      []), // Add this line in the GridView
-                ],
-              ),
-            ),
-            SizedBox(height: 50),
-          ],
-        ),
+            ],
+          ),
+          // 6. Fraud by Categories (in a separate row)
+          _buildChartCard('Fraud by Categories', _buildFraudByCategoriesBarChart(), []),
+          // 7. Categories (Scatter plot) (in a separate row)
+          _buildChartCard('Categories', _buildCategoriesScatterChart(categoriesData), []),
+          SizedBox(height: 50),
+        ],
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FraudPredictionPage()),
-            );
-          },
-          label: Text('Detect Fraud', style: TextStyle(color: Colors.white)),
-          icon: Icon(Icons.add, color: Colors.white),
-          backgroundColor: Color.fromARGB(255, 34, 34, 34),
-        ),
+    ),
+    floatingActionButton: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => FraudPredictionPage()),
+          );
+        },
+        label: Text('Detect Fraud', style: TextStyle(color: Colors.white)),
+        icon: Icon(Icons.add, color: Colors.white),
+        backgroundColor: Color.fromARGB(255, 34, 34, 34),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildCard(String title, String value) {
     return Card(
