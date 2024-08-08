@@ -222,12 +222,16 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
               ),
             ),
             SizedBox(height: 16),
-            SizedBox(
+            Container(
               height: 200,
+              width: double.infinity,
               child: chart,
             ),
             SizedBox(height: 8),
-            ...legendItems,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: legendItems,
+            ),
           ],
         ),
       ),
@@ -502,10 +506,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
             title: entry.value.toString(),
             radius: 30,
             titleStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
           );
         }).toList(),
       ),
@@ -531,6 +532,9 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   }
 
   Widget _buildBarChart(Map<String, int> data, Color color1, Color color2) {
+    final maxY = data.values.reduce((a, b) => a > b ? a : b).toDouble();
+    final interval = (maxY / 5).ceil().toDouble();
+
     return BarChart(
       BarChartData(
         barGroups: data.entries.map((entry) {
@@ -547,10 +551,24 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
           );
         }).toList(),
         borderData: FlBorderData(show: true),
-        maxY: data.values.reduce((a, b) => a > b ? a : b).toDouble() + 1,
+        maxY: maxY + interval,
         titlesData: FlTitlesData(
           leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true),
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              interval: interval,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  value.toInt().toString(),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                );
+              },
+            ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
@@ -558,8 +576,8 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
               getTitlesWidget: (double value, TitleMeta meta) {
                 const style = TextStyle(
                   color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
                 );
                 List<String> titles = data.keys.toList();
                 String text =
@@ -572,6 +590,14 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
               },
             ),
           ),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        gridData: FlGridData(
+          show: true,
+          drawHorizontalLine: true,
+          horizontalInterval: interval,
+          drawVerticalLine: false,
         ),
       ),
     );
