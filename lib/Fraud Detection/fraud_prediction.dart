@@ -1,266 +1,191 @@
 import 'package:flutter/material.dart';
-import 'fraud_data.dart'; // Import your data file
-import 'fraud_result_page.dart'; // Import FraudResultPage
-import '../custom_app_bar.dart';
+import 'fraud_data.dart';
+import 'fraud_result_page.dart';
 import '../custom_dropdown.dart';
+import '../custom_app_bar.dart';
 
-class FraudPredictionPage extends StatefulWidget {
+final Map<String, String> fieldLabels = {
+  'age': 'Age',
+  'gender': 'Gender',
+  'zipcodeOri': 'Zip Code Origin',
+  'merchant': 'Merchant',
+  'zipMerchant': 'Merchant Zip Code',
+  'category': 'Category',
+  'amount': 'Amount',
+};
+
+class FraudUserInputPage extends StatefulWidget {
   @override
-  _FraudPredictionPageState createState() => _FraudPredictionPageState();
+  _FraudUserInputPageState createState() => _FraudUserInputPageState();
 }
 
-class _FraudPredictionPageState extends State<FraudPredictionPage> {
-  final List<FraudPerson> data = getFraudPersons();
-  FraudPerson? selectedPerson;
-  String predictionResult = "";
-
-  final TextEditingController customerController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
-  final TextEditingController zipCodeOriController = TextEditingController();
-  final TextEditingController merchantController = TextEditingController();
-  final TextEditingController zipMerchantController = TextEditingController();
-  final TextEditingController amountController = TextEditingController();
-
-  String? selectedGender;
-  String? selectedCategory;
-
-  @override
-  void dispose() {
-    customerController.dispose();
-    ageController.dispose();
-    zipCodeOriController.dispose();
-    merchantController.dispose();
-    zipMerchantController.dispose();
-    amountController.dispose();
-    super.dispose();
-  }
-
-  void predictFraud() {
-    if (selectedPerson != null) {
-      setState(() {
-        predictionResult =
-            selectedPerson!.amount > 100 ? "High Fraud Risk" : "Low Fraud Risk";
-      });
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FraudResultPage(
-            userInput: selectedPerson!,
-            dummyData: data,
-          ),
-        ),
-      );
-    } else {
-      setState(() {
-        predictionResult = "Please fill in all details";
-      });
-    }
-  }
+class _FraudUserInputPageState extends State<FraudUserInputPage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _zipcodeOriController = TextEditingController();
+  final TextEditingController _merchantController = TextEditingController();
+  final TextEditingController _zipMerchantController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  String? _selectedGender;
+  String? _selectedCategory;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-        c: context,
-        title: 'Fraud Detection',
         backButton: true,
+        c: context,
+        title: 'Fraud Detection Input',
         backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: 10),
-            TextField(
-              controller: customerController,
-              onChanged: (value) {
-                updateSelectedPerson();
-              },
-              decoration: InputDecoration(
-                labelText: 'Customer',
-                hintText: 'C1551465414',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 20),
+                _buildTextField('age', _ageController, TextInputType.number,
+                    'Please enter age', 'Enter age'),
+                const SizedBox(height: 20),
+                CustomDropdown(
+                  label: fieldLabels['gender']!,
+                  items: ['M', 'F'],
+                  value: _selectedGender,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedGender = value;
+                    });
+                  },
                 ),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: ageController,
-              onChanged: (value) {
-                updateSelectedPerson();
-              },
-              decoration: InputDecoration(
-                labelText: 'Age',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                const SizedBox(height: 20),
+                _buildTextField('zipcodeOri', _zipcodeOriController,
+                    TextInputType.number, 'Please enter zip code', 'Enter zip code'),
+                const SizedBox(height: 20),
+                _buildTextField('merchant', _merchantController,
+                    TextInputType.text, 'Please enter merchant', 'Enter merchant'),
+                const SizedBox(height: 20),
+                _buildTextField('zipMerchant', _zipMerchantController,
+                    TextInputType.number, 'Please enter merchant zip code', 'Enter merchant zip code'),
+                const SizedBox(height: 20),
+                CustomDropdown(
+                  label: fieldLabels['category']!,
+                  items: [
+                    'es_transportation',
+                    'es_health',
+                    'es_food',
+                    'es_tech',
+                    'es_travel',
+                    'es_bills',
+                    'es_others'
+                  ],
+                  value: _selectedCategory,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  },
                 ),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
-              keyboardType: TextInputType.number,
-              maxLength: 2,
-            ),
-            SizedBox(height: 10),
-            CustomDropdown(
-              label: 'Gender',
-              items: ['M', 'F'],
-              value: selectedGender,
-              onChanged: (value) {
-                setState(() {
-                  selectedGender = value;
-                  updateSelectedPerson();
-                });
-              },
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: zipCodeOriController,
-              onChanged: (value) {
-                updateSelectedPerson();
-              },
-              decoration: InputDecoration(
-                labelText: 'Zip Code Origin',
-                hintText: '28007',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                const SizedBox(height: 20),
+                _buildTextField('amount', _amountController,
+                    TextInputType.number, 'Please enter amount', 'Enter amount'),
+                const SizedBox(height: 30),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 34, 34, 34),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 15),
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    child: const Text(
+                      'Submit',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
-              keyboardType: TextInputType.number,
-              maxLength: 5,
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: merchantController,
-              onChanged: (value) {
-                updateSelectedPerson();
-              },
-              decoration: InputDecoration(
-                labelText: 'Merchant',
-                hintText: 'M1823072687',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: zipMerchantController,
-              onChanged: (value) {
-                updateSelectedPerson();
-              },
-              decoration: InputDecoration(
-                labelText: 'Zip Merchant',
-                hintText: '28007',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
-              keyboardType: TextInputType.number,
-              maxLength: 5,
-            ),
-            SizedBox(height: 10),
-            CustomDropdown(
-              label: 'Category',
-              items: [
-                'es_transportation',
-                'es_health',
-                'es_food',
-                'es_hotelservices',
-                'es_bills',
-                'es_automotive',
-                'es_travel',
-                'es_tech',
-                'es_otherservices',
               ],
-              value: selectedCategory,
-              onChanged: (value) {
-                setState(() {
-                  selectedCategory = value;
-                  updateSelectedPerson();
-                });
-              },
             ),
-            SizedBox(height: 10),
-            TextField(
-              controller: amountController,
-              onChanged: (value) {
-                updateSelectedPerson();
-              },
-              decoration: InputDecoration(
-                labelText: 'Amount',
-                hintText: '100.0',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
-              keyboardType: TextInputType.number,
-              maxLength: 10,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (selectedPerson != null) {
-                  predictFraud();
-                } else {
-                  setState(() {
-                    predictionResult = "Please fill in all details";
-                  });
-                }
-              },
-              child: const Text(
-                'Submit',
-                style: TextStyle(color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 0, 0, 0),
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                textStyle:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              predictionResult,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.red,
-              ),
-            ),
-            SizedBox(height: 20),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  void updateSelectedPerson() {
-    setState(() {
-      selectedPerson = FraudPerson(
-        customer: customerController.text,
-        age: int.tryParse(ageController.text) ?? 0,
-        gender: selectedGender ?? '',
-        zipcodeOri: zipCodeOriController.text,
-        merchant: merchantController.text,
-        zipMerchant: zipMerchantController.text,
-        category: selectedCategory ?? '',
-        amount: double.tryParse(amountController.text) ?? 0.0,
-        fraudStatus: 'Accepted',
+  Widget _buildTextField(String fieldName, TextEditingController controller,
+      TextInputType inputType, String validationMessage, String hintText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          fieldLabels[fieldName]!,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 5),
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          ),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+            color: Colors.grey[800],
+          ),
+          keyboardType: inputType,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return validationMessage;
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      FraudPerson userInput = FraudPerson(
+        customer: 'C1234567890', // Placeholder
+        age: int.parse(_ageController.text),
+        gender: _selectedGender ?? '',
+        zipcodeOri: _zipcodeOriController.text,
+        merchant: _merchantController.text,
+        zipMerchant: _zipMerchantController.text,
+        category: _selectedCategory ?? '',
+        amount: double.parse(_amountController.text),
+        fraudStatus: 'Pending', // Placeholder
       );
-    });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ResultScreen(userInput: userInput, dummyData: []),
+        ),
+      );
+
+      
+    }
   }
 }

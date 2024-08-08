@@ -1,25 +1,13 @@
 import 'package:flutter/material.dart';
 import 'fraud_data.dart';
 import 'fraud_feature_comparison_graph.dart';
+import 'fraud_categorical_comparison.dart';
 import '../custom_app_bar.dart';
-import 'package:fl_chart/fl_chart.dart';
 
-class FraudResultPage extends StatefulWidget {
+class ResultScreen extends StatelessWidget {
   final FraudPerson userInput;
-  final List<FraudPerson> dummyData;
 
-  FraudResultPage({
-    required this.userInput,
-    required this.dummyData,
-  });
-
-  @override
-  _FraudResultPageState createState() => _FraudResultPageState();
-}
-
-class _FraudResultPageState extends State<FraudResultPage> {
-  // Example boolean for fraud detection status
-  bool isFraudDetected = false; // Adjust logic to set this value
+  ResultScreen({required this.userInput, required List dummyData});
 
   @override
   Widget build(BuildContext context) {
@@ -27,33 +15,53 @@ class _FraudResultPageState extends State<FraudResultPage> {
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
         c: context,
-        title: 'Fraud Result',
+        title: 'Fraud Detection Result',
         backButton: true,
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(height: 20),
-              _buildUserInputSummary(),
-              _buildSectionTitle('Prediction Result'),
-              _buildFraudDetectionInfo(isFraudDetected),
-              SizedBox(height: 20),
-              // Pass the argument here
-              SizedBox(height: 20),
-              _buildComparisonSection('Age Comparison', 'age'),
-              SizedBox(height: 20),
-              _buildComparisonSection('Amount Comparison', 'amount'),
-              SizedBox(height: 20),
-              _buildComparisonSection('Gender Comparison', 'gender'),
-              SizedBox(height: 20),
-              _buildComparisonSection('Category Comparison', 'category'),
-              SizedBox(height: 20),
-            ],
-          ),
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 20),
+            _buildUserInputSummary(),
+            _buildSectionTitle('Fraud Detection Result'),
+            _buildResultDisplay(),
+            _buildSectionTitle('Age Comparison'),
+            _buildComparisonSection(
+              child: FeatureComparisonGraph(
+                dummyData: dummyData,
+                userInput: userInput,
+                feature: 'age',
+              ),
+            ),
+            _buildSectionTitle('Amount Comparison'),
+            _buildComparisonSection(
+              child: FeatureComparisonGraph(
+                dummyData: dummyData,
+                userInput: userInput,
+                feature: 'amount',
+              ),
+            ),
+            _buildSectionTitle('Gender Comparison'),
+            _buildComparisonSection(
+              child: CategoricalComparisonGraph(
+                dummyData: dummyData,
+                userInput: userInput,
+                feature: 'gender',
+              ),
+            ),
+            _buildSectionTitle('Category Comparison'),
+            _buildComparisonSection(
+              child: CategoricalComparisonGraph(
+                dummyData: dummyData,
+                userInput: userInput,
+                feature: 'category',
+              ),
+            ),
+            SizedBox(height: 20),
+          ],
         ),
       ),
     );
@@ -61,8 +69,10 @@ class _FraudResultPageState extends State<FraudResultPage> {
 
   Widget _buildUserInputSummary() {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
@@ -73,59 +83,47 @@ class _FraudResultPageState extends State<FraudResultPage> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: Colors.blue[900],
               ),
             ),
-            SizedBox(height: 16),
-            _buildProfileItem(
-                Icons.person, 'Customer', widget.userInput.customer),
-            _buildProfileItem(
-                Icons.cake, 'Age', widget.userInput.age.toString()),
-            _buildProfileItem(Icons.male, 'Gender', widget.userInput.gender),
-            _buildProfileItem(Icons.location_on, 'Zip Code Origin',
-                widget.userInput.zipcodeOri),
-            _buildProfileItem(
-                Icons.store, 'Merchant', widget.userInput.merchant),
-            _buildProfileItem(Icons.location_city, 'Zip Merchant',
-                widget.userInput.zipMerchant),
-            _buildProfileItem(
-                Icons.category, 'Category', widget.userInput.category),
-            _buildProfileItem(Icons.attach_money, 'Amount',
-                widget.userInput.amount.toStringAsFixed(2)),
+            SizedBox(height: 10),
+            _buildSummaryItem('Age', '${userInput.age}', Icons.cake),
+            _buildSummaryItem('Gender', userInput.gender, Icons.person),
+            _buildSummaryItem('Zip Code Origin', userInput.zipcodeOri, Icons.location_on),
+            _buildSummaryItem('Merchant', userInput.merchant, Icons.store),
+            _buildSummaryItem('Merchant Zip Code', userInput.zipMerchant, Icons.location_city),
+            _buildSummaryItem('Category', userInput.category, Icons.category),
+            _buildSummaryItem('Amount', '${userInput.amount}', Icons.money),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSummaryItem(String title, String value, IconData icon) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: Align(
-        alignment: Alignment.centerLeft, // Aligns the text to the left
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.blue[900],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileItem(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 28, color: Colors.blue[900]),
-          SizedBox(width: 16),
-          Text('$label: ', style: TextStyle(fontWeight: FontWeight.w500)),
-          Flexible(
+          Icon(icon, size: 24.0, color: Colors.blue[900]),
+          SizedBox(width: 10),
+          Expanded(
+            flex: 1,
+            child: Text(
+              title + ':',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            flex: 2,
             child: Text(
               value,
-              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 16),
             ),
           ),
         ],
@@ -133,179 +131,67 @@ class _FraudResultPageState extends State<FraudResultPage> {
     );
   }
 
-  Widget _buildFraudDetectionInfo(bool isFraudDetected) {
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.blue[900],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildComparisonSection({required Widget child}) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: isFraudDetected ? Colors.red[100] : Colors.green[100],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Container(
+          height: 300,
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultDisplay() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      color: userInput.fraudDetected ? Colors.red[100] : Colors.green[100],
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Prediction Result',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+            SizedBox(height: 10),
+            Center(
+              child: Icon(
+                userInput.fraudDetected ? Icons.warning : Icons.check_circle,
+                size: 50,
+                color: userInput.fraudDetected ? Colors.red : Colors.green,
               ),
             ),
-            SizedBox(height: 8),
-            // Icon
-            Icon(
-              isFraudDetected ? Icons.thumb_down : Icons.thumb_up,
-              color: isFraudDetected ? Colors.red : Colors.green,
-              size: 50,
-            ),
-            SizedBox(width: 16), // Space between icon and text
-            // Text Column
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Prediction Result title
-
-                SizedBox(height: 8), // Space between title and result
-                // Fraud detection result
-                Text(
-                  isFraudDetected ? 'Fraud Detected' : 'No Fraud Detected',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+            SizedBox(height: 10),
+            Center(
+                child: Text(
+              userInput.fraudDetected
+                  ? 'Fraud Detected'
+                  : 'No Fraud Detected',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            )),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildComparisonSection(String title, String feature) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue[900]),
-        ),
-        SizedBox(height: 10),
-        Card(
-          elevation: 5,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: FeatureComparisonGraph(
-              dummyData: widget.dummyData,
-              userInput: widget.userInput,
-              feature: feature,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  List<LineChartBarData> _generateLineData(String feature) {
-    switch (feature) {
-      case 'gender':
-        return _genderComparisonData();
-      case 'age':
-        return _ageComparisonData();
-      case 'ageAmount':
-        return _ageAmountComparisonData();
-      case 'categoryGender':
-        return _categoryGenderComparisonData();
-      default:
-        return [];
-    }
-  }
-
-  List<LineChartBarData> _genderComparisonData() {
-    return [
-      LineChartBarData(
-        spots: _generateGenderComparisonSpots(),
-        isCurved: true,
-        color: Colors.black,
-        dotData: FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-      ),
-    ];
-  }
-
-  List<FlSpot> _generateGenderComparisonSpots() {
-    return [
-      FlSpot(0, 1),
-      FlSpot(1, 3),
-      FlSpot(2, 2),
-      FlSpot(3, 4),
-    ];
-  }
-
-  List<LineChartBarData> _ageComparisonData() {
-    return [
-      LineChartBarData(
-        spots: _generateAgeComparisonSpots(),
-        isCurved: true,
-        color: Colors.green,
-        dotData: FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-      ),
-    ];
-  }
-
-  List<FlSpot> _generateAgeComparisonSpots() {
-    return [
-      FlSpot(0, 25),
-      FlSpot(1, 30),
-      FlSpot(2, 35),
-      FlSpot(3, 40),
-    ];
-  }
-
-  List<LineChartBarData> _ageAmountComparisonData() {
-    return [
-      LineChartBarData(
-        spots: _generateAgeAmountComparisonSpots(),
-        isCurved: true,
-        color: Colors.red,
-        dotData: FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-      ),
-    ];
-  }
-
-  List<FlSpot> _generateAgeAmountComparisonSpots() {
-    return [
-      FlSpot(0, 500),
-      FlSpot(1, 1000),
-      FlSpot(2, 1500),
-      FlSpot(3, 2000),
-    ];
-  }
-
-  List<LineChartBarData> _categoryGenderComparisonData() {
-    return [
-      LineChartBarData(
-        spots: _generateCategoryGenderComparisonSpots(),
-        isCurved: true,
-        color: Colors.orange,
-        dotData: FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-      ),
-    ];
-  }
-
-  List<FlSpot> _generateCategoryGenderComparisonSpots() {
-    return [
-      FlSpot(0, 1),
-      FlSpot(1, 2),
-      FlSpot(2, 3),
-      FlSpot(3, 4),
-    ];
   }
 }

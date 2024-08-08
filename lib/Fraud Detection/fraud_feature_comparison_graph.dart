@@ -2,570 +2,222 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'fraud_data.dart';
 
-// Main widget for feature comparison graph
-class FeatureComparisonGraph extends StatelessWidget {
-  final FraudPerson userInput;
+class FeatureComparisonGraph extends StatefulWidget {
   final List<FraudPerson> dummyData;
+  final FraudPerson userInput;
   final String feature;
 
   FeatureComparisonGraph({
-    required this.userInput,
     required this.dummyData,
+    required this.userInput,
     required this.feature,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: <Widget>[
-          _buildComparisonChart(),
-          SizedBox(height: 20),
-          _buildComparisonText(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildComparisonChart() {
-    switch (feature) {
-      case 'age':
-        return AgeBarChart(
-          userValue: userInput.age.toDouble(),
-          values: dummyData.map((e) => e.age.toDouble()).toList(),
-        );
-      case 'amount':
-        return AmountLineChart(
-          userValue: userInput.amount,
-          values: dummyData.map((e) => e.amount).toList(),
-        );
-      case 'gender':
-        return GenderBoxPlot(
-          dummyData: dummyData,
-        );
-      case 'category':
-        return CategoryPieChart(
-          dummyData: dummyData,
-        );
-      default:
-        return Container();
-    }
-  }
-
-  Widget _buildComparisonText() {
-    String comparisonText = '';
-    _getTopCategoryData();
-
-    switch (feature) {
-      case 'age':
-        comparisonText =
-            'Your age: ${userInput.age}, Mean age: ${_calculateMean(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Min age: ${_calculateMin(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}, Max age: ${_calculateMax(dummyData.map((e) => e.age.toDouble()).toList()).toStringAsFixed(2)}';
-        break;
-      // default:
-      //   comparisonText = 'No data';
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Text(
-        comparisonText,
-        style: TextStyle(fontSize: 16),
-      ),
-    );
-  }
-
-  bool _isFraudDetected() {
-    return userInput.amount > 1000;
-  }
-
-  List<MapEntry<String, double>> _getTopCategoryData() {
-    Map<String, double> categoryData = {};
-    for (var person in dummyData) {
-      categoryData[person.category] =
-          (categoryData[person.category] ?? 0.0) + person.amount;
-    }
-
-    var sortedCategories = categoryData.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-
-    return sortedCategories.take(5).toList();
-  }
-
-  double _calculateMean(List<double> values) {
-    if (values.isEmpty) return 0;
-    double sum = values.reduce((value, element) => value + element);
-    return sum / values.length;
-  }
-
-  double _calculateMin(List<double> values) {
-    if (values.isEmpty) return 0;
-    return values.reduce((a, b) => a < b ? a : b);
-  }
-
-  double _calculateMax(List<double> values) {
-    if (values.isEmpty) return 0;
-    return values.reduce((a, b) => a > b ? a : b);
-  }
+  _FeatureComparisonGraphState createState() => _FeatureComparisonGraphState();
 }
 
-// Widget for Bar Chart based on Age
-class AgeBarChart extends StatelessWidget {
-  final double userValue;
-  final List<double> values;
-
-  AgeBarChart({required this.userValue, required this.values});
+class _FeatureComparisonGraphState extends State<FeatureComparisonGraph> {
+  double _minX = 0;
+  double _maxX = 0;
+  double _minY = 0;
+  double _maxY = 0;
 
   @override
-  Widget build(BuildContext context) {
-    double meanValue = _calculateMean(values);
-    double minValue = _calculateMin(values);
-    double maxValue = _calculateMax(values);
-
-    double maxY = [userValue, meanValue, minValue, maxValue]
-            .reduce((a, b) => a > b ? a : b) *
-        1.2;
-
-    return Container(
-      height: 300,
-      child: BarChart(
-        BarChartData(
-          alignment: BarChartAlignment.spaceBetween,
-          maxY: maxY,
-          barTouchData: BarTouchData(enabled: false),
-          titlesData: FlTitlesData(
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) {
-                  const style = TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  );
-                  Widget text;
-                  switch (value.toInt()) {
-                    case 0:
-                      text = const Text('User Input', style: style);
-                      break;
-                    case 1:
-                      text = const Text('Mean', style: style);
-                      break;
-                    case 2:
-                      text = const Text('Min', style: style);
-                      break;
-                    case 3:
-                      text = const Text('Max', style: style);
-                      break;
-                    default:
-                      text = const Text('');
-                      break;
-                  }
-                  return SideTitleWidget(
-                    axisSide: meta.axisSide,
-                    child: text,
-                  );
-                },
-                reservedSize: 28,
-              ),
-            ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 40,
-                interval: maxY / 4,
-                getTitlesWidget: (value, meta) {
-                  const style = TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
-                  );
-                  return Text(
-                    value.toInt().toString(),
-                    style: style,
-                  );
-                },
-              ),
-            ),
-          ),
-          borderData: FlBorderData(show: false),
-          barGroups: _buildBarGroups(userValue, meanValue, minValue, maxValue),
-        ),
-      ),
-    );
+  void initState() {
+    super.initState();
+    _updateBoundaries();
   }
 
-  List<BarChartGroupData> _buildBarGroups(
-      double userValue, double meanValue, double minValue, double maxValue) {
-    return [
-      _buildBarGroup(0, userValue, Colors.blue),
-      _buildBarGroup(1, meanValue, Colors.green),
-      _buildBarGroup(2, minValue, Colors.red),
-      _buildBarGroup(3, maxValue, Colors.orange),
+  void _updateBoundaries() {
+    final List<double> allValues = [
+      ...widget.dummyData.map((person) => _getFeatureValue(person)),
+      _getFeatureValue(widget.userInput)
     ];
+    if (allValues.isNotEmpty) {
+      _minX = 0;
+      _maxX = widget.dummyData.length.toDouble();
+      _minY = allValues.reduce((a, b) => a < b ? a : b);
+      _maxY = allValues.reduce((a, b) => a > b ? a : b);
+
+      // Add some padding to the Y-axis
+      double yPadding = (_maxY - _minY) * 0.1;
+      _minY -= yPadding;
+      _maxY += yPadding;
+
+      // Ensure minimum Y value is not negative
+      _minY = _minY < 0 ? 0 : _minY;
+    }
   }
-
-  BarChartGroupData _buildBarGroup(int x, double value, Color color) {
-    return BarChartGroupData(
-      barsSpace: 4,
-      x: x,
-      barRods: [
-        BarChartRodData(
-          toY: value,
-          color: color,
-          width: 10,
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: Colors.black, width: 1),
-        ),
-      ],
-    );
-  }
-
-  double _calculateMean(List<double> values) {
-    if (values.isEmpty) return 0;
-    double sum = values.reduce((value, element) => value + element);
-    return sum / values.length;
-  }
-
-  double _calculateMin(List<double> values) {
-    if (values.isEmpty) return 0;
-    return values.reduce((a, b) => a < b ? a : b);
-  }
-
-  double _calculateMax(List<double> values) {
-    if (values.isEmpty) return 0;
-    return values.reduce((a, b) => a > b ? a : b);
-  }
-}
-
-// Widget for Line Chart based on Amount
-
-class AmountLineChart extends StatelessWidget {
-  final double userValue;
-  final List<double> values;
-
-  AmountLineChart({required this.userValue, required this.values});
 
   @override
   Widget build(BuildContext context) {
-    double meanValue = _calculateMean(values);
-    double minValue = _calculateMin(values);
-    double maxValue = _calculateMax(values);
+    final List<double> featureValues =
+        widget.dummyData.map((person) => _getFeatureValue(person)).toList();
+    if (featureValues.isEmpty) {
+      return const Center(child: Text('No data available for this feature.'));
+    }
 
-    double maxY = [userValue, meanValue, minValue, maxValue]
-            .reduce((a, b) => a > b ? a : b) *
-        1.2;
+    final double userValue = _getFeatureValue(widget.userInput);
+    final double meanVal =
+        featureValues.reduce((a, b) => a + b) / featureValues.length;
+    final double medianVal = _calculateMedian(featureValues);
 
-    return Column(
-      children: [
-        Container(
-          height: 300,
-          child: LineChart(
-            LineChartData(
-              lineBarsData: [
-                // Line for the User Input
-                LineChartBarData(
-                  spots: [
-                    FlSpot(0, userValue),
-                    FlSpot(1, userValue),
-                    FlSpot(2, userValue),
-                    FlSpot(3, userValue),
-                  ],
-                  isCurved: false,
-                  color: Colors.yellow,
-                  dotData: FlDotData(
-                    show: false,
-                    getDotPainter: (spot, percent, barData, index) =>
-                        FlDotCirclePainter(
-                      radius: 4,
-                      color: Colors.yellow,
-                      strokeColor: Colors.black,
-                      strokeWidth: 1,
+    _updateBoundaries();
+
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        height: constraints.maxHeight,
+        width: constraints.maxWidth,
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Expanded(
+              child: LineChart(
+                LineChartData(
+                  minX: _minX,
+                  maxX: _maxX,
+                  minY: _minY,
+                  maxY: _maxY,
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          return Text(value.toStringAsFixed(0));
+                        },
+                      ),
                     ),
                   ),
-                  belowBarData: BarAreaData(show: false),
-                  isStrokeCapRound: true,
-                  aboveBarData: BarAreaData(show: false),
-                  barWidth: 2,
-                  showingIndicators: [0],
-                ),
-                // Line for Mean, Min, and Max Values
-                LineChartBarData(
-                  spots: [
-                    FlSpot(0, userValue),
-                    FlSpot(1, meanValue),
-                    FlSpot(2, minValue),
-                    FlSpot(3, maxValue),
+                  borderData: FlBorderData(show: true),
+                  lineBarsData: [
+                    _createLineChartBarData(featureValues, Colors.blue),
+                    _createHorizontalLine(_maxY, Colors.orange, 'Maximum'),
+                    _createHorizontalLine(meanVal, Colors.purple, 'Mean'),
+                    _createHorizontalLine(medianVal, Colors.yellow, 'Median'),
+                    _createHorizontalLine(userValue, Colors.green, 'User Data'),
                   ],
-                  isCurved: true,
-                  color: Colors.blue,
-                  dotData: FlDotData(
-                    show: true,
-                    getDotPainter: (spot, percent, barData, index) {
-                      Color dotColor;
-                      switch (index) {
-                        case 0:
-                          dotColor = Colors.yellow; // User Value
-                          break;
-                        case 1:
-                          dotColor = Colors.green; // Mean Value
-                          break;
-                        case 2:
-                          dotColor = Colors.red; // Min Value
-                          break;
-                        case 3:
-                          dotColor = Colors.orange; // Max Value
-                          break;
-                        default:
-                          dotColor = Colors.blue; // Default
-                      }
-                      return FlDotCirclePainter(
-                        radius: 4,
-                        color: dotColor,
-                        strokeColor: Colors.black,
-                        strokeWidth: 1,
-                      );
-                    },
+                  extraLinesData: ExtraLinesData(
+                    horizontalLines: [
+                      HorizontalLine(
+                        y: userValue,
+                        color: Colors.green,
+                        strokeWidth: 2,
+                        label: HorizontalLineLabel(
+                          show: true,
+                          alignment: Alignment.topRight,
+                          padding: EdgeInsets.only(right: 5, top: 5),
+                          style: TextStyle(color: Colors.black),
+                          labelResolver: (line) =>
+                              'User: ${userValue.toStringAsFixed(2)}',
+                        ),
+                      ),
+                    ],
                   ),
-                  belowBarData: BarAreaData(show: false),
-                  isStrokeCapRound: true,
-                  aboveBarData: BarAreaData(show: false),
-                  barWidth: 2,
-                ),
-              ],
-              minY: 0,
-              maxY: maxY,
-              titlesData: FlTitlesData(
-                bottomTitles: AxisTitles(
-                  sideTitles:
-                      SideTitles(showTitles: false), // Hide bottom titles
-                ),
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 40,
-                    interval: (maxY / 5).toDouble(),
-                    getTitlesWidget: (value, meta) {
-                      const style = TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                      );
-                      return Text(
-                        value.toStringAsFixed(0),
-                        style: style,
-                      );
-                    },
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+                        return touchedBarSpots.map((barSpot) {
+                          final flSpot = barSpot;
+                          return LineTooltipItem(
+                            '${widget.feature}: ${flSpot.y.toStringAsFixed(2)}',
+                            TextStyle(color: Colors.white),
+                          );
+                        }).toList();
+                      },
+                    ),
                   ),
                 ),
               ),
-              borderData: FlBorderData(
-                show: true,
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 1,
-                ),
-              ),
-              gridData: FlGridData(show: false),
             ),
-          ),
+            SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildLegend(),
+                ],
+              ),
+            ),
+          ],
         ),
-        SizedBox(height: 10),
-        _buildLegend(),
-      ],
-    );
+      );
+    });
   }
 
   Widget _buildLegend() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _buildLegendItem(Colors.yellow, 'User Input'),
-        SizedBox(width: 10),
-        _buildLegendItem(Colors.green, 'Mean'),
-        SizedBox(width: 10),
-        _buildLegendItem(Colors.red, 'Min'),
-        SizedBox(width: 10),
-        _buildLegendItem(Colors.orange, 'Max'),
+        _legendItem(Colors.blue, 'Data'),
+        _legendItem(Colors.orange, 'Max'),
+        _legendItem(Colors.purple, 'Mean'),
+        _legendItem(Colors.yellow, 'Median'),
+        _legendItem(Colors.green, 'User'),
       ],
     );
   }
 
-  Widget _buildLegendItem(Color color, String label) {
+  Widget _legendItem(Color color, String label) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 16,
           height: 16,
           color: color,
-          margin: EdgeInsets.only(right: 4),
         ),
+        SizedBox(width: 4),
         Text(label),
+        SizedBox(width: 8),
       ],
     );
   }
 
-  double _calculateMean(List<double> values) {
-    if (values.isEmpty) return 0;
-    double sum = values.reduce((value, element) => value + element);
-    return sum / values.length;
-  }
-
-  double _calculateMin(List<double> values) {
-    if (values.isEmpty) return 0;
-    return values.reduce((a, b) => a < b ? a : b);
-  }
-
-  double _calculateMax(List<double> values) {
-    if (values.isEmpty) return 0;
-    return values.reduce((a, b) => a > b ? a : b);
-  }
-}
-
-// Widget for Box Plot based on Gender
-class GenderBoxPlot extends StatelessWidget {
-  final List<FraudPerson> dummyData;
-
-  GenderBoxPlot({required this.dummyData});
-
-  @override
-  Widget build(BuildContext context) {
-    List<double> maleAges = dummyData
-        .where((person) => person.gender == 'M')
-        .map((person) => person.age.toDouble())
-        .toList();
-    List<double> femaleAges = dummyData
-        .where((person) => person.gender == 'F')
-        .map((person) => person.age.toDouble())
-        .toList();
-
-    return Container(
-      height: 300,
-      child: BarChart(
-        BarChartData(
-          alignment: BarChartAlignment.spaceBetween,
-          maxY: [
-                maleAges.reduce((a, b) => a > b ? a : b),
-                femaleAges.reduce((a, b) => a > b ? a : b)
-              ].reduce((a, b) => a > b ? a : b) *
-              1.2,
-          barTouchData: BarTouchData(enabled: false),
-          titlesData: FlTitlesData(
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) {
-                  const style = TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  );
-                  switch (value.toInt()) {
-                    case 0:
-                      return const Text('Male', style: style);
-                    case 1:
-                      return const Text('Female', style: style);
-                    default:
-                      return const Text('');
-                  }
-                },
-                reservedSize: 28,
-              ),
-            ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 40,
-                interval: 10,
-                getTitlesWidget: (value, meta) {
-                  const style = TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
-                  );
-                  return Text(
-                    value.toInt().toString(),
-                    style: style,
-                  );
-                },
-              ),
-            ),
-          ),
-          borderData: FlBorderData(show: false),
-          barGroups: [
-            _buildBarGroup(0, maleAges.reduce((a, b) => a < b ? a : b),
-                Colors.blue.withOpacity(0.2)),
-            _buildBarGroup(
-                0, maleAges.reduce((a, b) => a > b ? a : b), Colors.blue),
-            _buildBarGroup(1, femaleAges.reduce((a, b) => a < b ? a : b),
-                Colors.pink.withOpacity(0.2)),
-            _buildBarGroup(
-                1, femaleAges.reduce((a, b) => a > b ? a : b), Colors.pink),
-          ],
-        ),
-      ),
-    );
-  }
-
-  BarChartGroupData _buildBarGroup(int x, double value, Color color) {
-    return BarChartGroupData(
-      barsSpace: 4,
-      x: x,
-      barRods: [
-        BarChartRodData(
-          toY: value,
-          color: color,
-          width: 10,
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: Colors.black, width: 1),
-        ),
-      ],
-    );
-  }
-}
-
-// Widget for Pie Chart based on Category
-class CategoryPieChart extends StatelessWidget {
-  final List<FraudPerson> dummyData;
-
-  CategoryPieChart({required this.dummyData});
-
-  @override
-  Widget build(BuildContext context) {
-    List<MapEntry<String, double>> topCategories = _getTopCategoryData();
-
-    if (topCategories.isEmpty) {
-      return Center(child: Text("No categories available"));
+  double _getFeatureValue(FraudPerson person) {
+    switch (widget.feature) {
+      case 'age':
+        return person.age.toDouble();
+      case 'amount':
+        return person.amount;
+      default:
+        return 0;
     }
+  }
 
-    return Container(
-      height: 300,
-      child: PieChart(
-        PieChartData(
-          sections: topCategories.asMap().entries.map((entry) {
-            int index = entry.key;
-            MapEntry<String, double> categoryEntry = entry.value;
-            return PieChartSectionData(
-              value: categoryEntry.value,
-              title:
-                  '${categoryEntry.key}\n${categoryEntry.value.toStringAsFixed(2)}',
-              color: Colors.primaries[index % Colors.primaries.length],
-              radius: 100,
-              titleStyle: TextStyle(color: Colors.white),
-            );
-          }).toList(),
-        ),
-      ),
+  double _calculateMedian(List<double> values) {
+    values.sort();
+    final middle = values.length ~/ 2;
+    if (values.length % 2 == 0) {
+      return (values[middle - 1] + values[middle]) / 2;
+    } else {
+      return values[middle];
+    }
+  }
+
+  LineChartBarData _createLineChartBarData(List<double> values, Color color) {
+    return LineChartBarData(
+      spots: values.asMap().entries.map((entry) {
+        return FlSpot(entry.key.toDouble(), entry.value);
+      }).toList(),
+      isCurved: true,
+      color: color,
+      dotData: FlDotData(show: false),
+      belowBarData: BarAreaData(show: false),
     );
   }
 
-  List<MapEntry<String, double>> _getTopCategoryData() {
-    Map<String, double> categoryData = {};
-    for (var person in dummyData) {
-      categoryData[person.category] =
-          (categoryData[person.category] ?? 0.0) + person.amount;
-    }
-
-    var sortedCategories = categoryData.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-
-    return sortedCategories.take(5).toList();
+  LineChartBarData _createHorizontalLine(double y, Color color, String label) {
+    return LineChartBarData(
+      spots: [FlSpot(_minX, y), FlSpot(_maxX, y)],
+      color: color,
+      dotData: FlDotData(show: false),
+      belowBarData: BarAreaData(show: false),
+    );
   }
 }

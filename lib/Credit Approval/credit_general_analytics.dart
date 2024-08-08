@@ -527,242 +527,252 @@ Widget build(BuildContext context) {
   }
 
   Widget _buildEducationBarChart() {
-    Map<String, int> educationData =
-        _calculateCategoryData(people.map((p) => p.educationType).toList());
-    double maxY =
-        educationData.values.reduce((a, b) => a > b ? a : b).toDouble();
+  Map<String, int> educationData =
+      _calculateCategoryData(people.map((p) => p.educationType).toList());
+  double maxY =
+      educationData.values.reduce((a, b) => a > b ? a : b).toDouble();
 
-    return BarChart(
-      BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        maxY: maxY * 1.2,
-        barTouchData: BarTouchData(enabled: false),
-        titlesData: FlTitlesData(
-          show: true,
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (double value, TitleMeta meta) {
-                List<String> titles = educationData.keys.toList();
-                return Text(
-                  value.toInt() < titles.length
-                      ? titles[value.toInt()].substring(0, 3)
-                      : '',
-                  style: TextStyle(color: Colors.black, fontSize: 10),
-                );
-              },
-              reservedSize: 30,
-            ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toInt().toString(),
-                  style: TextStyle(color: Colors.black, fontSize: 10),
-                );
-              },
-              reservedSize: 30,
-            ),
-          ),
-        ),
-        borderData: FlBorderData(show: true),
-        barGroups: educationData.entries.map((entry) {
-          return BarChartGroupData(
-            x: educationData.keys.toList().indexOf(entry.key),
-            barRods: [
-              BarChartRodData(
-                toY: entry.value.toDouble(),
-                color: _getCategoryColor(entry.key),
-                width: 22,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ],
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildAgeIncomeScatterPlot() {
-    List<ScatterSpot> spots = people.map((person) {
-      return ScatterSpot(
-        person.yearsBirth.toDouble(),
-        person.annualIncome.toDouble(),
-      );
-    }).toList();
-
-    return ScatterChart(
-      ScatterChartData(
-        scatterSpots: spots,
-        minX: 20,
-        maxX: 60,
-        minY: 0,
-        maxY: 300000, // Adjusted to accommodate full income values
-        titlesData: FlTitlesData(
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) => Text(
-                value.toInt().toString(),
-                style: TextStyle(color: Colors.black, fontSize: 12),
-              ),
-              interval: 10,
-            ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) => Text(
-                '\$${(value / 1000).toInt()}k',
-                style: TextStyle(color: Colors.black, fontSize: 12),
-              ),
-              interval: 50000, // Adjusted interval
-              reservedSize: 40, // Increased reserved size for labels
-            ),
-          ),
-        ),
-        gridData: FlGridData(
-          show: true,
-          drawHorizontalLine: true,
-          drawVerticalLine: true,
-          horizontalInterval: 50000, // Adjusted to match Y-axis interval
-        ),
-        borderData: FlBorderData(show: true),
-        scatterTouchData: ScatterTouchData(
-          touchTooltipData: ScatterTouchTooltipData(
-            getTooltipItems: (ScatterSpot touchedBarSpot) {
-              return ScatterTooltipItem(
-                'Age: ${touchedBarSpot.x.toInt()}\nIncome: \$${touchedBarSpot.y.toInt()}',
-                textStyle: TextStyle(color: Colors.white),
-                bottomMargin: 10,
+  return BarChart(
+    BarChartData(
+      alignment: BarChartAlignment.spaceAround,
+      maxY: maxY * 1.2,
+      barTouchData: BarTouchData(enabled: false),
+      titlesData: FlTitlesData(
+        show: true,
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (double value, TitleMeta meta) {
+              List<String> titles = educationData.keys.toList();
+              return Text(
+                value.toInt() < titles.length
+                    ? titles[value.toInt()].substring(0, 3)
+                    : '',
+                style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
               );
             },
+            reservedSize: 30,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildFamilyStatusBarChart() {
-    Map<String, int> familyStatusData =
-        _calculateCategoryData(people.map((p) => p.familyStatus).toList());
-    double maxY =
-        familyStatusData.values.reduce((a, b) => a > b ? a : b).toDouble();
-
-    return BarChart(
-      BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        maxY: maxY * 1.2,
-        barTouchData: BarTouchData(enabled: false),
-        titlesData: FlTitlesData(
-          show: true,
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (double value, TitleMeta meta) {
-                List<String> titles = familyStatusData.keys.toList();
-                return Text(
-                  value.toInt() < titles.length
-                      ? titles[value.toInt()].substring(0, 3)
-                      : '',
-                  style: TextStyle(color: Colors.black, fontSize: 10),
-                );
-              },
-              reservedSize: 30,
-            ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toInt().toString(),
-                  style: TextStyle(color: Colors.black, fontSize: 10),
-                );
-              },
-              reservedSize: 30,
-            ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, meta) {
+              return Text(
+                value.toInt().toString(),
+                style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+              );
+            },
+            reservedSize: 30,
           ),
         ),
-        borderData: FlBorderData(show: true),
-        barGroups: familyStatusData.entries.map((entry) {
-          return BarChartGroupData(
-            x: familyStatusData.keys.toList().indexOf(entry.key),
-            barRods: [
-              BarChartRodData(
-                toY: entry.value.toDouble(),
-                color: _getFamilyStatusColor(entry.key),
-                width: 22,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ],
-          );
-        }).toList(),
+        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
       ),
+      borderData: FlBorderData(show: true),
+      barGroups: educationData.entries.map((entry) {
+        return BarChartGroupData(
+          x: educationData.keys.toList().indexOf(entry.key),
+          barRods: [
+            BarChartRodData(
+              toY: entry.value.toDouble(),
+              color: _getCategoryColor(entry.key),
+              width: 22,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ],
+        );
+      }).toList(),
+    ),
+  );
+}
+
+Widget _buildAgeIncomeScatterPlot() {
+  List<ScatterSpot> spots = people.map((person) {
+    return ScatterSpot(
+      person.yearsBirth.toDouble(),
+      person.annualIncome.toDouble(),
     );
-  }
+  }).toList();
 
-  Widget _buildHousingTypeBarChart() {
-    Map<String, int> housingTypeData =
-        _calculateCategoryData(people.map((p) => p.housingType).toList());
-    double maxY =
-        housingTypeData.values.reduce((a, b) => a > b ? a : b).toDouble();
-
-    return BarChart(
-      BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        maxY: maxY * 1.2,
-        barTouchData: BarTouchData(enabled: false),
-        titlesData: FlTitlesData(
-          show: true,
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (double value, TitleMeta meta) {
-                List<String> titles = housingTypeData.keys.toList();
-                return Text(
-                  value.toInt() < titles.length
-                      ? titles[value.toInt()].substring(0, 3)
-                      : '',
-                  style: TextStyle(color: Colors.black, fontSize: 10),
-                );
-              },
-              reservedSize: 30,
+  return ScatterChart(
+    ScatterChartData(
+      scatterSpots: spots,
+      minX: 20,
+      maxX: 60,
+      minY: 0,
+      maxY: 300000,
+      titlesData: FlTitlesData(
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, meta) => Text(
+              value.toInt().toString(),
+              style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
             ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toInt().toString(),
-                  style: TextStyle(color: Colors.black, fontSize: 10),
-                );
-              },
-              reservedSize: 30,
-            ),
+            interval: 10,
           ),
         ),
-        borderData: FlBorderData(show: true),
-        barGroups: housingTypeData.entries.map((entry) {
-          return BarChartGroupData(
-            x: housingTypeData.keys.toList().indexOf(entry.key),
-            barRods: [
-              BarChartRodData(
-                toY: entry.value.toDouble(),
-                color: _getHousingTypeColor(entry.key),
-                width: 22,
-                borderRadius: BorderRadius.circular(4),
-              )
-            ],
-          );
-        }).toList(),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, meta) => Text(
+              '\$${(value / 1000).toInt()}k',
+              style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            interval: 50000,
+            reservedSize: 40,
+          ),
+        ),
+        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
       ),
-    );
-  }
+      gridData: FlGridData(
+        show: true,
+        drawHorizontalLine: true,
+        drawVerticalLine: true,
+        horizontalInterval: 50000,
+      ),
+      borderData: FlBorderData(show: true),
+      scatterTouchData: ScatterTouchData(
+        touchTooltipData: ScatterTouchTooltipData(
+          getTooltipItems: (ScatterSpot touchedBarSpot) {
+            return ScatterTooltipItem(
+              'Age: ${touchedBarSpot.x.toInt()}\nIncome: \$${touchedBarSpot.y.toInt()}',
+              textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              bottomMargin: 10,
+            );
+          },
+        ),
+      ),
+    ),
+  );
+}
 
+
+
+
+Widget _buildFamilyStatusBarChart() {
+  Map<String, int> familyStatusData =
+      _calculateCategoryData(people.map((p) => p.familyStatus).toList());
+  double maxY =
+      familyStatusData.values.reduce((a, b) => a > b ? a : b).toDouble();
+
+  return BarChart(
+    BarChartData(
+      alignment: BarChartAlignment.spaceAround,
+      maxY: maxY * 1.2,
+      barTouchData: BarTouchData(enabled: false),
+      titlesData: FlTitlesData(
+        show: true,
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (double value, TitleMeta meta) {
+              List<String> titles = familyStatusData.keys.toList();
+              return Text(
+                value.toInt() < titles.length
+                    ? titles[value.toInt()].substring(0, 3)
+                    : '',
+                style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+              );
+            },
+            reservedSize: 30,
+          ),
+        ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, meta) {
+              return Text(
+                value.toInt().toString(),
+                style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+              );
+            },
+            reservedSize: 30,
+          ),
+        ),
+        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      ),
+      borderData: FlBorderData(show: true),
+      barGroups: familyStatusData.entries.map((entry) {
+        return BarChartGroupData(
+          x: familyStatusData.keys.toList().indexOf(entry.key),
+          barRods: [
+            BarChartRodData(
+              toY: entry.value.toDouble(),
+              color: _getFamilyStatusColor(entry.key),
+              width: 22,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ],
+        );
+      }).toList(),
+    ),
+  );
+}
+
+Widget _buildHousingTypeBarChart() {
+  Map<String, int> housingTypeData =
+      _calculateCategoryData(people.map((p) => p.housingType).toList());
+  double maxY =
+      housingTypeData.values.reduce((a, b) => a > b ? a : b).toDouble();
+
+  return BarChart(
+    BarChartData(
+      alignment: BarChartAlignment.spaceAround,
+      maxY: maxY * 1.2,
+      barTouchData: BarTouchData(enabled: false),
+      titlesData: FlTitlesData(
+        show: true,
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (double value, TitleMeta meta) {
+              List<String> titles = housingTypeData.keys.toList();
+              return Text(
+                value.toInt() < titles.length
+                    ? titles[value.toInt()].substring(0, 3)
+                    : '',
+                style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+              );
+            },
+            reservedSize: 30,
+          ),
+        ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, meta) {
+              return Text(
+                value.toInt().toString(),
+                style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+              );
+            },
+            reservedSize: 30,
+          ),
+        ),
+        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      ),
+      borderData: FlBorderData(show: true),
+      barGroups: housingTypeData.entries.map((entry) {
+        return BarChartGroupData(
+          x: housingTypeData.keys.toList().indexOf(entry.key),
+          barRods: [
+            BarChartRodData(
+              toY: entry.value.toDouble(),
+              color: _getHousingTypeColor(entry.key),
+              width: 22,
+              borderRadius: BorderRadius.circular(4),
+            )
+          ],
+        );
+      }).toList(),
+    ),
+  );
+}
   Map<String, int> _calculateCategoryData(List<String> categories) {
     Map<String, int> categoryData = {};
     for (var category in categories) {

@@ -23,41 +23,9 @@ class FraudPerson {
     required this.fraudStatus,
   });
 
-  factory FraudPerson.fromMap(Map<String, dynamic> map) {
-    return FraudPerson(
-      customer: map['customer'],
-      age: map['age'],
-      gender: map['gender'],
-      zipcodeOri: map['zipcodeOri'],
-      merchant: map['merchant'],
-      zipMerchant: map['zipMerchant'],
-      category: map['category'],
-      amount: (map['amount'] is int)
-          ? (map['amount'] as int).toDouble()
-          : map['amount'],
-      fraudDetected: map['fraudDetected'] ?? false,
-      fraudStatus: map['fraudStatus'],
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'customer': customer,
-      'age': age,
-      'gender': gender,
-      'zipcodeOri': zipcodeOri,
-      'merchant': merchant,
-      'zipMerchant': zipMerchant,
-      'category': category,
-      'amount': amount,
-      'fraudDetected': fraudDetected,
-      'fraudStatus': fraudStatus,
-    };
-  }
 }
 
-List<FraudPerson> getFraudPersons() {
-  return [
+List<FraudPerson> dummyData = [
     FraudPerson(
         customer: 'C1551465414',
         age: 21,
@@ -279,4 +247,4 @@ List<FraudPerson> getFraudPersons() {
         fraudDetected: false,
         fraudStatus: 'Denied'),
   ];
-}
+

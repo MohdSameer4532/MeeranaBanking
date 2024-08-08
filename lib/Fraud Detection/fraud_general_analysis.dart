@@ -11,7 +11,7 @@ class FraudGeneralAnalyticsPage extends StatefulWidget {
 }
 
 class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
-  final List<FraudPerson> data = getFraudPersons();
+  final List<FraudPerson> data = dummyData;
   ScatterSpot? _selectedScatterSpot;
 
   int totalClients = 0;
@@ -801,7 +801,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => FraudPredictionPage()),
+              MaterialPageRoute(builder: (context) => FraudUserInputPage()),
             );
           },
           label: Text('Detect Fraud', style: TextStyle(color: Colors.white)),
