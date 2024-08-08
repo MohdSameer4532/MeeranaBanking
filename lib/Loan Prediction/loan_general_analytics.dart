@@ -100,6 +100,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
               [
                 _buildLegendItem(Colors.blue, 'Single'),
                 _buildLegendItem(Colors.orange, 'Married'),
+                _buildLegendItem(Colors.green, 'Divorced'),
               ],
             ),
             _buildChartSection(
@@ -108,6 +109,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
               [
                 _buildLegendItem(Colors.blue, 'Single'),
                 _buildLegendItem(Colors.orange, 'Married'),
+                _buildLegendItem(Colors.green, 'Divorced'),
               ],
             ),
             _buildTwoChartRow(
@@ -251,7 +253,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
               title,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.normal, // Make the title bold
                 color: Colors.black87,
               ),
             ),
@@ -357,7 +359,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
         centerSpaceRadius: 22,
         sections: maritalStatusData.entries.map((entry) {
           return PieChartSectionData(
-            color: entry.key == 'Single' ? Colors.blue : Colors.orange,
+            color: entry.key == 'Single' ? Colors.blue : Colors.orange, 
             value: entry.value.toDouble(),
             title: entry.value.toString(),
             radius: 30,
