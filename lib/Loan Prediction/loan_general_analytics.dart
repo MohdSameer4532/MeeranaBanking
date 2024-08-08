@@ -82,7 +82,7 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
                 children: [
                   _buildStatisticCard('Total Clients', '$totalClients'),
                   _buildStatisticCard('Accepted Clients', '$acceptedClients'),
-                  _buildStatisticCard('Rejected Clients', '$rejectedClients'),
+                  _buildStatisticCard('Denied Clients', '$rejectedClients'),
                   _buildStatisticCard('Average Income',
                       '${averageIncome?.toStringAsFixed(1) ?? 'N/A'}'),
                 ],

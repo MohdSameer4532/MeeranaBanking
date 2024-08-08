@@ -709,8 +709,8 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                 childAspectRatio: 1.5,
                 children: [
                   _buildCard('Total Clients', totalClients.toString()),
-                  _buildCard('Fraud Not Detected', '$acceptedClients'),
-                  _buildCard('Fraud Detected', '$deniedClients'),
+                  _buildCard('Not Detected', '$acceptedClients'),
+                  _buildCard('Detected', '$deniedClients'),
                   _buildCard('Average Age', averageAge.toStringAsFixed(1)),
                 ],
               ),
@@ -718,7 +718,6 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
             SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-               
             ),
             SizedBox(height: 16),
             // 1. Previous Clients and 2. Gender (in one row)
@@ -817,7 +816,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
             Text(
               title,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.normal, // Make the title bold
                 color: Colors.black87,
               ),
@@ -826,7 +825,7 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
             Text(
               value,
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),

@@ -151,6 +151,7 @@ class ResultScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: Colors.blue[900],
               ),
             ),
             SizedBox(height: 10),
