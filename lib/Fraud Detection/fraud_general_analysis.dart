@@ -715,17 +715,10 @@ class _FraudGeneralAnalyticsPageState extends State<FraudGeneralAnalyticsPage> {
                 ],
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Graphical View',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
+               
             ),
             SizedBox(height: 16),
             // 1. Previous Clients and 2. Gender (in one row)
