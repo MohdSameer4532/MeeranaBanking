@@ -63,35 +63,35 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
   }
 
   Widget _buildChartCard(String title, Widget chart, List<Widget> legendItems) {
-  return Card(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    color: Colors.white,
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-          ),
-          SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: chart,
-          ),
-          SizedBox(height: 8),
-          ...legendItems,
-        ],
+            SizedBox(height: 16),
+            SizedBox(
+              height: 200,
+              child: chart,
+            ),
+            SizedBox(height: 8),
+            ...legendItems,
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildLegendItem(Color color, String label) {
     return Padding(
@@ -136,35 +136,26 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
                 ),
               ),
             ),
-            SizedBox(
-  height: 300, // Adjust this value as needed
-  child: GridView.count(
-    shrinkWrap: true,
-    physics: NeverScrollableScrollPhysics(),
-    crossAxisCount: 2,
-    mainAxisSpacing: 16,
-    crossAxisSpacing: 16,
-    childAspectRatio: 1.5,
-    children: [
-      _buildCard('Total Clients', totalClients.toString()),
-      _buildCard('Likely Clients', acceptedClients.toString()),
-      _buildCard('Unlikely Clients', rejectedClients.toString()),
-      _buildCard('Average Age', _calculateAverageAge().toStringAsFixed(1)),
-    ],
-  ),
-),
-            SizedBox(height: 16),
+            SizedBox(height: 8),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Graphical View',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildCard('Total Clients', totalClients.toString()),
+                  _buildCard('Likely Clients', acceptedClients.toString()),
+                  _buildCard('Unlikely Clients', rejectedClients.toString()),
+                  _buildCard(
+                      'Average Age', _calculateAverageAge().toStringAsFixed(1)),
+                ],
               ),
             ),
+
             SizedBox(height: 16),
             // 1. Total Clients and 2. Education (Pie Charts)
             Padding(
@@ -172,14 +163,16 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
               child: Row(
                 children: [
                   Expanded(
-                    child: _buildChartCard('Total Clients', _buildTotalClientsChart(), [
+                    child: _buildChartCard(
+                        'Total Clients', _buildTotalClientsChart(), [
                       _buildLegendItem(Colors.green, 'Accepted Client'),
                       _buildLegendItem(Colors.red, 'Rejected Client'),
                     ]),
                   ),
                   SizedBox(width: 16),
                   Expanded(
-                    child: _buildChartCard('Education', _buildEducationChart(), [
+                    child:
+                        _buildChartCard('Education', _buildEducationChart(), [
                       _buildLegendItem(Colors.blue, 'Primary'),
                       _buildLegendItem(Colors.orange, 'Secondary'),
                       _buildLegendItem(Colors.green, 'Tertiary'),
@@ -189,7 +182,8 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
               ),
             ),
             // 3. Education Distribution (Bar Chart)
-            _buildChartSection('Education Distribution', _buildEducationBarChart(), [
+            _buildChartSection(
+                'Education Distribution', _buildEducationBarChart(), [
               _buildLegendItem(Colors.blue, 'Primary'),
               _buildLegendItem(Colors.orange, 'Secondary'),
               _buildLegendItem(Colors.green, 'Tertiary'),
@@ -209,7 +203,8 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
                   ),
                   SizedBox(width: 16),
                   Expanded(
-                    child: _buildChartCard('Balance Range', _buildBalanceRangeChart(), [
+                    child: _buildChartCard(
+                        'Balance Range', _buildBalanceRangeChart(), [
                       _buildLegendItem(Colors.green, '1000+'),
                       _buildLegendItem(Colors.blue, '5000+'),
                     ]),
@@ -218,22 +213,26 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
               ),
             ),
             // 6. Age vs Balance (Scatter Plot)
-            _buildChartSection('Age vs Balance', _buildAgeBalanceScatterPlot(), []),
+            _buildChartSection(
+                'Age vs Balance', _buildAgeBalanceScatterPlot(), []),
             // 7. Marital Status and 8. Personal Loan (Pie Charts)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
                   Expanded(
-                    child: _buildChartCard('Marital Status', _buildMaritalStatusChart(), [
+                    child: _buildChartCard(
+                        'Marital Status', _buildMaritalStatusChart(), [
                       _buildLegendItem(Colors.green, 'Single'),
                       _buildLegendItem(Colors.red, 'Married'),
-                      _buildLegendItem(Color.fromARGB(255, 6, 112, 160), 'Divorced'),
+                      _buildLegendItem(
+                          Color.fromARGB(255, 6, 112, 160), 'Divorced'),
                     ]),
                   ),
                   SizedBox(width: 16),
                   Expanded(
-                    child: _buildChartCard('Personal Loan', _buildPersonalLoanChart(), [
+                    child: _buildChartCard(
+                        'Personal Loan', _buildPersonalLoanChart(), [
                       _buildLegendItem(Colors.green, 'True'),
                       _buildLegendItem(Colors.red, 'False'),
                     ]),
@@ -242,12 +241,14 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
               ),
             ),
             // 9. Family Status Distribution (Bar Chart)
-            _buildChartSection('Family Status Distribution', _buildFamilyStatusBarChart(), [
+            _buildChartSection(
+                'Family Status Distribution', _buildFamilyStatusBarChart(), [
               _buildLegendItem(Colors.blue, 'With Family'),
               _buildLegendItem(Colors.green, 'Single'),
             ]),
             // 10. Marital Status Distribution (Bar Chart)
-            _buildChartSection('Marital Status Distribution', _buildMaritalStatusBarChart(), [
+            _buildChartSection(
+                'Marital Status Distribution', _buildMaritalStatusBarChart(), [
               _buildLegendItem(Colors.green, 'Single'),
               _buildLegendItem(Colors.red, 'Married'),
               _buildLegendItem(Color.fromARGB(255, 6, 112, 160), 'Divorced'),
@@ -266,7 +267,8 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
                 MaterialPageRoute(builder: (context) => UserInputForm()),
               );
             },
-            label: Text('Start Prediction', style: TextStyle(color: Colors.white)),
+            label:
+                Text('Start Prediction', style: TextStyle(color: Colors.white)),
             icon: Icon(
               Icons.add,
               color: Colors.white,
@@ -285,31 +287,31 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
   }
 
   Widget _buildTotalClientsChart() {
-  Map<String, int> totalClientsData = _calculateTotalClientsData(dummyData);
-  return SizedBox(
-    height: 200,
-    child: PieChart(
-      PieChartData(
-        sectionsSpace: 0,
-        centerSpaceRadius: 22,
-        sections: totalClientsData.keys.map((status) {
-          Color color = status == 'Accepted' ? Colors.green : Colors.red;
-          return PieChartSectionData(
-            color: color,
-            value: totalClientsData[status]!.toDouble(),
-            title: totalClientsData[status].toString(),
-            radius: 30,
-            titleStyle: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
-        }).toList(),
+    Map<String, int> totalClientsData = _calculateTotalClientsData(dummyData);
+    return SizedBox(
+      height: 200,
+      child: PieChart(
+        PieChartData(
+          sectionsSpace: 0,
+          centerSpaceRadius: 22,
+          sections: totalClientsData.keys.map((status) {
+            Color color = status == 'Accepted' ? Colors.green : Colors.red;
+            return PieChartSectionData(
+              color: color,
+              value: totalClientsData[status]!.toDouble(),
+              title: totalClientsData[status].toString(),
+              radius: 30,
+              titleStyle: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            );
+          }).toList(),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildEducationChart() {
     Map<String, int> educationData = _calculateEducationData(dummyData);
@@ -487,43 +489,45 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
     );
   }
 
-  Widget _buildChartSection(String title, Widget chart, List<Widget> legendItems) {
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+  Widget _buildChartSection(
+      String title, Widget chart, List<Widget> legendItems) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-            ),
-            SizedBox(height: 16),
-            SizedBox(
-              height: 300,
-              width: double.infinity,
-              child: chart,
-            ),
-            SizedBox(height: 8),
-            ...legendItems,
-          ],
+              SizedBox(height: 16),
+              SizedBox(
+                height: 300,
+                width: double.infinity,
+                child: chart,
+              ),
+              SizedBox(height: 8),
+              ...legendItems,
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildEducationBarChart() {
     Map<String, int> educationData = _calculateEducationData(dummyData);
-    double maxY = educationData.values.reduce((a, b) => a > b ? a : b).toDouble();
+    double maxY =
+        educationData.values.reduce((a, b) => a > b ? a : b).toDouble();
 
     return BarChart(
       BarChartData(
@@ -538,7 +542,9 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
               getTitlesWidget: (double value, TitleMeta meta) {
                 List<String> titles = educationData.keys.toList();
                 return Text(
-                  value.toInt() < titles.length ? titles[value.toInt()].substring(0, 3) : '',
+                  value.toInt() < titles.length
+                      ? titles[value.toInt()].substring(0, 3)
+                      : '',
                   style: TextStyle(color: Colors.black, fontSize: 10),
                 );
               },
@@ -584,7 +590,10 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
       );
     }).toList();
 
-    double maxY = dummyData.map((p) => p.balance).reduce((a, b) => a > b ? a : b).toDouble();
+    double maxY = dummyData
+        .map((p) => p.balance)
+        .reduce((a, b) => a > b ? a : b)
+        .toDouble();
 
     return ScatterChart(
       ScatterChartData(
@@ -617,7 +626,8 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
             ),
           ),
         ),
-        gridData: FlGridData(show: true, drawHorizontalLine: true, drawVerticalLine: true),
+        gridData: FlGridData(
+            show: true, drawHorizontalLine: true, drawVerticalLine: true),
         borderData: FlBorderData(show: true),
         scatterTouchData: ScatterTouchData(
           enabled: true,
@@ -637,7 +647,8 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
 
   Widget _buildFamilyStatusBarChart() {
     Map<String, int> familyStatusData = _calculateFamilyStatusData(dummyData);
-    double maxY = familyStatusData.values.reduce((a, b) => a > b ? a : b).toDouble();
+    double maxY =
+        familyStatusData.values.reduce((a, b) => a > b ? a : b).toDouble();
 
     return BarChart(
       BarChartData(
@@ -692,7 +703,8 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
 
   Widget _buildMaritalStatusBarChart() {
     Map<String, int> maritalStatusData = _calculateMaritalStatusData(dummyData);
-    double maxY = maritalStatusData.values.reduce((a, b) => a > b ? a : b).toDouble();
+    double maxY =
+        maritalStatusData.values.reduce((a, b) => a > b ? a : b).toDouble();
 
     return BarChart(
       BarChartData(
@@ -707,7 +719,9 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
               getTitlesWidget: (double value, TitleMeta meta) {
                 List<String> titles = maritalStatusData.keys.toList();
                 return Text(
-                  value.toInt() < titles.length ? titles[value.toInt()].substring(0, 3) : '',
+                  value.toInt() < titles.length
+                      ? titles[value.toInt()].substring(0, 3)
+                      : '',
                   style: TextStyle(color: Colors.black, fontSize: 10),
                 );
               },
@@ -758,21 +772,35 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
   }
 
   Map<String, int> _calculateEducationData(List<Person> dummyData) {
-    Map<String, int> educationData = {'primary': 0, 'secondary': 0, 'tertiary': 0};
+    Map<String, int> educationData = {
+      'primary': 0,
+      'secondary': 0,
+      'tertiary': 0
+    };
     for (var person in dummyData) {
-      educationData[person.education] = (educationData[person.education] ?? 0) + 1;
+      educationData[person.education] =
+          (educationData[person.education] ?? 0) + 1;
     }
     return educationData;
   }
 
   Map<String, int> _calculateAgeGroupData(List<Person> dummyData) {
-    Map<String, int> ageGroupData = {'20-29': 0, '30-39': 0, '40-49': 0, '50-59': 0};
+    Map<String, int> ageGroupData = {
+      '20-29': 0,
+      '30-39': 0,
+      '40-49': 0,
+      '50-59': 0
+    };
     for (var person in dummyData) {
       int age = person.age;
-      if (age >= 20 && age < 30) ageGroupData['20-29'] = ageGroupData['20-29']! + 1;
-      else if (age >= 30 && age < 40) ageGroupData['30-39'] = ageGroupData['30-39']! + 1;
-      else if (age >= 40 && age < 50) ageGroupData['40-49'] = ageGroupData['40-49']! + 1;
-      else if (age >= 50 && age < 60) ageGroupData['50-59'] = ageGroupData['50-59']! + 1;
+      if (age >= 20 && age < 30)
+        ageGroupData['20-29'] = ageGroupData['20-29']! + 1;
+      else if (age >= 30 && age < 40)
+        ageGroupData['30-39'] = ageGroupData['30-39']! + 1;
+      else if (age >= 40 && age < 50)
+        ageGroupData['40-49'] = ageGroupData['40-49']! + 1;
+      else if (age >= 50 && age < 60)
+        ageGroupData['50-59'] = ageGroupData['50-59']! + 1;
     }
     return ageGroupData;
   }
@@ -780,16 +808,23 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
   Map<String, int> _calculateBalanceRangeData(List<Person> dummyData) {
     Map<String, int> balanceRangeData = {'1000+': 0, '5000+': 0};
     for (var person in dummyData) {
-      if (person.balance >= 5000) balanceRangeData['5000+'] = balanceRangeData['5000+']! + 1;
-      else if (person.balance >= 1000) balanceRangeData['1000+'] = balanceRangeData['1000+']! + 1;
+      if (person.balance >= 5000)
+        balanceRangeData['5000+'] = balanceRangeData['5000+']! + 1;
+      else if (person.balance >= 1000)
+        balanceRangeData['1000+'] = balanceRangeData['1000+']! + 1;
     }
     return balanceRangeData;
   }
 
   Map<String, int> _calculateMaritalStatusData(List<Person> dummyData) {
-    Map<String, int> maritalStatusData = {'single': 0, 'married': 0, 'divorced': 0};
+    Map<String, int> maritalStatusData = {
+      'single': 0,
+      'married': 0,
+      'divorced': 0
+    };
     for (var person in dummyData) {
-      maritalStatusData[person.marital] = (maritalStatusData[person.marital] ?? 0) + 1;
+      maritalStatusData[person.marital] =
+          (maritalStatusData[person.marital] ?? 0) + 1;
     }
     return maritalStatusData;
   }
@@ -797,8 +832,8 @@ class _DepositPredictionPageState extends State<DepositPredictionPage> {
   Map<String, int> _calculatePersonalLoanData(List<Person> dummyData) {
     Map<String, int> personalLoanData = {'true': 0, 'false': 0};
     for (var person in dummyData) {
-      personalLoanData[person.personalLoan.toString()] = 
-        (personalLoanData[person.personalLoan.toString()] ?? 0) + 1;
+      personalLoanData[person.personalLoan.toString()] =
+          (personalLoanData[person.personalLoan.toString()] ?? 0) + 1;
     }
     return personalLoanData;
   }
