@@ -34,6 +34,7 @@ flutter:
     - assets/fraud.png
     - assets/loan.png
     - assets/banking_illustration.png
+    - assets/bankenginelogo.png
     # Add any other assets here if needed
 
 flutter_icons:

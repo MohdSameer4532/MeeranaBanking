@@ -62,10 +62,10 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.account_balance, // Bank icon
-                      size: 100,
-                      color: Color(0xFF1E3354),
+                    Image.asset(
+                      "assets/bankenginelogo.png", // Path to your logo image
+                      width: 100, // Adjust the width as needed
+                      height: 100, // Adjust the height as needed
                     ),
                     SizedBox(height: 30),
                     Text(
