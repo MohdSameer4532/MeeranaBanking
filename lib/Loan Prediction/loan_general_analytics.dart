@@ -357,14 +357,32 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
       PieChartData(
         sectionsSpace: 0,
         centerSpaceRadius: 22,
-        sections: maritalStatusData.entries.map((entry) {
+        sections: maritalStatusData.keys.map((status) {
+          Color color;
+          switch (status) {
+            case 'Single':
+              color = Colors.blue;
+              break;
+            case 'Married':
+              color = Colors.orange;
+              break;
+            case 'Divorced':
+              color = Colors.green;
+              break;
+            default:
+              color = Colors.grey;
+              break;
+          }
           return PieChartSectionData(
-            color: entry.key == 'Single' ? Colors.blue : Colors.orange, 
-            value: entry.value.toDouble(),
-            title: entry.value.toString(),
+            color: color,
+            value: maritalStatusData[status]!.toDouble(),
+            title: maritalStatusData[status].toString(),
             radius: 30,
             titleStyle: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           );
         }).toList(),
       ),
@@ -518,7 +536,87 @@ class _LoanGeneralAnalyticsPageState extends State<LoanGeneralAnalyticsPage> {
   Widget _buildMaritalStatusBarChart() {
     Map<String, int> maritalStatusData =
         _calculateCategoryData(people.map((p) => p.maritalStatus).toList());
-    return _buildBarChart(maritalStatusData, Colors.blue, Colors.orange);
+    return BarChart(
+      BarChartData(
+        barGroups: maritalStatusData.entries.map((entry) {
+          Color color;
+          switch (entry.key) {
+            case 'Single':
+              color = Colors.blue;
+              break;
+            case 'Married':
+              color = Colors.orange;
+              break;
+            case 'Divorced':
+              color = Colors.green;
+              break;
+            default:
+              color = Colors.grey;
+          }
+          return BarChartGroupData(
+            x: maritalStatusData.keys.toList().indexOf(entry.key),
+            barRods: [
+              BarChartRodData(
+                toY: entry.value.toDouble(),
+                color: color,
+                width: 20,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ],
+          );
+        }).toList(),
+        borderData: FlBorderData(show: true),
+        maxY: maritalStatusData.values
+                .reduce((a, b) => a > b ? a : b)
+                .toDouble() +
+            1,
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  value.toInt().toString(),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                );
+              },
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                const style = TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                );
+                List<String> titles = maritalStatusData.keys.toList();
+                String text =
+                    value.toInt() < titles.length ? titles[value.toInt()] : '';
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 4,
+                  child: Text(text, style: style),
+                );
+              },
+            ),
+          ),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        gridData: FlGridData(
+          show: true,
+          drawHorizontalLine: true,
+          drawVerticalLine: false,
+        ),
+      ),
+    );
   }
 
   Widget _buildHouseOwnershipBarChart() {
